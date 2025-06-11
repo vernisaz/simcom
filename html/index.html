@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LightCommander</title>
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #ccc;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      --bg-color: #1e1e1e;
+      --text-color: #ccc;
+    } 
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+    }
+
+    .panel {
+      flex: 1;
+      border: 1px solid #ccc;
+      overflow-y: auto;
+    }
+
+    .panel-header {
+      background-color: #f1f1f1;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .file {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .file:hover {
+      background-color: #ddd;
+    }
+
+    .directory {
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    footer button {
+      background: none;
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    footer button:hover {
+      background-color: #555;
+    }
+  </style>
+  <script src="/cmd/js/common.js" language="Javascript"></script>
+</head>
+<body>
+  <div class="main-content">
+    <div class="panel" id="left-panel">
+      <div class="panel-header">
+        <input type="text" id="left-dir" value="/" />
+        <button onclick="loadPanel('left')">Go</button>
+      </div>
+      <div id="left-files"></div>
+    </div>
+
+    <div class="panel" id="right-panel">
+      <div class="panel-header">
+        <input type="text" id="right-dir" value="/" />
+        <button onclick="loadPanel('right')">Go</button>
+      </div>
+      <div id="right-files"></div>
+    </div>
+  </div>
+
+  <footer>
+    <button onclick="handleFunction('F3')">F3 View</button>
+    <button onclick="handleFunction('F4')">F4 Edit</button>
+    <button onclick="handleFunction('F5')">F5 Copy</button>
+    <button onclick="handleFunction('F6')">F6 Move</button>
+    <button onclick="handleFunction('F8')">F8 Delete</button>
+    <button onclick="handleFunction('F10')">F10 Exit</button>
+  </footer>
+
+  <script>
+    
+    var wskt = new WebSocket('./com')
+    //document.body.dataset.theme = 'light';
+
+    function requestPanel(panelId) {
+        const dirInput = document.getElementById(`${panelId}-dir`);
+        wskt .send(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
+    }
+    
+    function loadPanel(response) {
+        const panelId = response.panel;
+        const dirInput = document.getElementById(`${panelId}-dir`);
+        const filesDiv = document.getElementById(`${panelId}-files`);
+        const dir = dirInput.value;
+
+          filesDiv.innerHTML = '';
+          response.dir.forEach(file => {
+            const div = document.createElement('div');
+            div.textContent = file.name;
+            div.className = `file ${file.dir ? 'directory' : ''}`;
+            div.onclick = () => {
+              if (file.dir) {
+                dirInput.value = `${dir}/${file.name}`;
+                requestPanel(panelId);
+              }
+            };
+            filesDiv.appendChild(div);
+          });
+    }
+    
+    wskt.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        loadPanel (response)
+    }
+
+    function handleFunction(key) {
+      if (key == 'F10')
+         unload()
+      else {
+        // Implement file operation based on key
+        alert(`${key} pressed!`);
+      }
+    }
+
+    wskt.onopen = () => {
+        requestPanel('left');
+        requestPanel('right');
+    }
+    
+    function unload() {
+        wskt.close();
+    }
+  </script>
+</body>
+</html>
