@@ -47,6 +47,10 @@
       display: flex;
       justify-content: space-between;
     }
+    
+    .panel-header input[type="text"] {
+         width: calc(100% - 40px);
+    }
 
     .file {
       padding: 5px;
@@ -135,7 +139,7 @@
             div.className = `file ${file.dir ? 'directory' : ''}`;
             div.onclick = () => {
               if (file.dir) {
-                dirInput.value = `${dir}/${file.name}`;
+                dirInput.value = dir != '/'? `${dir}/${file.name}`:`${dir}${file.name}`;
                 requestPanel(panelId);
               }
             };

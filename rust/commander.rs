@@ -2,7 +2,7 @@ extern crate simjson;
 extern crate simweb;
 extern crate simtime;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
-    fs::read_dir, time::UNIX_EPOCH,
+    fs::read_dir, time::UNIX_EPOCH, path::Path,
 };
 
 use simjson::{JsonData::{Data,Text},parse_fragment};
@@ -57,7 +57,12 @@ fn main() -> io::Result<()> {
 }
 
 fn get_dir(dir: &str) -> Result<String,std::io::Error> {
-    Ok(read_dir(dir)?.fold(String::new(),
+    let mut init = String::new();
+    let path = Path::new(&dir);
+    if let Some(_path) = path.parent() {
+        write!(init,r#"{{"name":"{}", "dir":{}}}"#,"..",true).unwrap()
+    };
+    Ok(read_dir(dir)?.fold(init,
        |mut res,cur| {if let Ok(cur) = cur {
             let md = cur.metadata().unwrap(); 
              write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
