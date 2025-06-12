@@ -150,7 +150,7 @@
 
     function handleFunction(key) {
       if (key == 'F10')
-         unload()
+         unloadWS()
       else {
         // Implement file operation based on key
         alert(`${key} pressed!`);
@@ -159,10 +159,13 @@
 
     wskt.onopen = () => {
         requestPanel('left');
+        /*setTimeout(() => {
+          requestPanel('right');
+        }, "1 second");*/
         requestPanel('right');
     }
     
-    function unload() {
+    function unloadWS() {
         wskt.close();
     }
   </script>

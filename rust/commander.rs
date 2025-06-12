@@ -5,7 +5,7 @@ use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite,
     fs::read_dir, time::UNIX_EPOCH,
 };
 
-use simjson::JsonData::{Data,Text};
+use simjson::{JsonData::{Data,Text},parse_fragment};
 
 const MAX_BLOCK_LEN : usize = 40960;
 
@@ -15,27 +15,41 @@ fn main() -> io::Result<()> {
     loop {
         let Ok(len) = stdin().read(&mut buffer) else {break};
         if len == 0 { break }
-        let Data(json) = simjson::parse(&String::from_utf8_lossy(&buffer[0..len])) else {
-            continue
-        };
+        if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
+            // ws close
+            break
+        }
+        //eprintln!("parsing {}", String::from_utf8_lossy(&buffer[0..len]));
+        let commands = String::from_utf8_lossy(&buffer[0..len]);
+
+        let mut chars = commands.chars();
+        loop {
+            let res = parse_fragment(&mut chars);
+            let json = match res.0 {
+                Data(json) => json,
+                _ => break,
+            };
         
-        let Some(Text(panel)) = json.get("panel") else {
-                continue
-        };
-        
-        match json.get("op") {
-            Some(Text(op)) => match op.as_str() {
-                "dir" => {
-                    //eprintln!("{json:?}");
-                    let Some(Text(dir)) = json.get("dir") else {
-                        continue
-                    };
-                    print!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dir).unwrap());
-                    io::stdout().flush()?;
+            let Some(Text(panel)) = json.get("panel") else {
+                    continue
+            };
+            
+            match json.get("op") {
+                Some(Text(op)) => match op.as_str() {
+                    "dir" => {
+                        //eprintln!("{json:?}");
+                        let Some(Text(dir)) = json.get("dir") else {
+                            continue
+                        };
+                        print!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dir).unwrap());
+                        io::stdout().flush()?;
+                    }
+                    "copy" => {
+                    }
+                    _ => continue
                 }
                 _ => continue
             }
-            _ => continue
         }
     }
     
