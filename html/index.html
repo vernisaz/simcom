@@ -156,6 +156,7 @@
             div.onclick = () => {
               if (file.dir) {
                 dirInput.value = dir != '/'? `${dir}/${file.name}`:`${dir}${file.name}`;
+                dirInput.value = normalizePath(dirInput.value)
                 requestPanel(panelId);
               }
             };

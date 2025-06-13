@@ -157,6 +157,24 @@ function convertEpochToSpecificTimezone(timeEpoch, offset){
     return nd.toLocaleString();
 }
 
+function normalizePath(path) {
+  // Remove multiple slashes
+  path = path.replace(/\/\/+/g, '/');
+
+  let segments = path.split('/');
+  let normalizedSegments = [];
+
+  for (let segment of segments) {
+    if (segment === '..') {
+      normalizedSegments.pop(); // Go up one directory
+    } else if (segment !== '.' && segment !== '') {
+      normalizedSegments.push(segment); // Push valid directory names
+    }
+  }
+
+  return '/' + normalizedSegments.join('/'); // Reconstruct the path
+}
+
 function makeid(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
