@@ -51,7 +51,20 @@
     .panel-header input[type="text"] {
          width: calc(100% - 40px);
     }
-
+    
+    .panel-files {
+        display: grid;
+        grid-template-columns: 3fr 1fr 2fr;
+    }
+    
+    .file-size {
+        text-align: right;
+    }
+    
+    .file-timestamp {
+        text-align:center;
+    }
+    
     .file {
       padding: 5px;
       cursor: pointer;
@@ -95,7 +108,7 @@
         <input type="text" id="left-dir" value="/" />
         <button onclick="requestPanel('left')">Go</button>
       </div>
-      <div id="left-files"></div>
+      <div id="left-files" class="panel-files"></div>
     </div>
 
     <div class="panel" id="right-panel">
@@ -103,7 +116,7 @@
         <input type="text" id="right-dir" value="/" />
         <button onclick="requestPanel('right')">Go</button>
       </div>
-      <div id="right-files"></div>
+      <div id="right-files" class="panel-files"></div>
     </div>
   </div>
 
@@ -133,6 +146,9 @@
         const dir = dirInput.value;
 
           filesDiv.innerHTML = '';
+          response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
+              if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
+          })
           response.dir.forEach(file => {
             const div = document.createElement('div');
             div.textContent = file.name;
@@ -144,6 +160,17 @@
               }
             };
             filesDiv.appendChild(div);
+            const div_size = document.createElement('div');
+            if (!file.dir)
+                div_size.textContent = file.size;
+            div_size.className = 'file-size'
+            filesDiv.appendChild(div_size);
+            const div_date = document.createElement('div');
+            const dateFromMilliseconds = new Date(file.timestamp);
+
+            div_date.textContent = dateFromMilliseconds.toLocaleString("en-US");
+            div_date.className = 'file-timestamp'
+            filesDiv.appendChild(div_date);
           });
     }
     
