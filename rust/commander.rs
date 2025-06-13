@@ -41,7 +41,7 @@ fn main() -> io::Result<()> {
                         let Some(Text(dir)) = json.get("dir") else {
                             continue
                         };
-                        print!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dir).unwrap());
+                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dir).unwrap());
                         io::stdout().flush()?;
                     }
                     "copy" => {

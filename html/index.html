@@ -73,6 +73,10 @@
     .file:hover {
       background-color: #ddd;
     }
+    
+    .selectedd {
+        color:#E3CD07;
+    }
 
     .directory {
       font-weight: bold;
@@ -133,7 +137,20 @@
     
     var wskt = new WebSocket('./com')
     //document.body.dataset.theme = 'light';
-
+    var accum = ''
+    
+    window.addEventListener('keydown', function(event) {
+      //console.log('Key Pressed:', event.key);
+     // console.log('Key Code:', event.code);
+       
+      if (event.key == 'Delete') {
+          const el = document.querySelector('.file:hover');
+          if (el) {
+              el.classList.toggle('selectedd');
+          }
+      }
+    });
+    
     function requestPanel(panelId) {
         const dirInput = document.getElementById(`${panelId}-dir`);
         wskt .send(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
@@ -176,7 +193,11 @@
     }
     
     wskt.onmessage = (event) => {
-        const response = JSON.parse(event.data);
+        accum = accum + event.data
+        if (!accum.endsWith('\n'))
+           return;
+        const response = JSON.parse(accum);
+        accum = ''
         loadPanel (response)
     }
 

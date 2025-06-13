@@ -16,5 +16,8 @@ Currently the project has 3 direct dependecies:
 - [SimTime](https://github.com/vernisaz/simtime)
 -
 
+## Web server
+Since the project uses websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
+
 ## Status
 The work is in progress.
