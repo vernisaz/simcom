@@ -2,10 +2,10 @@ extern crate simjson;
 extern crate simweb;
 extern crate simtime;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
-    fs::read_dir, time::UNIX_EPOCH, path::Path,
+    fs::{self,read_dir}, time::UNIX_EPOCH, path::{PathBuf,Path},
 };
 
-use simjson::{JsonData::{Data,Text},parse_fragment};
+use simjson::{JsonData::{Data,Text,Arr},parse_fragment};
 
 const MAX_BLOCK_LEN : usize = 40960;
 
@@ -46,6 +46,43 @@ fn main() -> io::Result<()> {
                     }
                     "copy" => {
                         eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
+                    }
+                    "move" => {
+                        let Some(Arr(files)) = json.get("files") else {
+                            eprintln!("no files to move");
+                            continue
+                        };
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src to move");
+                            continue
+                        };
+                        let mut src = PathBuf::from(&src);
+                        if src.is_file() {
+                            eprintln!("src should be dir");
+                            continue
+                        }
+                        let Some(Text(dst)) = json.get("dst") else {
+                            eprintln!("no dst to move");
+                            continue
+                        };
+                        let mut dst = PathBuf::from(&dst);
+                        if dst .is_file()  {
+                            if files.len() == 1 {
+                                if let Text(file) = &files[0] {
+                                    src.push(file);
+                                    fs::rename(src,dst).unwrap()
+                                }
+                            }
+                        } else {
+                            for file in files {
+                                let Text(file) = file else { continue };
+                                src.push(file.clone());
+                                dst.push(file);
+                                fs::rename(&src,&dst).unwrap();
+                                src.pop();
+                                dst.pop();
+                            }
+                        }
                     }
                     _ => continue
                 }

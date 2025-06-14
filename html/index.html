@@ -214,19 +214,21 @@
                 unloadWS()
                 break
             case 'F5': 
+            case 'F6':
                 const dlg = document.querySelector('dialog')
                 const msg = dlg.querySelector('p')
                 const srcPanel = 'right'
                 const dstPanel = 'left'
                 const files = getSelected(srcPanel)
+                const move = key == 'F6'
                 if (files) {
                     if (files.length == 1)
-                        msg.innerHTML = 'Copying ' + files[0] + '...'
+                        msg.innerHTML = (move?'Moving ':'Copying ') + files[0] + '...'
                     else
-                        msg.innerHTML = `Copying ${files.length} files...`
+                        msg.innerHTML = `${move ? 'Moving' : 'Copying'} ${files.length} files...`
                     const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                     const dstDirInput = document.getElementById(`${dstPanel}-dir`);
-                    wskt .send(JSON.stringify({op:'copy', dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
+                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
                     dlg.show()
                 }
                 
