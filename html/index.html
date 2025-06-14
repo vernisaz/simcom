@@ -132,7 +132,14 @@
     <button onclick="handleFunction('F8')">F8 Delete</button>
     <button onclick="handleFunction('F10')">F10 Exit</button>
   </footer>
-
+  
+    <dialog >
+      <p></p>
+      <form method="dialog">
+        <button>Cancel</button>
+      </form>
+    </dialog>
+    
   <script>
     
     var wskt = new WebSocket('./com')
@@ -202,12 +209,32 @@
     }
 
     function handleFunction(key) {
-      if (key == 'F10')
-         unloadWS()
-      else {
-        // Implement file operation based on key
-        alert(`${key} pressed!`);
-      }
+        switch (key) {
+            case 'F10': 
+                unloadWS()
+                break
+            case 'F5': 
+                const dlg = document.querySelector('dialog')
+                const msg = dlg.querySelector('p')
+                const srcPanel = 'right'
+                const dstPanel = 'left'
+                const files = getSelected(srcPanel)
+                if (files) {
+                    if (files.length == 1)
+                        msg.innerHTML = 'Copying ' + files[0] + '...'
+                    else
+                        msg.innerHTML = `Copying ${files.length} files...`
+                    const srcDirInput = document.getElementById(`${srcPanel}-dir`);
+                    const dstDirInput = document.getElementById(`${dstPanel}-dir`);
+                    wskt .send(JSON.stringify({op:'copy', dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
+                    dlg.show()
+                }
+                
+                break
+            default: 
+                // Implement file operation based on key
+                alert(`${key} pressed!`);
+        }
     }
 
     wskt.onopen = () => {
@@ -216,6 +243,13 @@
           requestPanel('right');
         }, "1 second");*/
         requestPanel('right');
+    }
+    
+    function getSelected(panelId) {
+        const filesDiv = document.getElementById(`${panelId}-files`);
+        var res = []
+        filesDiv.querySelectorAll('div.selectedd').forEach((divEl) => { res.push(divEl.textContent) })
+        return res
     }
     
     function unloadWS() {

@@ -45,6 +45,7 @@ fn main() -> io::Result<()> {
                         io::stdout().flush()?;
                     }
                     "copy" => {
+                        eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     _ => continue
                 }
