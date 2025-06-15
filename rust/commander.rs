@@ -53,8 +53,8 @@ fn main() -> io::Result<()> {
                             eprintln!("no src of copy");
                             continue
                         };
-                        let mut src = PathBuf::from(&src);
-                        if src.is_file() {
+                        let mut src_path = PathBuf::from(&src);
+                        if src_path.is_file() {
                             eprintln!("src should be dir");
                             continue
                         }
@@ -62,16 +62,20 @@ fn main() -> io::Result<()> {
                             eprintln!("no dst to copy");
                             continue
                         };
+                        
                         let mut dst_path = PathBuf::from(&dst);
                         for file in files {
                             let Text(file) = file else { continue };
-                            src.push(file.clone());
+                            src_path.push(file.clone());
                             dst_path.push(file);
-                            fs::copy(&src,&dst).unwrap();
-                            src.pop();
+                            fs::copy(&src_path,&dst_path).unwrap();
+                            src_path.pop();
                             dst_path.pop();
                         }
                         println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                        io::stdout().flush()?;
+                        let other_panel = if panel == "left" { "right" } else { "left" };
+                        println!(r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                         io::stdout().flush()?;
                         //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
@@ -84,8 +88,8 @@ fn main() -> io::Result<()> {
                             eprintln!("no src to move");
                             continue
                         };
-                        let mut src = PathBuf::from(&src);
-                        if src.is_file() {
+                        let mut src_path = PathBuf::from(&src);
+                        if src_path.is_file() {
                             eprintln!("src should be dir");
                             continue
                         }
@@ -94,23 +98,31 @@ fn main() -> io::Result<()> {
                             continue
                         };
                         let mut dst_path = PathBuf::from(&dst);
+                        let mut was_move = false;
                         if dst_path .is_file()  {
                             if files.len() == 1 {
                                 if let Text(file) = &files[0] {
-                                    src.push(file);
-                                    fs::rename(src,dst_path).unwrap()
+                                    src_path.push(file);
+                                    fs::rename(src_path,dst_path).unwrap();
+                                    was_move = true
                                 }
                             }
-                        } else {
+                        } else if files.len() > 0 {
                             for file in files {
                                 let Text(file) = file else { continue };
-                                src.push(file.clone());
+                                src_path.push(file.clone());
                                 dst_path.push(file);
-                                fs::rename(&src,&dst).unwrap();
-                                src.pop();
+                                fs::rename(&src_path,&dst_path).unwrap();
+                                src_path.pop();
                                 dst_path.pop();
                             }
-                            println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                            was_move = true
+                        }
+                        if was_move {
+                             println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                            io::stdout().flush()?;
+                            let other_panel = if panel == "left" { "right" } else { "left" };
+                            println!(r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                             io::stdout().flush()?;
                         }
                     }
@@ -165,8 +177,9 @@ fn main() -> io::Result<()> {
 fn get_dir(dir: &str) -> Result<String,std::io::Error> {
     let mut init = String::new();
     let path = Path::new(&dir);
-    if let Some(_path) = path.parent() {
-        write!(init,r#"{{"name":"{}", "dir":{}}}"#,"..",true).unwrap()
+    if let Some(parent_path) = path.parent() {
+        let timestamp = fs::metadata(parent_path)?.modified()?;
+        write!(init,r#"{{"name":"{}", "dir":{}, "timestamp":{}}}"#,"..",true,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
     };
     Ok(read_dir(dir)?.fold(init,
        |mut res,cur| {if let Ok(cur) = cur {

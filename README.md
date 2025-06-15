@@ -17,7 +17,8 @@ Currently the project has 3 direct dependecies:
 -
 
 ## Web server
-Since the project uses websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
+Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
+Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
 
 ## Status
 The work is in progress.

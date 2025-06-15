@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <title>LightCommander</title>
   <style>
     :root {
@@ -137,7 +138,7 @@
     <dialog >
       <p></p>
       <form method="dialog">
-          <p><input type="text" id="some_txt" name="some_txt" required /></p>
+          <p id="extra_input" hidden><input type="text" id="some_txt" name="some_txt" required /></p>
         <div>
           <button value="cancel" formmethod="dialog">Cancel</button>
           <button id="confirmBtn" value="default">Confirm</button>
@@ -234,8 +235,14 @@
                         msg.innerHTML = `${move ? 'Moving' : 'Copying'} ${files.length} files...`
                     const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                     const dstDirInput = document.getElementById(`${dstPanel}-dir`);
-                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
+                     const extraInput = dlg.querySelector("p#extra_input")
+                    extraInput.style.visibility = "hidden"
+                    const extraTxt = dlg.querySelector("#some_txt")
+                    extraTxt.required = false
+                    const createBtn = dlg.querySelector("#confirmBtn");
+                    createBtn.style.visibility = "hidden"
                     dlg.show()
+                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
                 }
                 
                 break
@@ -245,15 +252,24 @@
                         msg.innerHTML = 'Delete ' + files[0] + '?'
                     else
                         msg.innerHTML = `Delete ${files.length} files?`
-                    dlg.show()
-                    // the code executed if confirmed
-                    const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-                    wskt .send(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
-                    
+                    const extraInput = dlg.querySelector("p#extra_input")
+                    extraInput.style.visibility = "hidden"
+                    const extraTxt = dlg.querySelector("#some_txt")
+                    extraTxt.required = false
+                    const createBtn = dlg.querySelector("#confirmBtn");
+                    createBtn.addEventListener("click", (e) => {
+                      //e.preventDefault();
+                      //dlg.close();
+                      const srcDirInput = document.getElementById(`${srcPanel}-dir`);
+                      wskt .send(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
+                    });
+                    dlg.showModal()
                 }
                 break
             case 'F7':
                 msg.innerHTML = 'What\'s the directory name?'
+                const extraInput = dlg.querySelector("p#extra_input")
+                extraInput.style.visibility = "visible"
                 const createBtn = dlg.querySelector("#confirmBtn");
                 createBtn.addEventListener("click", (e) => {
                   //e.preventDefault();
