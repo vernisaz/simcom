@@ -129,6 +129,7 @@
     <button onclick="handleFunction('F4')">F4 Edit</button>
     <button onclick="handleFunction('F5')">F5 Copy</button>
     <button onclick="handleFunction('F6')">F6 Move</button>
+    <button onclick="handleFunction('F7')">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
     <button onclick="handleFunction('F10')">F10 Exit</button>
   </footer>
@@ -136,7 +137,11 @@
     <dialog >
       <p></p>
       <form method="dialog">
-        <button>Cancel</button>
+          <p><input type="text" id="some_txt" name="some_txt" required /></p>
+        <div>
+          <button value="cancel" formmethod="dialog">Cancel</button>
+          <button id="confirmBtn" value="default">Confirm</button>
+        </div>
       </form>
     </dialog>
     
@@ -164,6 +169,7 @@
     }
     
     function loadPanel(response) {
+        document.querySelector('dialog').close();
         const panelId = response.panel;
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
@@ -209,17 +215,17 @@
     }
 
     function handleFunction(key) {
+        const dlg = document.querySelector('dialog')
+        const msg = dlg.querySelector('p')
+        const srcPanel = 'right'
+        const files = getSelected(srcPanel)
         switch (key) {
             case 'F10': 
                 unloadWS()
                 break
             case 'F5': 
             case 'F6':
-                const dlg = document.querySelector('dialog')
-                const msg = dlg.querySelector('p')
-                const srcPanel = 'right'
                 const dstPanel = 'left'
-                const files = getSelected(srcPanel)
                 const move = key == 'F6'
                 if (files) {
                     if (files.length == 1)
@@ -232,6 +238,23 @@
                     dlg.show()
                 }
                 
+                break
+            case 'F8':
+                if (files && files.length > 0) {
+                    if (files.length == 1)
+                        msg.innerHTML = 'Delete ' + files[0] + '?'
+                    else
+                        msg.innerHTML = `Delete ${files.length} files?`
+                    dlg.show()
+                    // the code executed if confirmed
+                    const srcDirInput = document.getElementById(`${srcPanel}-dir`);
+                    wskt .send(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
+                    
+                }
+                break
+            case 'F7':
+                msg.innerHTML = 'What\'s the directory name?'
+                dlg.showModal();
                 break
             default: 
                 // Implement file operation based on key

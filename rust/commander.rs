@@ -45,7 +45,35 @@ fn main() -> io::Result<()> {
                         io::stdout().flush()?;
                     }
                     "copy" => {
-                        eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
+                        let Some(Arr(files)) = json.get("files") else {
+                            eprintln!("no files to copy");
+                            continue
+                        };
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src of copy");
+                            continue
+                        };
+                        let mut src = PathBuf::from(&src);
+                        if src.is_file() {
+                            eprintln!("src should be dir");
+                            continue
+                        }
+                        let Some(Text(dst)) = json.get("dst") else {
+                            eprintln!("no dst to copy");
+                            continue
+                        };
+                        let mut dst_path = PathBuf::from(&dst);
+                        for file in files {
+                            let Text(file) = file else { continue };
+                            src.push(file.clone());
+                            dst_path.push(file);
+                            fs::copy(&src,&dst).unwrap();
+                            src.pop();
+                            dst_path.pop();
+                        }
+                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                        io::stdout().flush()?;
+                        //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     "move" => {
                         let Some(Arr(files)) = json.get("files") else {
@@ -65,24 +93,64 @@ fn main() -> io::Result<()> {
                             eprintln!("no dst to move");
                             continue
                         };
-                        let mut dst = PathBuf::from(&dst);
-                        if dst .is_file()  {
+                        let mut dst_path = PathBuf::from(&dst);
+                        if dst_path .is_file()  {
                             if files.len() == 1 {
                                 if let Text(file) = &files[0] {
                                     src.push(file);
-                                    fs::rename(src,dst).unwrap()
+                                    fs::rename(src,dst_path).unwrap()
                                 }
                             }
                         } else {
                             for file in files {
                                 let Text(file) = file else { continue };
                                 src.push(file.clone());
-                                dst.push(file);
+                                dst_path.push(file);
                                 fs::rename(&src,&dst).unwrap();
                                 src.pop();
-                                dst.pop();
+                                dst_path.pop();
                             }
+                            println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                            io::stdout().flush()?;
                         }
+                    }
+                    "del" => {
+                        let Some(Arr(files)) = json.get("files") else {
+                            eprintln!("no files to delete");
+                            continue
+                        };
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src to delete");
+                            continue
+                        };
+                        let mut src_path = PathBuf::from(&src);
+                        for file in files {
+                            let Text(file) = file else { continue };
+                            src_path.push(file);
+                            if src_path.is_file() {
+                                fs::remove_file(&src_path).unwrap();
+                            } else if src_path.is_dir() {
+                                fs::remove_dir_all(&src_path).unwrap();
+                            }
+                            src_path.pop();
+                        }
+                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        io::stdout().flush()?;
+                    }
+                    "mkdir" => {
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src where to create");
+                            continue
+                        };
+                        let Some(Text(file)) = json.get("file") else {
+                            eprintln!("no dir name to create");
+                            continue
+                        };
+                        let mut create_path = PathBuf::from(&src);
+                        create_path.push(file);
+                        fs::create_dir(&create_path).unwrap();
+                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        io::stdout().flush()?;
                     }
                     _ => continue
                 }
