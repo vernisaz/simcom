@@ -1,7 +1,7 @@
 # Simple Commander (simcom)
 
 ## Goal
-Mimic Norton Commander like web interface using the websocket.
+Mimic Norton Commander functionality using a  web interface and the websocket.
 
 ## Technologies
 - Rust

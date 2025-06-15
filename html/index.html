@@ -254,6 +254,14 @@
                 break
             case 'F7':
                 msg.innerHTML = 'What\'s the directory name?'
+                const createBtn = dlg.querySelector("#confirmBtn");
+                createBtn.addEventListener("click", (e) => {
+                  //e.preventDefault();
+                  //dlg.close();
+                  const dirName = dlg.querySelector("#some_txt").value;
+                  const srcDirInput = document.getElementById(`${srcPanel}-dir`);
+                  wskt .send(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
+                });
                 dlg.showModal();
                 break
             default: 
