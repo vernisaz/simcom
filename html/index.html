@@ -78,6 +78,10 @@
     .selectedd {
         color:#E3CD07;
     }
+    
+    .selected-panel {
+      background-color: #F5F3A4;
+    }
 
     .directory {
       font-weight: bold;
@@ -126,12 +130,15 @@
   </div>
 
   <footer>
+      <button onclick="handleFunction('F1')">F1 Left</button>
+    <button onclick="handleFunction('F2')">F2 Right</button>
     <button onclick="handleFunction('F3')">F3 View</button>
     <button onclick="handleFunction('F4')">F4 Edit</button>
     <button onclick="handleFunction('F5')">F5 Copy</button>
     <button onclick="handleFunction('F6')">F6 Move</button>
     <button onclick="handleFunction('F7')">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
+    <button onclick="handleFunction('F9')">F9 Upload</button>
     <button onclick="handleFunction('F10')">F10 Exit</button>
   </footer>
   
@@ -149,19 +156,29 @@
   <script>
     
     var wskt = new WebSocket('./com')
-    //document.body.dataset.theme = 'light';
+    document.body.dataset.theme = 'dark';
     var accum = ''
     
     window.addEventListener('keydown', function(event) {
-      //console.log('Key Pressed:', event.key);
-     // console.log('Key Code:', event.code);
+      console.log('Key Pressed:', event.key);
+      console.log('Key Code:', event.code);
        
-      if (event.key == 'Delete') {
+      if (event.key == 'Delete' || event.code == 'NumLock') {
           const el = document.querySelector('.file:hover');
           if (el) {
               el.classList.toggle('selectedd');
           }
-      }
+      } else if (event.key == 'F1' || event.key == 'F2' ||
+      event.key == 'F3' || event.key == 'F4' ||
+      event.key == 'F5' || event.key == 'F6' ||
+      event.key == 'F7' || event.key == 'F8' ||
+      event.key == 'F9' || event.key == 'F10') {
+          handleFunction(event.key)
+      } else if (event.key == 'F13') {
+           handleFunction('F1')
+      } else if (event.key == 'F14') {
+          handleFunction('F2')
+      } 
     });
     
     function requestPanel(panelId) {
@@ -218,7 +235,9 @@
     function handleFunction(key) {
         const dlg = document.querySelector('dialog')
         const msg = dlg.querySelector('p')
-        const srcPanel = 'right'
+        const dirInputLeft = document.getElementById(`left-dir`);
+        const dirInputRight = document.getElementById(`right-dir`);
+        const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
         const files = getSelected(srcPanel)
         switch (key) {
             case 'F10': 
@@ -226,7 +245,7 @@
                 break
             case 'F5': 
             case 'F6':
-                const dstPanel = 'left'
+                const dstPanel = srcPanel == 'right'?'left':'right';
                 const move = key == 'F6'
                 if (files) {
                     if (files.length == 1)
@@ -242,7 +261,7 @@
                     const createBtn = dlg.querySelector("#confirmBtn");
                     createBtn.style.visibility = "hidden"
                     dlg.show()
-                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:srcPanel, files:files}))
+                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files}))
                 }
                 
                 break
@@ -279,6 +298,18 @@
                   wskt .send(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
                 });
                 dlg.showModal();
+                break
+            case 'F1':
+                if (!dirInputLeft.classList.contains('selected-panel')) {
+                    dirInputRight.classList.remove('selected-panel')
+                    dirInputLeft.classList.add('selected-panel')
+                }
+                break
+            case 'F2':
+                if (!dirInputRight.classList.contains('selected-panel')) {
+                    dirInputLeft.classList.remove('selected-panel')
+                    dirInputRight.classList.add('selected-panel')
+                }
                 break
             default: 
                 // Implement file operation based on key
