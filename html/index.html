@@ -114,7 +114,7 @@
   <div class="main-content">
     <div class="panel" id="left-panel">
       <div class="panel-header">
-        <input type="text" id="left-dir" value="/" />
+        <input type="text" id="left-dir" value="/" class="selected-panel" />
         <button onclick="requestPanel('left')">Go</button>
       </div>
       <div id="left-files" class="panel-files"></div>
@@ -156,7 +156,7 @@
   <script>
     
     var wskt = new WebSocket('./com')
-    document.body.dataset.theme = 'dark';
+    //document.body.dataset.theme = 'dark';
     var accum = ''
     
     window.addEventListener('keydown', function(event) {
@@ -276,6 +276,7 @@
                     const extraTxt = dlg.querySelector("#some_txt")
                     extraTxt.required = false
                     const createBtn = dlg.querySelector("#confirmBtn");
+                    createBtn.style.visibility = "visible"
                     createBtn.addEventListener("click", (e) => {
                       //e.preventDefault();
                       //dlg.close();
@@ -290,6 +291,7 @@
                 const extraInput = dlg.querySelector("p#extra_input")
                 extraInput.style.visibility = "visible"
                 const createBtn = dlg.querySelector("#confirmBtn");
+                createBtn.style.visibility = "visible"
                 createBtn.addEventListener("click", (e) => {
                   //e.preventDefault();
                   //dlg.close();

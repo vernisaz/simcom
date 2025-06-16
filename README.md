@@ -21,4 +21,4 @@ Since the project uses the websocket, only the [SimHTTP](https://github.com/vern
 Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
 
 ## Status
-The work is in progress.
+There is an alpha version you can try.
