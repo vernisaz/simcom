@@ -182,8 +182,8 @@
     var accum = ''
     
     window.addEventListener('keydown', function(event) {
-      console.log('Key Pressed:', event.key);
-      console.log('Key Code:', event.code);
+      //console.log('Key Pressed:', event.key);
+      //console.log('Key Code:', event.code);
        
       if (event.key == 'Delete' || event.code == 'NumLock') {
           const el = document.querySelector('.file:hover');
@@ -286,7 +286,10 @@
                 const el = document.querySelector('.file:hover');
                 if (el) {
                     // TODO look up to find appropriate panel dir
-                    wskt .send(JSON.stringify({op:'show', src:dirInputLeft.value, panel:srcPanel, file:el.textContent}))
+                    if (el.parentElement.nodeName == 'DIV') {
+                        const actPanel = el.parentElement.id.split('-', 1)[0]
+                        wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:el.textContent}))
+                    }
                 }
                 break
             case 'F5': 
