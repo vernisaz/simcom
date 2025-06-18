@@ -214,6 +214,8 @@
               if (file.dir) {
                 dirInput.value = dir != '/'? `${dir}/${file.name}`:`${dir}${file.name}`;
                 dirInput.value = normalizePath(dirInput.value)
+                // TODO update title if it's an active panel
+                document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
                 requestPanel(panelId);
               }
             };
