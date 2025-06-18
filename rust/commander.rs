@@ -6,6 +6,7 @@ use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite,
 };
 
 use simjson::{JsonData::{Data,Text,Arr},parse_fragment};
+use simweb::json_encode;
 
 const MAX_BLOCK_LEN : usize = 40960;
 
@@ -163,6 +164,23 @@ fn main() -> io::Result<()> {
                         fs::create_dir(&create_path).unwrap();
                         println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                         io::stdout().flush()?;
+                    }
+                    "show" => {
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src of what to show");
+                            continue
+                        };
+                        let Some(Text(file)) = json.get("file") else {
+                            eprintln!("no file name to show");
+                            continue
+                        };
+                        let mut show_path = PathBuf::from(&src);
+                        show_path.push(file);
+                        if show_path.is_file() {
+                            let file_contents = fs::read_to_string(show_path)?;
+                             println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&file_contents));
+                            io::stdout().flush()?;
+                        }
                     }
                     _ => continue
                 }

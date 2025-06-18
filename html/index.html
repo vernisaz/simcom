@@ -103,6 +103,19 @@
       background-color: #555;
     }
     
+    .overlay{
+        opacity:0.9;
+        background-color:#ddd;
+        position:fixed;
+        width:100%;
+        height:100%;
+        top:0px;
+        left:0px;
+        display: flex;
+        justify-content: center;
+        z-index:1000;
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -187,6 +200,13 @@
            handleFunction('F1')
       } else if (event.key == 'F14') {
           handleFunction('F2')
+      } else if (event.key == 'F15') {
+          handleFunction('F3')
+      } else if (event.key == 'F16') {
+          handleFunction('F4')
+      } else if (event.key == 'Escape') {
+          let lastChild = document.body.children[document.body.children.length - 1];
+            document.body.removeChild(lastChild);
       } 
     });
     
@@ -240,7 +260,15 @@
            return;
         const response = JSON.parse(accum);
         accum = ''
-        loadPanel (response)
+        if (response.panel == 'center') {
+            const div = document.createElement('div');
+            //div.textContent = response.content;
+            div.innerHTML = '<pre>' + response.content + '</pre>'
+            div.className = 'overlay'
+            document.body.appendChild(div)
+        } else {
+            loadPanel (response)
+        }
     }
 
     function handleFunction(key) {
@@ -253,6 +281,13 @@
         switch (key) {
             case 'F10': 
                 unloadWS()
+                break
+            case 'F3': 
+                const el = document.querySelector('.file:hover');
+                if (el) {
+                    // TODO look up to find appropriate panel dir
+                    wskt .send(JSON.stringify({op:'show', src:dirInputLeft.value, panel:srcPanel, file:el.textContent}))
+                }
                 break
             case 'F5': 
             case 'F6':
