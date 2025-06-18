@@ -6,7 +6,7 @@ use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite,
 };
 
 use simjson::{JsonData::{Data,Text,Arr},parse_fragment};
-use simweb::json_encode;
+use simweb::{json_encode,html_encode};
 
 const MAX_BLOCK_LEN : usize = 40960;
 
@@ -178,7 +178,7 @@ fn main() -> io::Result<()> {
                         show_path.push(file);
                         if show_path.is_file() {
                             let file_contents = fs::read_to_string(show_path)?;
-                             println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&file_contents));
+                             println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&html_encode(&file_contents)));
                             io::stdout().flush()?;
                         }
                     }
