@@ -314,14 +314,14 @@
                 if (!dirInputLeft.classList.contains('selected-panel')) {
                     dirInputRight.classList.remove('selected-panel')
                     dirInputLeft.classList.add('selected-panel')
-                    document.title = dirInputRight.value + ' LightCommander'
+                    document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
                 }
                 break
             case 'F2':
                 if (!dirInputRight.classList.contains('selected-panel')) {
                     dirInputLeft.classList.remove('selected-panel')
                     dirInputRight.classList.add('selected-panel')
-                    document.title = dirInputRight.value + ' LightCommander'
+                    document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
                 }
                 break
             default: 

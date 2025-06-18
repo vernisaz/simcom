@@ -175,6 +175,17 @@ function normalizePath(path) {
   return '/' + normalizedSegments.join('/'); // Reconstruct the path
 }
 
+// use the method for normalized paths
+function getLastPathComponent(path) {
+     path = path.replace(/\/\/+/g, '/');
+     path = path.replaceAll('\\', '/');
+    let segments = path.split('/');
+    if (segments.length === 0) {
+        return ''
+    }
+    return segments.pop();
+}
+
 function makeid(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
