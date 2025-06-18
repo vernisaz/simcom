@@ -15,11 +15,6 @@
       --bg-color: #1e1e1e;
       --text-color: #ccc;
     }
-    
-    @media (prefers-color-scheme: dark) {
-      --bg-color: #1e1e1e;
-      --text-color: #ccc;
-    } 
 
     body {
       font-family: Arial, sans-serif;
@@ -107,6 +102,17 @@
     footer button:hover {
       background-color: #555;
     }
+    
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #ccc;
+            color-scheme: dark;
+        }
+        .selected-panel {
+            background-color: #706706;
+        }
+    } 
   </style>
   <script src="/cmd/js/common.js" language="Javascript"></script>
 </head>
@@ -305,12 +311,14 @@
                 if (!dirInputLeft.classList.contains('selected-panel')) {
                     dirInputRight.classList.remove('selected-panel')
                     dirInputLeft.classList.add('selected-panel')
+                    document.title = dirInputRight.value + ' LightCommander'
                 }
                 break
             case 'F2':
                 if (!dirInputRight.classList.contains('selected-panel')) {
                     dirInputLeft.classList.remove('selected-panel')
                     dirInputRight.classList.add('selected-panel')
+                    document.title = dirInputRight.value + ' LightCommander'
                 }
                 break
             default: 
