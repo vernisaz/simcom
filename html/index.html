@@ -272,6 +272,7 @@
         accum = ''
         if (response.panel == 'center') {
             const div = document.createElement('div');
+            div.style = "overflow:scroll"
             //div.textContent = response.content;
             if (response.op == 'edit') {
                 div.innerHTML = '<textarea style="width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
