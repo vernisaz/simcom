@@ -182,6 +182,38 @@ fn main() -> io::Result<()> {
                             io::stdout().flush()?;
                         }
                     }
+                    "edit" => {
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src of what to edit");
+                            continue
+                        };
+                        let Some(Text(file)) = json.get("file") else {
+                            eprintln!("no file name to edit");
+                            continue
+                        };
+                        let mut edit_path = PathBuf::from(&src);
+                        edit_path.push(file);
+                        if edit_path.is_file() {
+                            let file_contents = fs::read_to_string(&edit_path)?;
+                             println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":"{}"}}"#, 
+                                json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
+                            io::stdout().flush()?;
+                        }
+                    }
+                    "save" => {
+                        let Some(Text(file)) = json.get("file") else {
+                            eprintln!("no file to save");
+                            continue
+                        };
+                        let save_path = PathBuf::from(&file);
+                        if save_path.is_file() || !save_path.exists() {
+                            let Some(Text(content)) = json.get("content") else {
+                                eprintln!("no content to save");
+                                continue
+                            };
+                            fs::write(save_path, content)?;
+                        }
+                    }
                     _ => continue
                 }
                 _ => continue

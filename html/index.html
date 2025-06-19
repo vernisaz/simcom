@@ -128,6 +128,10 @@
         .panel-header, .file:hover {
              background-color: #738584;
         }
+        .overlay{
+            opacity:0.9;
+            background-color:#333;
+        }
     } 
   </style>
   <script src="/cmd/js/common.js" language="Javascript"></script>
@@ -207,6 +211,12 @@
       } else if (event.key == 'Escape') {
           let lastChild = document.body.children[document.body.children.length - 1];
             document.body.removeChild(lastChild);
+      } else if (event.ctrlKey && event.code == 'KeyS') {
+          const editArea = document.querySelector('textarea');
+          if (editArea) {
+              const filePath = document.querySelector('input[type="hidden"]').value;
+              wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value}))
+          }
       } 
     });
     
@@ -263,7 +273,13 @@
         if (response.panel == 'center') {
             const div = document.createElement('div');
             //div.textContent = response.content;
-            div.innerHTML = '<pre>' + response.content + '</pre>'
+            if (response.op == 'edit') {
+                div.innerHTML = '<textarea style="width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
+                    + response.content + '</textarea>' +
+                    '<input type="hidden" value="' + response.file + '" />';
+            } else {
+                div.innerHTML = '<pre>' + response.content + '</pre>'
+            }
             div.className = 'overlay'
             document.body.appendChild(div)
         } else {
@@ -362,6 +378,16 @@
                     dirInputLeft.classList.remove('selected-panel')
                     dirInputRight.classList.add('selected-panel')
                     document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
+                }
+                break
+            case 'F4': 
+                const elEd = document.querySelector('.file:hover');
+                if (elEd) {
+                    // TODO look up to find appropriate panel dir
+                    if (elEd.parentElement.nodeName == 'DIV') {
+                        const actPanel = elEd.parentElement.id.split('-', 1)[0]
+                        wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
+                    }
                 }
                 break
             default: 
