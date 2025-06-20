@@ -42,8 +42,14 @@ fn main() -> io::Result<()> {
                         let Some(Text(dir)) = json.get("dir") else {
                             continue
                         };
-                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dir).unwrap());
-                        io::stdout().flush()?;
+                        match get_dir(dir) {
+                            Ok(dir) => {
+                                println!(r#"{{"panel":"{panel}", "dir":[{dir}]}}"#);
+                                io::stdout().flush()?;
+                            }
+                            _ => eprintln!("an error in reading {dir} "),
+                        }
+                        
                     }
                     "copy" => {
                         let Some(Arr(files)) = json.get("files") else {
@@ -161,9 +167,11 @@ fn main() -> io::Result<()> {
                         };
                         let mut create_path = PathBuf::from(&src);
                         create_path.push(file);
-                        fs::create_dir(&create_path).unwrap();
-                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                        io::stdout().flush()?;
+                        match fs::create_dir(&create_path) {
+                            Ok(()) => { println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                                io::stdout().flush()?;},
+                            Err(_) => eprintln!("can't create dir {create_path:?}"),
+                        }
                     }
                     "show" => {
                         let Some(Text(src)) = json.get("src") else {
@@ -198,6 +206,10 @@ fn main() -> io::Result<()> {
                              println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":"{}"}}"#, 
                                 json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
                             io::stdout().flush()?;
+                        } else if !edit_path.exists() {
+                            println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":""}}"#, 
+                                json_encode(&edit_path.display().to_string()));
+                            io::stdout().flush()?;
                         }
                     }
                     "save" => {
@@ -205,13 +217,19 @@ fn main() -> io::Result<()> {
                             eprintln!("no file to save");
                             continue
                         };
-                        let save_path = PathBuf::from(&file);
-                        if save_path.is_file() || !save_path.exists() {
+                        let mut save_path = PathBuf::from(&file);
+                        let new_file = !save_path.exists();
+                        if save_path.is_file() || new_file {
                             let Some(Text(content)) = json.get("content") else {
                                 eprintln!("no content to save");
                                 continue
                             };
-                            fs::write(save_path, content)?;
+                            fs::write(&save_path, content)?;
+                            if new_file {
+                                save_path.pop();
+                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
+                                io::stdout().flush()?;
+                            }
                         }
                     }
                     _ => continue

@@ -173,7 +173,7 @@
       <form method="dialog">
           <p id="extra_input" hidden><input type="text" id="some_txt" name="some_txt" required /></p>
         <div>
-          <button value="cancel" formmethod="dialog">Cancel</button>
+          <button value="cancel" autofocus formmethod="dialog" formnovalidate>Cancel</button>
           <button id="confirmBtn" value="default">Confirm</button>
         </div>
       </form>
@@ -298,6 +298,7 @@
         switch (key) {
             case 'F10': 
                 unloadWS()
+                window.close();
                 break
             case 'F3': 
                 const el = document.querySelector('.file:hover');
@@ -355,7 +356,8 @@
             case 'F7':
                 msg.innerHTML = 'What\'s the directory name?'
                 const extraInput = dlg.querySelector("p#extra_input")
-                extraInput.style.visibility = "visible"
+                extraInput.style.display = 'block'
+                dlg.querySelector("#some_txt").value = ''
                 const createBtn = dlg.querySelector("#confirmBtn");
                 createBtn.style.visibility = "visible"
                 createBtn.addEventListener("click", (e) => {
@@ -384,11 +386,24 @@
             case 'F4': 
                 const elEd = document.querySelector('.file:hover');
                 if (elEd) {
-                    // TODO look up to find appropriate panel dir
                     if (elEd.parentElement.nodeName == 'DIV') {
                         const actPanel = elEd.parentElement.id.split('-', 1)[0]
                         wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
                     }
+                } else { // create one
+                    msg.innerHTML = 'What\'s the file name?'
+                    const extraInput = dlg.querySelector("p#extra_input")
+                    extraInput.style.display = 'block'
+                    dlg.querySelector("#some_txt").value = ''
+                    const createBtn = dlg.querySelector("#confirmBtn");
+                    createBtn.style.visibility = "visible"
+                    createBtn.addEventListener("click", (e) => {
+                      e.preventDefault();
+                      dlg.close();
+                      const fileName = dlg.querySelector("#some_txt").value;
+                      wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
+                    });
+                    dlg.showModal();
                 }
                 break
             default: 
