@@ -321,16 +321,30 @@
                         msg.innerHTML = `${move ? 'Moving' : 'Copying'} ${files.length} files...`
                     const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                     const dstDirInput = document.getElementById(`${dstPanel}-dir`);
-                     const extraInput = dlg.querySelector("p#extra_input")
+                    const extraInput = dlg.querySelector("p#extra_input")
+                    const createBtn = dlg.querySelector("#confirmBtn");
+                    if (dstDirInput.value == srcDirInput.value) {
+                        // the op is possible only with changing name when 
+                        if (files.length == 1) {
+                            extraInput.style.display = 'block'
+                             dlg.querySelector("#some_txt").value = files[0]
+                            createBtn.style.visibility = "visible"
+                            createBtn.addEventListener("click", (e) => {
+                              e.preventDefault();
+                              const newName = dlg.querySelector("#some_txt").value;
+                              wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
+                            });
+                            dlg.showModal()
+                        } 
+                        break;
+                    }
                     extraInput.style.visibility = "hidden"
                     const extraTxt = dlg.querySelector("#some_txt")
                     extraTxt.required = false
-                    const createBtn = dlg.querySelector("#confirmBtn");
                     createBtn.style.visibility = "hidden"
                     dlg.show()
                     wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files}))
                 }
-                
                 break
             case 'F8':
                 if (files && files.length > 0) {

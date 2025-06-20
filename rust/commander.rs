@@ -69,15 +69,27 @@ fn main() -> io::Result<()> {
                             eprintln!("no dst to copy");
                             continue
                         };
-                        
                         let mut dst_path = PathBuf::from(&dst);
-                        for file in files {
-                            let Text(file) = file else { continue };
-                            src_path.push(file.clone());
-                            dst_path.push(file);
-                            fs::copy(&src_path,&dst_path).unwrap();
-                            src_path.pop();
-                            dst_path.pop();
+                        let mut need_copy = true;
+                        if files.len() == 1 {
+                            if let Some(Text(dst_file)) = json.get("file") {
+                                if let Text(file) = &files[0] {
+                                    dst_path.push(dst_file);
+                                    src_path.push(file);
+                                    fs::copy(&src_path,&dst_path).unwrap();
+                                    need_copy = false;
+                                }
+                            }
+                        }
+                        if need_copy {
+                            for file in files {
+                                let Text(file) = file else { continue };
+                                src_path.push(file.clone());
+                                dst_path.push(file);
+                                fs::copy(&src_path,&dst_path).unwrap();
+                                src_path.pop();
+                                dst_path.pop();
+                            }
                         }
                         println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
                         io::stdout().flush()?;
@@ -105,13 +117,18 @@ fn main() -> io::Result<()> {
                             continue
                         };
                         let mut dst_path = PathBuf::from(&dst);
+                        if let Some(Text(dst_file)) = json.get("file") {
+                            dst_path.push(dst_file)
+                        }
                         let mut was_move = false;
-                        if dst_path .is_file()  {
+                        if dst_path .is_file() || !dst_path.exists() { // potential renaming can happen in a new directory
                             if files.len() == 1 {
                                 if let Text(file) = &files[0] {
                                     src_path.push(file);
-                                    fs::rename(src_path,dst_path).unwrap();
-                                    was_move = true
+                                    match fs::rename(&src_path,&dst_path) {
+                                        Ok(()) => was_move = true,
+                                        Err(err) => eprintln!("not renamed {src_path:?} to {dst_path:?} because {err}")
+                                    }
                                 }
                             }
                         } else if files.len() > 0 {
@@ -253,7 +270,7 @@ fn get_dir(dir: &str) -> Result<String,std::io::Error> {
        |mut res,cur| {if let Ok(cur) = cur {
             let md = cur.metadata().unwrap(); 
              write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
-             simweb::json_encode(&cur.file_name().display().to_string()), // add json escape ""
+             simweb::json_encode(&cur.file_name().display().to_string()),
              md.is_dir(),
              md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
             }
