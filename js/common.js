@@ -177,7 +177,7 @@ function normalizePath(path,separator,root) {
     }
   }
 
-  return root + separator + normalizedSegments.join(separator); // Reconstruct the path
+  return (separator == '/'?'/':'') + normalizedSegments.join(separator); // Reconstruct the path
 }
 
 // use the method for normalized paths
