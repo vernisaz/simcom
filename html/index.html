@@ -185,6 +185,9 @@
     //document.body.dataset.theme = 'dark';
     var accum = ''
     
+    var DRIVE = ''
+    var SEP = ''
+    
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
@@ -242,8 +245,8 @@
             div.className = `file ${file.dir ? 'directory' : ''}`;
             div.onclick = () => {
               if (file.dir) {
-                dirInput.value = dir != '/'? `${dir}/${file.name}`:`${dir}${file.name}`;
-                dirInput.value = normalizePath(dirInput.value)
+                dirInput.value = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
+               // dirInput.value = normalizePath(dirInput.value)
                 // TODO update title if it's an active panel
                 document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
                 requestPanel(panelId);
@@ -283,6 +286,13 @@
             }
             div.className = 'overlay'
             document.body.appendChild(div)
+        } else if (response.panel == 'control') {
+            DRIVE = response.root
+            SEP = response.separator
+            const dirInputLeft = document.getElementById(`left-dir`);
+            const dirInputRight = document.getElementById(`right-dir`);
+            dirInputLeft.value = DRIVE + SEP
+            dirInputRight.value = DRIVE + SEP
         } else {
             loadPanel (response)
         }

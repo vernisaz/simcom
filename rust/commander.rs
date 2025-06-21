@@ -3,6 +3,7 @@ extern crate simweb;
 extern crate simtime;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
     fs::{self,read_dir}, time::UNIX_EPOCH, path::{PathBuf,Path},
+    env::consts, env,
 };
 
 use simjson::{JsonData::{Data,Text,Arr},parse_fragment};
@@ -13,6 +14,18 @@ const MAX_BLOCK_LEN : usize = 40960;
 fn main() -> io::Result<()> {
     let web = simweb::WebData::new();
     let mut buffer = [0_u8;MAX_BLOCK_LEN];
+    let os_drive =
+    if "windows" == consts::OS {
+        match env::var("SystemDrive") {
+            Ok(value) => value,
+            Err(_e) => String::new(),
+        }
+    } else {
+         String::new()
+    };
+    println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}"}}"#, consts::OS,
+        os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR));
+    io::stdout().flush()?;
     loop {
         let Ok(len) = stdin().read(&mut buffer) else {break};
         if len == 0 { break }
