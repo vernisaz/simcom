@@ -314,7 +314,7 @@
             case 'F6':
                 const dstPanel = srcPanel == 'right'?'left':'right';
                 const move = key == 'F6'
-                if (files) {
+                if (files && files.length > 0) {
                     if (files.length == 1)
                         msg.innerHTML = (move?'Moving ':'Copying ') + files[0] + '...'
                     else
