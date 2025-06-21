@@ -186,7 +186,7 @@
     var accum = ''
     
     var DRIVE = ''
-    var SEP = ''
+    var SEP = '/'
     
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
@@ -213,6 +213,7 @@
           handleFunction('F4')
       } else if (event.key == 'Escape') {
           let lastChild = document.body.children[document.body.children.length - 1];
+          if (lastChild.id == "view-edit")
             document.body.removeChild(lastChild);
       } else if (event.ctrlKey && event.code == 'KeyS') {
           const editArea = document.querySelector('textarea');
@@ -246,7 +247,7 @@
             div.onclick = () => {
               if (file.dir) {
                 dirInput.value = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
-               // dirInput.value = normalizePath(dirInput.value)
+                dirInput.value = normalizePath(dirInput.value,SEP,DRIVE)
                 // TODO update title if it's an active panel
                 document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
                 requestPanel(panelId);
@@ -276,6 +277,7 @@
         if (response.panel == 'center') {
             const div = document.createElement('div');
             div.style = "overflow:scroll"
+            div.id = "view-edit"
             //div.textContent = response.content;
             if (response.op == 'edit') {
                 div.innerHTML = '<textarea style="width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
@@ -293,6 +295,8 @@
             const dirInputRight = document.getElementById(`right-dir`);
             dirInputLeft.value = DRIVE + SEP
             dirInputRight.value = DRIVE + SEP
+            requestPanel('left');
+            requestPanel('right');
         } else {
             loadPanel (response)
         }
@@ -437,11 +441,11 @@
     }
 
     wskt.onopen = () => {
-        requestPanel('left');
+        //requestPanel('left');
         /*setTimeout(() => {
           requestPanel('right');
         }, "1 second");*/
-        requestPanel('right');
+        //requestPanel('right');
     }
     
     function getSelected(panelId) {

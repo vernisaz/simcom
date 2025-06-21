@@ -157,11 +157,16 @@ function convertEpochToSpecificTimezone(timeEpoch, offset){
     return nd.toLocaleString();
 }
 
-function normalizePath(path) {
+function normalizePath(path,separator,root) {
+    separator = separator || '/'
+    root = root || ''
   // Remove multiple slashes
-  path = path.replace(/\/\/+/g, '/');
-
-  let segments = path.split('/');
+  if (separator ==  '/') {
+    path = path.replace(/\/\/+/g, separator);
+  } else {
+    path = path.replace(/\\\\+/g, separator);
+  }
+  let segments = path.split(separator);
   let normalizedSegments = [];
 
   for (let segment of segments) {
@@ -172,7 +177,7 @@ function normalizePath(path) {
     }
   }
 
-  return '/' + normalizedSegments.join('/'); // Reconstruct the path
+  return root + separator + normalizedSegments.join(separator); // Reconstruct the path
 }
 
 // use the method for normalized paths
