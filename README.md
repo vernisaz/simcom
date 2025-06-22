@@ -20,5 +20,8 @@ Currently the project has 3 direct dependecies:
 Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
 Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
 
+## Platforms
+Windows, Mac, Linux and free BSD are supported.
+
 ## Status
-There is an alpha version you can try.
+There is a beta version you can try.
