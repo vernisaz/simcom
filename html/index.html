@@ -202,6 +202,7 @@
       event.key == 'F5' || event.key == 'F6' ||
       event.key == 'F7' || event.key == 'F8' ||
       event.key == 'F9' || event.key == 'F10') {
+          event.preventDefault();
           handleFunction(event.key)
       } else if (event.key == 'F13') {
            handleFunction('F1')
