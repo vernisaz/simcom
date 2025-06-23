@@ -195,6 +195,7 @@
       if (event.key == 'Delete' || event.code == 'NumLock') {
           const el = document.querySelector('.file:hover');
           if (el) {
+              event.preventDefault();
               el.classList.toggle('selectedd');
           }
       } else if (event.key == 'F1' || event.key == 'F2' ||
@@ -214,13 +215,18 @@
           handleFunction('F4')
       } else if (event.key == 'Escape') {
           let lastChild = document.body.children[document.body.children.length - 1];
-          if (lastChild.id == "view-edit")
+          if (lastChild.id == "view-edit") {
             document.body.removeChild(lastChild);
-          if (lastChild.id == "preview-upload")
-            document.body.removeChild(lastChild);
+            event.preventDefault();
+          }
+          if (lastChild.id == "preview-upload") {
+              document.body.removeChild(lastChild);
+              event.preventDefault();
+          }
       } else if (event.ctrlKey && event.code == 'KeyS') {
           const editArea = document.querySelector('textarea');
           if (editArea) {
+              event.preventDefault();
               const filePath = document.querySelector('input[type="hidden"]').value;
               wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value}))
           }
@@ -493,6 +499,25 @@
         filesDiv.querySelectorAll('div.selectedd').forEach((divEl) => { res.push(divEl.textContent) })
         return res
     }
+    
+    function sendFile(file, dir) {
+        const uri = "./upload/simupld";
+        const xhr = new XMLHttpRequest();
+        const fd = new FormData();
+
+        xhr.open("POST", uri, true);
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            alert(xhr.responseText); // handle response.
+          }
+        };
+        fd.append("dir", dir);
+        // think of putting an array of files
+        fd.append("upFile", file);
+        // Initiate a multipart/form-data upload
+        xhr.send(fd);
+    }
+
     
     function unloadWS() {
         wskt.close();

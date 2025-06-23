@@ -3,5 +3,15 @@ main=rust${~/~}commander
 common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
 comp opts=[]
+
+version=1.02
+target package {
+    dependency {
+        target(build)
+    }
+	dependency{true}
+	zip(.${~/~}simcom-${version}.zip,
+	-E ${project}/simcom{script ext}) 
+}
 #
 include(common);
