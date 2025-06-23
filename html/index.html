@@ -215,6 +215,8 @@
           let lastChild = document.body.children[document.body.children.length - 1];
           if (lastChild.id == "view-edit")
             document.body.removeChild(lastChild);
+          if (lastChild.id == "preview-upload")
+            document.body.removeChild(lastChild);
       } else if (event.ctrlKey && event.code == 'KeyS') {
           const editArea = document.querySelector('textarea');
           if (editArea) {
@@ -280,7 +282,7 @@
             div.id = "view-edit"
             //div.textContent = response.content;
             if (response.op == 'edit') {
-                div.innerHTML = '<textarea style="width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
+                div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
                     + response.content + '</textarea>' +
                     '<input type="hidden" value="' + response.file + '" />';
             } else {
@@ -433,6 +435,42 @@
                     });
                     dlg.showModal();
                 }
+                break
+            case 'F9':
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.multiple = true; // Allows selection of multiple files
+                fileInput.addEventListener('change', (event) => {
+                    const selectedFiles = event.target.files;
+                    if (selectedFiles.length > 0) {
+                        const fileList = document.createElement('div');
+                        //div.style = "overflow:scroll"
+                        fileList.id = "preview-upload"
+                        //div.textContent = response.content;
+                        
+                        fileList.className = 'overlay'
+                        
+                        document.body.appendChild(fileList)
+                        const list = document.createElement("ul");
+                        fileList.appendChild(list);
+                        for (const file of selectedFiles) {
+                          const li = document.createElement("li");
+                          list.appendChild(li);
+                    
+                          const img = document.createElement("img");
+                          img.src = URL.createObjectURL(file);
+                          img.height = 60;
+                          li.appendChild(img);
+                          const info = document.createElement("span");
+                          info.textContent = `${file.name}: ${file.size} bytes`;
+                          li.appendChild(info);
+                        }
+                    } else {
+                        console.log('No files selected.');
+                    }
+                });
+                fileInput.click();
+
                 break
             default: 
                 // Implement file operation based on key
