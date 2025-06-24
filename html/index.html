@@ -472,6 +472,17 @@
                           info.textContent = `${file.name}: ${file.size} bytes`;
                           li.appendChild(info);
                         }
+                        const proceedButton = document.createElement('button');
+                        proceedButton.textContent = 'Proceed';
+                        proceedButton.id = 'proceedButton';
+                        //proceedButton.className = 'dynamic-btn';
+                        fileList.appendChild(proceedButton);
+                            
+                        proceedButton.addEventListener('click', () => {
+                            sendFile(selectedFiles,document.getElementById(`${srcPanel}-dir`).value)
+                            // TODO close the panel
+                        });
+
                     } else {
                         console.log('No files selected.');
                     }
@@ -512,8 +523,12 @@
           }
         };
         fd.append("dir", dir);
-        // think of putting an array of files
-        fd.append("upFile", file);
+        if (Array.isArray(file)) {
+            for (el of file) {
+                fd.append("upFile", el);
+            }
+        } else
+            fd.append("upFile", file);
         // Initiate a multipart/form-data upload
         xhr.send(fd);
     }
