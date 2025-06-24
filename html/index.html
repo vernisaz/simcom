@@ -361,7 +361,7 @@
                         } 
                         break;
                     }
-                    extraInput.style.visibility = "hidden"
+                    extraInput.style.display = "hidden"
                     const extraTxt = dlg.querySelector("#some_txt")
                     extraTxt.required = false
                     createBtn.style.visibility = "hidden"
@@ -376,7 +376,7 @@
                     else
                         msg.innerHTML = `Delete ${files.length} files?`
                     const extraInput = dlg.querySelector("p#extra_input")
-                    extraInput.style.visibility = "hidden"
+                    extraInput.style.display = "hidden"
                     const extraTxt = dlg.querySelector("#some_txt")
                     extraTxt.required = false
                     const createBtn = dlg.querySelector("#confirmBtn");
