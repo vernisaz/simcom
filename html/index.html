@@ -537,11 +537,7 @@
           }
         };
         fd.append("dir", dir);
-        var is_array = function (value) {
-            return value &&
-                typeof value.length === 'number' ;
-        };
-        if (is_array(file)) {
+        if (file[Symbol.iterator] !== undefined) {
             for (const el of file) {
                 fd.append("upFile", el);
             }
