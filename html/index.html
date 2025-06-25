@@ -103,7 +103,7 @@
       background-color: #555;
     }
     
-    .overlay{
+    .overlay {
         opacity:0.9;
         background-color:#ddd;
         position:fixed;
@@ -114,6 +114,11 @@
         display: flex;
         justify-content: center;
         z-index:1000;
+    }
+    
+    .overlay button {
+        height: 26px;
+        display: block;
     }
     
     @media (prefers-color-scheme: dark) {
@@ -479,7 +484,7 @@
                         fileList.appendChild(proceedButton);
                             
                         proceedButton.addEventListener('click', () => {
-                            sendFile(selectedFiles,document.getElementById(`${srcPanel}-dir`).value)
+                            sendFile(selectedFiles,srcPanel)
                             // TODO close the panel
                         });
 
@@ -511,20 +516,33 @@
         return res
     }
     
-    function sendFile(file, dir) {
-        const uri = "./upload/simupld";
+    function sendFile(file, panel) {
+        const uri = "/upload/simupld"; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
         const fd = new FormData();
+        const dir = document.getElementById(`${panel}-dir`).value
 
         xhr.open("POST", uri, true);
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4 && xhr.status === 200) {
-            alert(xhr.responseText); // handle response.
+              if ('Ok' == xhr.responseText) {
+                  let lastChild = document.body.children[document.body.children.length - 1];
+                  if (lastChild.id == "preview-upload") {
+                      document.body.removeChild(lastChild);
+                  }
+                  requestPanel(panel)
+              } else {
+                  alert(xhr.responseText); // handle response.
+              }
           }
         };
         fd.append("dir", dir);
-        if (Array.isArray(file)) {
-            for (el of file) {
+        var is_array = function (value) {
+            return value &&
+                typeof value.length === 'number' ;
+        };
+        if (is_array(file)) {
+            for (const el of file) {
                 fd.append("upFile", el);
             }
         } else
