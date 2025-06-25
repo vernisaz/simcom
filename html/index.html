@@ -197,7 +197,7 @@
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
        
-      if (event.key == 'Delete' || event.code == 'NumLock') {
+      if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
           if (el) {
               event.preventDefault();
