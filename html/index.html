@@ -325,8 +325,12 @@
         const files = getSelected(srcPanel)
         switch (key) {
             case 'F10': 
-                unloadWS()
-                window.close();
+                if (wskt && wskt.readyState === WebSocket.OPEN) {
+                    unloadWS()
+                    window.close();
+                } else {
+                    wskt = new WebSocket('./com')
+                }
                 break
             case 'F3': 
                 const el = document.querySelector('.file:hover');
@@ -484,7 +488,10 @@
                         fileList.appendChild(proceedButton);
                             
                         proceedButton.addEventListener('click', () => {
-                            sendFile(selectedFiles,srcPanel)
+                            const progressBar = document.createElement("progress");
+                            progressBar.setAttribute("max", "100");
+                            fileList.appendChild(progressBar);
+                            sendFile(selectedFiles,srcPanel,progressBar)
                             // TODO close the panel
                         });
 
@@ -516,13 +523,22 @@
         return res
     }
     
-    function sendFile(file, panel) {
+    function sendFile(file, panel, progressBar) {
         const uri = "/upload/simupld"; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
         const fd = new FormData();
         const dir = document.getElementById(`${panel}-dir`).value
 
         xhr.open("POST", uri, true);
+        if (progressBar) {
+            xhr.upload.addEventListener("progress", function(event) {
+                if (event.lengthComputable) {
+                  var percentComplete = (event.loaded / event.total) * 100;
+                  progressBar.value = percentComplete;
+                  progressBar.textContent = Math.round(percentComplete) + "%"; // Display percentage
+                }
+              })
+        }
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4 && xhr.status === 200) {
               if ('Ok' == xhr.responseText) {

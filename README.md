@@ -20,6 +20,10 @@ Currently the project has 3 direct dependecies:
 Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
 Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
 
+## File upload
+The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
+configured properly accordingly your web server settings. Default value is **/upload**.
+
 ## Platforms
 Windows, Mac, Linux and free BSD are supported.
 
