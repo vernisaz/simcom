@@ -193,6 +193,8 @@
     var DRIVE = ''
     var SEP = '/'
     
+    var pending = []
+    
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
@@ -240,7 +242,7 @@
     
     function requestPanel(panelId) {
         const dirInput = document.getElementById(`${panelId}-dir`);
-        wskt .send(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
+        wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
     }
     
     function loadPanel(response) {
@@ -514,6 +516,12 @@
           requestPanel('right');
         }, "1 second");*/
         //requestPanel('right');
+        while (pending.lenght > 0) {
+            wskt.send(pending.pop())
+            /*for (msg of pending) {
+                wskt.send(msg)
+            }*/
+        }
     }
     
     function getSelected(panelId) {
@@ -563,6 +571,14 @@
         xhr.send(fd);
     }
 
+    function wsktSend(load) {
+        if (!wskt || wskt.readyState !== WebSocket.OPEN && wskt.readyState !== WebSocket.CONNECTING) { 
+            pending.push(load)
+            wskt = new WebSocket('./com')
+        } else {
+            wskt.send(load)
+        }
+    }
     
     function unloadWS() {
         wskt.close();
