@@ -111,15 +111,12 @@
         height:100%;
         top:0px;
         left:0px;
-        display: flex;
+        display: grid;
         justify-content: center;
         z-index:1000;
+        grid-auto-rows: min-content;
     }
     
-    .overlay button {
-        height: 26px;
-        display: block;
-    }
     
     @media (prefers-color-scheme: dark) {
         :root {
