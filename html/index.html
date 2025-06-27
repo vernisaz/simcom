@@ -182,8 +182,8 @@
     </dialog>
     
   <script>
-    
-    var wskt = new WebSocket('./com')
+    const WSKT_URL = './com'
+    var wskt = new WebSocket(WSKT_URL)
     //document.body.dataset.theme = 'dark';
     var accum = ''
     
@@ -328,7 +328,7 @@
                     unloadWS()
                     window.close();
                 } else {
-                    wskt = new WebSocket('./com')
+                    wskt = new WebSocket(WSKT_URL)
                 }
                 break
             case 'F3': 
@@ -571,7 +571,7 @@
     function wsktSend(load) {
         if (!wskt || wskt.readyState !== WebSocket.OPEN && wskt.readyState !== WebSocket.CONNECTING) { 
             pending.push(load)
-            wskt = new WebSocket('./com')
+            wskt = new WebSocket(WSKT_URL)
         } else {
             wskt.send(load)
         }
