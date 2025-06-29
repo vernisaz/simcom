@@ -183,6 +183,7 @@
     
   <script>
     const WSKT_URL = './com'
+    const UPL_URL = '/upload'
     var wskt = new WebSocket(WSKT_URL)
     initWSHandlers()
     //document.body.dataset.theme = 'dark';
@@ -235,12 +236,26 @@
               const filePath = document.querySelector('input[type="hidden"]').value;
               wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value}))
           }
-      } 
+      } else if (event.ctrlKey) {
+          if (event.key == 'F1') {
+              alignPanel('right')
+          }
+          if (event.key == 'F2') {
+              alignPanel('left')
+          }
+      }
     });
     
     function requestPanel(panelId) {
         const dirInput = document.getElementById(`${panelId}-dir`);
         wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
+    }
+    
+    function alignPanel(panelId) {
+        const dirInput = document.getElementById(`${panelId}-dir`);
+        const targetPanel = panelId == 'right' ? 'left':'right';
+        document.getElementById(`${targetPanel}-dir`).value = document.getElementById(`${panelId}-dir`).value;
+        wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:targetPanel}))
     }
     
     function loadPanel(response) {
@@ -267,7 +282,7 @@
                 requestPanel(panelId);
               } else {
                     const link = document.createElement("a");
-                    link.href = `/upload/simdown/${dir}${SEP}${file.name}`;
+                    link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
                     link.download = file.name;
                     link.click();
               }
@@ -533,7 +548,7 @@
     }
     
     function sendFile(file, panel, progressBar) {
-        const uri = "/upload/simupld"; // the URL will depend on an installation topology
+        const uri = `${UPL_URL}/simupld`; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
         const fd = new FormData();
         const dir = document.getElementById(`${panel}-dir`).value
