@@ -265,6 +265,11 @@
                 // TODO update title if it's an active panel
                 document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
                 requestPanel(panelId);
+              } else {
+                    const link = document.createElement("a");
+                    link.href = `/upload/simdown/${dir}${file.name}`;
+                    link.download = file.name;
+                    link.click();
               }
             };
             filesDiv.appendChild(div);
