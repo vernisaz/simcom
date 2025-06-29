@@ -184,6 +184,7 @@
   <script>
     const WSKT_URL = './com'
     var wskt = new WebSocket(WSKT_URL)
+    initWSHandlers()
     //document.body.dataset.theme = 'dark';
     var accum = ''
     
@@ -281,40 +282,51 @@
           });
     }
     
-    wskt.onmessage = (event) => {
-        accum = accum + event.data
-        if (!accum.endsWith('\n'))
-           return;
-        const response = JSON.parse(accum);
-        accum = ''
-        if (response.panel == 'center') {
-            const div = document.createElement('div');
-            div.style = "overflow:scroll"
-            div.id = "view-edit"
-            //div.textContent = response.content;
-            if (response.op == 'edit') {
-                div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
-                    + response.content + '</textarea>' +
-                    '<input type="hidden" value="' + response.file + '" />';
-            } else {
-                div.innerHTML = '<pre>' + response.content + '</pre>'
+    function initWSHandlers () {
+        wskt.onopen = () => {
+            while (pending.lenght > 0) {
+                wskt.send(pending.pop())
+                /*for (msg of pending) {
+                    wskt.send(msg)
+                }*/
             }
-            div.className = 'overlay'
-            document.body.appendChild(div)
-        } else if (response.panel == 'control') {
-            DRIVE = response.root
-            SEP = response.separator
-            const dirInputLeft = document.getElementById(`left-dir`);
-            const dirInputRight = document.getElementById(`right-dir`);
-            dirInputLeft.value = DRIVE + SEP
-            dirInputRight.value = DRIVE + SEP
-            requestPanel('left');
-            requestPanel('right');
-        } else {
-            loadPanel (response)
+        }
+        
+        wskt.onmessage = (event) => {
+            accum = accum + event.data
+            if (!accum.endsWith('\n'))
+               return;
+            const response = JSON.parse(accum);
+            accum = ''
+            if (response.panel == 'center') {
+                const div = document.createElement('div');
+                div.style = "overflow:scroll"
+                div.id = "view-edit"
+                //div.textContent = response.content;
+                if (response.op == 'edit') {
+                    div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
+                        + response.content + '</textarea>' +
+                        '<input type="hidden" value="' + response.file + '" />';
+                } else {
+                    div.innerHTML = '<pre>' + response.content + '</pre>'
+                }
+                div.className = 'overlay'
+                document.body.appendChild(div)
+            } else if (response.panel == 'control') {
+                DRIVE = response.root
+                SEP = response.separator
+                const dirInputLeft = document.getElementById(`left-dir`);
+                const dirInputRight = document.getElementById(`right-dir`);
+                dirInputLeft.value = DRIVE + SEP
+                dirInputRight.value = DRIVE + SEP
+                requestPanel('left');
+                requestPanel('right');
+            } else {
+                loadPanel (response)
+            }
         }
     }
-
+    
     function handleFunction(key) {
         const dlg = document.querySelector('dialog')
         const msg = dlg.querySelector('p')
@@ -329,6 +341,7 @@
                     window.close();
                 } else {
                     wskt = new WebSocket(WSKT_URL)
+                    initWSHandlers()
                 }
                 break
             case 'F3': 
@@ -507,20 +520,6 @@
         }
     }
 
-    wskt.onopen = () => {
-        //requestPanel('left');
-        /*setTimeout(() => {
-          requestPanel('right');
-        }, "1 second");*/
-        //requestPanel('right');
-        while (pending.lenght > 0) {
-            wskt.send(pending.pop())
-            /*for (msg of pending) {
-                wskt.send(msg)
-            }*/
-        }
-    }
-    
     function getSelected(panelId) {
         const filesDiv = document.getElementById(`${panelId}-files`);
         var res = []
@@ -572,6 +571,7 @@
         if (!wskt || wskt.readyState !== WebSocket.OPEN && wskt.readyState !== WebSocket.CONNECTING) { 
             pending.push(load)
             wskt = new WebSocket(WSKT_URL)
+            initWSHandlers()
         } else {
             wskt.send(load)
         }
