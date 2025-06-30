@@ -2,7 +2,7 @@ extern crate simjson;
 extern crate simweb;
 extern crate simtime;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
-    fs::{self,read_dir}, time::UNIX_EPOCH, path::{PathBuf,Path},
+    fs::{self,read_dir}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
     env::consts, env,
 };
 
@@ -232,8 +232,9 @@ fn main() -> io::Result<()> {
                         let mut edit_path = PathBuf::from(&src);
                         edit_path.push(file);
                         if edit_path.is_file() {
+                            let modified = get_file_modified(&edit_path);
                             let file_contents = fs::read_to_string(&edit_path)?;
-                             println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":"{}"}}"#, 
+                             println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
                                 json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
                             io::stdout().flush()?;
                         } else if !edit_path.exists() {
@@ -290,4 +291,13 @@ fn get_dir(dir: &str) -> Result<String,std::io::Error> {
          res
         }
     ))
+}
+
+fn get_file_modified(path: &PathBuf) -> u64 { // in seconds
+    match fs::metadata(path) {
+        Ok(metadata) => if let Ok(time) = metadata.modified() {time.duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs()} else {0}
+        _ => 0
+    }
 }
