@@ -174,7 +174,7 @@
     <button onclick="handleFunction('F7')">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
     <button onclick="handleFunction('F9')">F9 Upload</button>
-    <button onclick="handleFunction('F10')">F10 Exit</button>
+    <button onclick="handleFunction('F10')">F10 Zip</button>
   </footer>
   
     <dialog >
@@ -337,12 +337,12 @@
                     div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
                         + response.content + '</textarea>' +
                         '<input type="hidden" value="' + response.file + '" />';
+                    modified = response.modified; // TODO should be hidden field too    
                 } else {
                     div.innerHTML = '<pre>' + response.content + '</pre>'
                 }
                 div.className = 'overlay wide'
                 document.body.appendChild(div)
-                modified = response.modified || 0
             } else if (response.panel == 'control') {
                 DRIVE = response.root
                 SEP = response.separator
@@ -352,6 +352,11 @@
                 dirInputRight.value = DRIVE + SEP
                 requestPanel('left');
                 requestPanel('right');
+            } else if (response.panel == 'info') {
+                modified = response.modified || 0;
+                if (response.message) {
+                    alert(response.message)
+                }
             } else {
                 loadPanel (response)
             }

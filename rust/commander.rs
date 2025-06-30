@@ -260,6 +260,8 @@ fn main() -> io::Result<()> {
                             (true, 0)
                         };
                         if saved_modified < modified {
+                            println!(r#"{{"panel":"info", "message":"The file can't be saved, because it's been already modified"}}"#);
+                            io::stdout().flush()?;
                             continue
                         }
                         if save_path.is_file() || new_file {
@@ -269,7 +271,7 @@ fn main() -> io::Result<()> {
                             };
                             fs::write(&save_path, content)?;
                             let modified = get_file_modified(&save_path);
-                            println!(r#"{{"panel":"center", "modified":{modified}}}"#);
+                            println!(r#"{{"panel":"info", "modified":{modified}}}"#);
                             io::stdout().flush()?;
                             if new_file {
                                 save_path.pop();
