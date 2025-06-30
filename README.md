@@ -6,7 +6,9 @@ Mimic Norton Commander functionality using a  web interface and the websocket.
 ## Technologies
 - Rust
 - WebSocket
-- 
+
+This application doesn't use HTTP besides of loading 'index' page. All exchanges with a server
+websocket based. Every packet is a JSON object.
 
 ## Dependencies
 Currently the project has 3 direct dependecies:
@@ -26,6 +28,13 @@ configured properly accordingly your web server settings. Default value is **/up
 
 ## Platforms
 Windows, Mac, Linux and free BSD are supported.
+
+## Installation
+Unzip provided archive accordingly your platform and a processor type. Launch *simcom* script, or directly *bin/simhttp*. An access URL will look like -
+
+http://localhost:3000/cmd/
+
+You cam edit **env.conf** to change a host name or port.
 
 ## Status
 There is a beta version you can try.
