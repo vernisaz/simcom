@@ -200,6 +200,7 @@
     var SEP = '/'
     
     var pending = []
+    var modified = 0
     
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
@@ -250,7 +251,7 @@
           if (editArea) {
               event.preventDefault();
               const filePath = document.querySelector('input[type="hidden"]').value;
-              wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value}))
+              wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value, modified:modified}))
           }
       } 
     });
@@ -341,6 +342,7 @@
                 }
                 div.className = 'overlay wide'
                 document.body.appendChild(div)
+                modified = response.modified || 0
             } else if (response.panel == 'control') {
                 DRIVE = response.root
                 SEP = response.separator
