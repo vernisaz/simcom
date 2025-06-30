@@ -6,7 +6,7 @@ use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite,
     env::consts, env,
 };
 
-use simjson::{JsonData::{Data,Text,Arr},parse_fragment};
+use simjson::{JsonData::{Data,Text,Arr,Num},parse_fragment};
 use simweb::{json_encode,html_encode};
 
 const MAX_BLOCK_LEN : usize = 40960;
@@ -248,14 +248,29 @@ fn main() -> io::Result<()> {
                             eprintln!("no file to save");
                             continue
                         };
+                        let saved_modified = if let Some(Num(modified)) = json.get("modified") {
+                            *modified as u64
+                        } else {
+                            0
+                        };
                         let mut save_path = PathBuf::from(&file);
-                        let new_file = !save_path.exists();
+                        let (new_file, modified) = if save_path.exists() {
+                            (false, get_file_modified(&save_path))
+                        } else {
+                            (true, 0)
+                        };
+                        if saved_modified < modified {
+                            continue
+                        }
                         if save_path.is_file() || new_file {
                             let Some(Text(content)) = json.get("content") else {
                                 eprintln!("no content to save");
                                 continue
                             };
                             fs::write(&save_path, content)?;
+                            let modified = get_file_modified(&save_path);
+                            println!(r#"{{"panel":"center", "modified":{modified}}}"#);
+                            io::stdout().flush()?;
                             if new_file {
                                 save_path.pop();
                                 println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
