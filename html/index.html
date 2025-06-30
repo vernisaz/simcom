@@ -114,9 +114,15 @@
         display: grid;
         justify-content: center;
         z-index:1000;
+    }
+    
+    .narrow {
         grid-auto-rows: min-content;
     }
     
+    .wide {
+        grid-template-columns: 1fr;
+    }
     
     @media (prefers-color-scheme: dark) {
         :root {
@@ -332,7 +338,7 @@
                 } else {
                     div.innerHTML = '<pre>' + response.content + '</pre>'
                 }
-                div.className = 'overlay'
+                div.className = 'overlay wide'
                 document.body.appendChild(div)
             } else if (response.panel == 'control') {
                 DRIVE = response.root
@@ -498,7 +504,7 @@
                         fileList.id = "preview-upload"
                         //div.textContent = response.content;
                         
-                        fileList.className = 'overlay'
+                        fileList.className = 'overlay narrow'
                         
                         document.body.appendChild(fileList)
                         const list = document.createElement("ul");
