@@ -13,13 +13,13 @@ if {
 	then {
 		assign(ext,.exe)
 		assign(script ext,.bat)
-		assign(script,.\bin\simhttp.exe %1)
+		assign(script,START /B .\bin\simhttp.exe %1)
 	}
 	else {
 		assign(ext,)
 		assign(script ext,.sh)
 		assign(script,"#!/bin/sh
-./bin/simhttp $1")
+./bin/simhttp $1&")
 	}
 }
 
@@ -52,7 +52,7 @@ target package {
 	zip(.${~/~}simcom-${version}.zip,
 	-B ${project}/bin,
 	rustcom${ext},
-	-A ${project}/bin/env.conf,
+	-A ${project}/env.conf,
 	${http conf},
 	-B ${project}/bin,
 	${simupload proj}${~/~}simupld${ext},
@@ -67,7 +67,9 @@ target package {
 	-B ${project}/html/js,
 	.${~/~}js${~/~}common.js,
 	-E ${project}/simcom${script ext},
-	"${script}") 
+	"${script}",
+	-A ${project}/log/readme.txt,
+	This directory is intentionally empty) 
 }
 #
 include(common);
