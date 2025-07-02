@@ -8,7 +8,7 @@ Mimic Norton Commander functionality using a  web interface and the websocket.
 - WebSocket
 
 This application doesn't use HTTP besides of loading the 'index' page. All exchanges with a server
-websocket based. Every websocket packet is a JSON object.
+are the websocket based. Every websocket packet is a JSON object.
 
 ## Dependencies
 Currently the project has 4 direct dependecies:
@@ -20,19 +20,21 @@ Currently the project has 4 direct dependecies:
 
 ## Web server
 Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
+It isn't a drawback since the server exists on all platforms.
 Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
 
 ## File upload
 The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
-configured properly accordingly your web server settings. Default value is **/upload**.
+configured properly accordingly your web server settings. Default value is **./upload**.
 
 ## Platforms
 Windows, Mac, Linux and free BSD are supported.
 
 ## Installation
-Unzip provided archive accordingly your platform and a processor type. Launch *simcom* script, or directly *bin/simhttp*. An access URL will look like -
+Unzip the provided archive accordingly your platform and a processor type. Launch *simcom* script, or directly *./bin/simhttp*
+from the directory where the installation archive was opened. The access URL will look like -
 
-http://localhost:3000/cmd/
+> http://localhost:3000/cmd/
 
 You cam edit **env.conf** to change a host name or port.
 
