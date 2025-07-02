@@ -19,9 +19,11 @@ Currently the project has 4 direct dependecies:
 - [SimZip](https://github.com/vernisaz/simple_rust_zip)
 
 ## Web server
-Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
+Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp)
+can be used to run it now,
+because the project implementation is WS CGI based.
 It isn't a drawback since the server exists on all platforms.
-Hopefully more vendors will adopt the functionality soon and a list of supporting servers will be extended after.
+Hopefully more vendors will adopt the WS CGI soon and the list of supporting servers will be extended after.
 
 ## File upload
 The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
