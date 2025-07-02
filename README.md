@@ -7,16 +7,16 @@ Mimic Norton Commander functionality using a  web interface and the websocket.
 - Rust
 - WebSocket
 
-This application doesn't use HTTP besides of loading 'index' page. All exchanges with a server
-websocket based. Every packet is a JSON object.
+This application doesn't use HTTP besides of loading the 'index' page. All exchanges with a server
+websocket based. Every websocket packet is a JSON object.
 
 ## Dependencies
-Currently the project has 3 direct dependecies:
+Currently the project has 4 direct dependecies:
 
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimWEb](https://github.com/vernisaz/simweb)
 - [SimTime](https://github.com/vernisaz/simtime)
--
+- [SimZip](https://github.com/vernisaz/simple_rust_zip)
 
 ## Web server
 Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp) can be used to run it.
