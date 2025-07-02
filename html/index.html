@@ -388,6 +388,8 @@
                         const actPanel = el.parentElement.id.split('-', 1)[0]
                         wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:el.textContent}))
                     }
+                } else if (files && files.length == 1) {
+                    wskt .send(JSON.stringify({op:'show', src:srcDirInput.value, panel:srcPanel, file:files[0]}))
                 }
                 break
             case 'F5': 
@@ -484,6 +486,8 @@
                         const actPanel = elEd.parentElement.id.split('-', 1)[0]
                         wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
                     }
+                } else if (files && files.length == 1) {
+                    wskt .send(JSON.stringify({op:'edit', src:srcDirInput.value, panel:srcPanel, file:files[0]}))
                 } else { // create one
                     msg.innerHTML = 'What\'s the file name?'
                     const extraInput = dlg.querySelector("p#extra_input")
@@ -495,7 +499,7 @@
                       e.preventDefault();
                       dlg.close();
                       const fileName = dlg.querySelector("#some_txt").value;
-                      wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
+                      wskt .send(JSON.stringify({op:'edit', src:srcDirInput.value, panel:srcPanel, file:fileName }))
                     });
                     dlg.showModal();
                 }
