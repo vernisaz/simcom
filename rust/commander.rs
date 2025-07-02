@@ -269,7 +269,14 @@ fn main() -> io::Result<()> {
                                 eprintln!("no content to save");
                                 continue
                             };
-                            fs::write(&save_path, content)?;
+                            match fs::write(&save_path, content) {
+                                Err(err) => {
+                                    println!(r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
+                                    io::stdout().flush()?;
+                                    continue
+                                }
+                                _ => (),
+                            }
                             let modified = get_file_modified(&save_path);
                             println!(r#"{{"panel":"info", "modified":{modified}}}"#);
                             io::stdout().flush()?;
