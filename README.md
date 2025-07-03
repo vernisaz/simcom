@@ -40,5 +40,9 @@ from the directory where the installation archive was opened. The access URL wil
 
 You cam edit **env.conf** to change a host name or port.
 
+## No-Cargo build
+This product uses an alternative to Cargo building tool. It makes  sense especially for products
+having 0 delendency on the crates.io.
+
 ## Status
 There is a beta version you can try.

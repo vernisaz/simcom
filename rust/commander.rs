@@ -3,7 +3,7 @@ extern crate simweb;
 extern crate simtime;
 extern crate simzip;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
-    fs::{self,read_dir,File}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
+    fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
     env::consts, env,
 };
 
@@ -389,8 +389,7 @@ fn save_state(state:State) -> io::Result<()> {
     home.push(".sc");
     let mut state_str = String::new();
     write!(state_str,"left={}\nright={}",state.left,state.right).unwrap();
-    let mut file = File::create(home)?;
-    file.write_all(state_str.as_bytes())?;
+    fs::write(home, state_str)?;
     Ok(())
 }
 
