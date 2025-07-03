@@ -103,7 +103,7 @@
       background-color: #555;
     }
     
-    .overlay {
+    .overlay, .help {
         opacity:0.9;
         background-color:#ddd;
         position:fixed;
@@ -114,6 +114,10 @@
         display: grid;
         justify-content: center;
         z-index:1000;
+    }
+    
+    .help {
+        display: flex;
     }
     
     .narrow {
@@ -137,7 +141,7 @@
         .panel-header, .file:hover {
              background-color: #738584;
         }
-        .overlay{
+        .overlay, .help {
             opacity:0.9;
             background-color:#333;
         }
@@ -225,6 +229,12 @@
               if (event.key == 'F2') {
                   alignPanel('left')
               }
+          } else if (event.altKey) {
+              if (event.key == 'F1') {
+                  showHelp()
+              }
+          } else if (event.shiftKey) {
+         
           } else {
              handleFunction(event.key)
           }
@@ -243,6 +253,10 @@
             event.preventDefault();
           }
           if (lastChild.id == "preview-upload") {
+              document.body.removeChild(lastChild);
+              event.preventDefault();
+          }
+          if (lastChild.id == "help-panel") {
               document.body.removeChild(lastChild);
               event.preventDefault();
           }
@@ -628,6 +642,16 @@
         } else {
             wskt.send(load)
         }
+    }
+    
+    function showHelp() {
+        const helpDiv = document.createElement('DIV');
+        helpDiv.id = "help-panel"
+        helpDiv.className = 'help'
+        helpDiv.innerHTML = '<p>Alt+F1 - this screen</p>'+
+        '<p>F2 - make active right panel</p>' +
+        '<p>F3 - view hover or selected file</p>'
+        document.body.appendChild(helpDiv)
     }
     
     function unloadWS() {
