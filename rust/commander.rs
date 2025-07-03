@@ -46,9 +46,7 @@ fn main() -> io::Result<()> {
         let Ok(len) = stdin().read(&mut buffer) else {break};
         if len == 0 { break }
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
-            //eprintln!("closing WS");
-            // ws close
-            let _ = save_state(state);
+            
             break
         }
         let commands = String::from_utf8_lossy(&buffer[0..len]);
@@ -346,7 +344,8 @@ fn main() -> io::Result<()> {
             }
         }
     }
-    
+    // ws close
+    let _ = save_state(state);
     Ok(())
 }
 
