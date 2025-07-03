@@ -74,6 +74,7 @@ fn main() -> io::Result<()> {
                             Ok(dir) => {
                                 println!(r#"{{"panel":"{panel}", "dir":[{dir}]}}"#);
                                 io::stdout().flush()?;
+                                if panel == "right" { state.right = dir } else { state.left = dir }
                             }
                             _ => eprintln!("an error in reading {dir} "),
                         }
