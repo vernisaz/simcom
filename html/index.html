@@ -348,8 +348,8 @@
                 SEP = response.separator
                 const dirInputLeft = document.getElementById(`left-dir`);
                 const dirInputRight = document.getElementById(`right-dir`);
-                dirInputLeft.value = DRIVE + SEP
-                dirInputRight.value = DRIVE + SEP
+                dirInputLeft.value = response.left? response.left:DRIVE + SEP
+                dirInputRight.value = response.right? response.right:DRIVE + SEP
                 requestPanel('left');
                 requestPanel('right');
             } else if (response.panel == 'info') {
@@ -372,13 +372,26 @@
         const files = getSelected(srcPanel)
         switch (key) {
             case 'F10': 
-                if (wskt && wskt.readyState === WebSocket.OPEN) {
-                    unloadWS()
-                    window.close();
-                } else {
-                    wskt = new WebSocket(WSKT_URL)
-                    initWSHandlers()
+                if (files.length == 0) {
+                    break
                 }
+                msg.innerHTML = 'What\'s the zip name?'
+                const nameInput = dlg.querySelector("p#extra_input")
+                nameInput.style.display = 'block'
+                dlg.querySelector("#some_txt").value = ''
+                const zipBtn = dlg.querySelector("#confirmBtn");
+                zipBtn.style.visibility = "visible"
+                zipBtn.addEventListener("click", (e) => {
+                  //e.preventDefault();
+                  //dlg.close();
+                  var zipName = dlg.querySelector("#some_txt").value;
+                  const zipDirInput = document.getElementById(`${srcPanel}-dir`);
+                  if (!zipName.endsWith('.zip')) {
+                      zipName += '.zip'
+                  }
+                  wskt .send(JSON.stringify({op:'zip', src:zipDirInput.value, panel:srcPanel, zip:zipName, files:files}))
+                });
+                dlg.showModal();
                 break
             case 'F3': 
                 const el = document.querySelector('.file:hover');

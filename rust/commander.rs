@@ -1,15 +1,22 @@
 extern crate simjson;
 extern crate simweb;
 extern crate simtime;
+extern crate simzip;
 use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
-    fs::{self,read_dir}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
+    fs::{self,read_dir,File}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
     env::consts, env,
 };
 
 use simjson::{JsonData::{Data,Text,Arr,Num},parse_fragment};
 use simweb::{json_encode,html_encode};
+use simzip::{ZipEntry,ZipInfo};
 
 const MAX_BLOCK_LEN : usize = 40960;
+
+struct State {
+    left: String,
+    right: String,
+}
 
 fn main() -> io::Result<()> {
     let web = simweb::WebData::new();
@@ -23,8 +30,17 @@ fn main() -> io::Result<()> {
     } else {
          String::new()
     };
-    println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}"}}"#, consts::OS,
-        os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR));
+    
+    let mut state = State{
+        left: format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+        right:format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+    };
+    if let Some(stored_state) = read_state() {
+        state.left = stored_state.left;
+        state.right = stored_state.right;
+    }
+    println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
+        os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
     io::stdout().flush()?;
     loop {
         let Ok(len) = stdin().read(&mut buffer) else {break};
@@ -32,6 +48,7 @@ fn main() -> io::Result<()> {
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
             //eprintln!("closing WS");
             // ws close
+            let _ = save_state(state);
             break
         }
         let commands = String::from_utf8_lossy(&buffer[0..len]);
@@ -287,6 +304,42 @@ fn main() -> io::Result<()> {
                             }
                         }
                     }
+                    "zip" => {
+                        let Some(Arr(files)) = json.get("files") else {
+                            eprintln!("no files to zip");
+                            continue
+                        };
+                        let Some(Text(src)) = json.get("src") else {
+                            eprintln!("no src of filws");
+                            continue
+                        };
+                        let Some(Text(zip)) = json.get("zip") else {
+                            eprintln!("no zip name");
+                            continue
+                        };
+                        let mut src_path = PathBuf::from(&src);
+                        src_path.push(zip);
+                        let mut zip_file = ZipInfo::new_with_comment(&src_path, "The zip created using simcommander 1.02");
+                        for file in files {
+                            let Text(file) = file else { continue };
+                            src_path.pop();
+                            src_path.push(file);
+                            if src_path . is_file() {
+                                zip_file.add(ZipEntry::from_file(&src_path, Some("")));
+                            } else if src_path . is_dir() {
+                            }
+                        }
+                        match zip_file.store() {
+                            Ok(()) => {
+                                src_path.pop();
+                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src_path.display().to_string()).unwrap());
+                                io::stdout().flush()?;
+                            },
+                            Err(msg) => {println!(r#"{{"panel":"info", "message":"Can't zip because {}"}}"#, json_encode(&format!("{msg:?}")));
+                                io::stdout().flush()?;
+                            }
+                        }
+                    }
                     _ => continue
                 }
                 _ => continue
@@ -294,6 +347,51 @@ fn main() -> io::Result<()> {
         }
     }
     
+    Ok(())
+}
+
+fn read_state() -> Option<State> {
+    let home = if "windows" == consts::OS {
+        env::var("USERPROFILE")
+        } else {
+            env::var("HOME")
+        };
+    let Ok(home ) = home else {
+        return None
+    };
+    let mut home = PathBuf::from(home);
+    home.push(".sc");
+    if home.exists() {
+        let file_contents = fs::read_to_string(home).ok()?; 
+        if let Some(pair) = file_contents.split_once('\n') {
+            if let Some((panel,dir)) = pair.0.split_once('=' ) {
+                if let Some((other_panel,other_dir)) = pair.1.split_once('=' ) {
+                    return Some(State {
+                        right: if panel == "right" {dir} else {other_dir}.to_string(),
+                        left: if other_panel == "right" {dir} else {other_dir}.to_string(),
+                    })
+                }
+            }
+        }
+    }
+    None
+}
+
+fn save_state(state:State) -> io::Result<()> {
+    let home = if "windows" == consts::OS {
+        env::var("USERPROFILE")
+        } else {
+            env::var("HOME")
+        };
+    let Ok(home ) = home else {
+        return Ok(())
+    };
+    let mut home = PathBuf::from(home);
+    home.push(".sc");
+    let mut state_str = String::new();
+    write!(state_str,"left={}\nright={}",state.left,state.right).unwrap();
+    let mut file = File::create(home)?;
+    file.write_all(state_str.as_bytes())?;
     Ok(())
 }
 
