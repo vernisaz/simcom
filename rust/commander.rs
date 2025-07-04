@@ -70,11 +70,11 @@ fn main() -> io::Result<()> {
                         let Some(Text(dir)) = json.get("dir") else {
                             continue
                         };
+                        if panel == "right" { state.right =  dir.clone() } else { state.left =  dir.clone()}
                         match get_dir(dir) {
                             Ok(dir) => {
                                 println!(r#"{{"panel":"{panel}", "dir":[{dir}]}}"#);
                                 io::stdout().flush()?;
-                                if panel == "right" { state.right = dir } else { state.left = dir }
                             }
                             _ => eprintln!("an error in reading {dir} "),
                         }
@@ -215,7 +215,7 @@ fn main() -> io::Result<()> {
                         create_path.push(file);
                         match fs::create_dir(&create_path) {
                             Ok(()) => { println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                                io::stdout().flush()?;},
+                            io::stdout().flush()?;},
                             Err(_) => eprintln!("can't create dir {create_path:?}"),
                         }
                     }
@@ -250,14 +250,17 @@ fn main() -> io::Result<()> {
                         if edit_path.is_file() {
                             let modified = get_file_modified(&edit_path);
                             let file_contents = fs::read_to_string(&edit_path)?;
-                             println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
+                             println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
                                 json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
                             io::stdout().flush()?;
                         } else if !edit_path.exists() {
-                            println!(r#"{{"panel":"center", "op":"edit", "file":"{}", "content":""}}"#, 
+                            println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#, 
                                 json_encode(&edit_path.display().to_string()));
                             io::stdout().flush()?;
                         }
+                        // and update directory
+                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        io::stdout().flush()?;
                     }
                     "save" => {
                         let Some(Text(file)) = json.get("file") else {

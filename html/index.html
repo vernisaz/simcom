@@ -265,7 +265,9 @@
           if (editArea) {
               event.preventDefault();
               const filePath = document.querySelector('input[type="hidden"]').value;
-              wskt .send(JSON.stringify({op:'save', panel:'center', file:filePath, content:editArea.value, modified:modified}))
+              const dirInputLeft = document.getElementById(`left-dir`);
+              const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+              wskt .send(JSON.stringify({op:'save', panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
           }
       } 
     });
@@ -337,18 +339,27 @@
         }
         
         wskt.onmessage = (event) => {
-            accum = accum + event.data
+           /* accum += event.data
             if (!accum.endsWith('\n'))
                return;
-            const response = JSON.parse(accum);
-            accum = ''
-            if (response.panel == 'center') {
+            const lines = accum.split(/\r?\n|\r|\n/g)
+            if (lines.length > 2) {
+                alert('glued '+lines.length)
+            }*/
+            const response = JSON.parse(event.data);
+            //accum = ''
+            if (response.panel == 'center' || response.op == 'edit') {
+                let lastChild = document.body.children[document.body.children.length - 1];
+                if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
+                    alert('last child with id '+lastChild.id+', ignored')
+                    return
+                }
                 const div = document.createElement('div');
                 div.style = "overflow:scroll"
                 div.id = "view-edit"
                 //div.textContent = response.content;
                 if (response.op == 'edit') {
-                    div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;">'
+                    div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;" autofocus>'
                         + response.content + '</textarea>' +
                         '<input type="hidden" value="' + response.file + '" />';
                     modified = response.modified; // TODO should be hidden field too    
@@ -396,15 +407,14 @@
                 const zipBtn = dlg.querySelector("#confirmBtn");
                 zipBtn.style.visibility = "visible"
                 zipBtn.addEventListener("click", (e) => {
-                  //e.preventDefault();
-                  //dlg.close();
+                  e.preventDefault();
                   var zipName = dlg.querySelector("#some_txt").value;
                   const zipDirInput = document.getElementById(`${srcPanel}-dir`);
                   if (!zipName.endsWith('.zip')) {
                       zipName += '.zip'
                   }
                   wskt .send(JSON.stringify({op:'zip', src:zipDirInput.value, panel:srcPanel, zip:zipName, files:files}))
-                });
+                }, { once: true });
                 dlg.showModal();
                 break
             case 'F3': 
@@ -416,7 +426,7 @@
                         wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:el.textContent}))
                     }
                 } else if (files && files.length == 1) {
-                    wskt .send(JSON.stringify({op:'show', src:srcDirInput.value, panel:srcPanel, file:files[0]}))
+                    wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
                 }
                 break
             case 'F5': 
@@ -442,7 +452,7 @@
                               e.preventDefault();
                               const newName = dlg.querySelector("#some_txt").value;
                               wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
-                            });
+                            }, { once: true });
                             dlg.showModal()
                         } 
                         break;
@@ -468,11 +478,10 @@
                     const createBtn = dlg.querySelector("#confirmBtn");
                     createBtn.style.visibility = "visible"
                     createBtn.addEventListener("click", (e) => {
-                      //e.preventDefault();
-                      //dlg.close();
+                      e.preventDefault();
                       const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                       wskt .send(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
-                    });
+                    }, { once: true });
                     dlg.showModal()
                 }
                 break
@@ -489,7 +498,7 @@
                   const dirName = dlg.querySelector("#some_txt").value;
                   const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                   wskt .send(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
-                });
+                }, { once: true });
                 dlg.showModal();
                 break
             case 'F1':
@@ -514,7 +523,7 @@
                         wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
                     }
                 } else if (files && files.length == 1) {
-                    wskt .send(JSON.stringify({op:'edit', src:srcDirInput.value, panel:srcPanel, file:files[0]}))
+                    wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
                 } else { // create one
                     msg.innerHTML = 'What\'s the file name?'
                     const extraInput = dlg.querySelector("p#extra_input")
@@ -526,8 +535,8 @@
                       e.preventDefault();
                       dlg.close();
                       const fileName = dlg.querySelector("#some_txt").value;
-                      wskt .send(JSON.stringify({op:'edit', src:srcDirInput.value, panel:srcPanel, file:fileName }))
-                    });
+                      wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
+                    }, { once: true });
                     dlg.showModal();
                 }
                 break
@@ -572,7 +581,7 @@
                             fileList.appendChild(progressBar);
                             sendFile(selectedFiles,srcPanel,progressBar)
                             // TODO close the panel
-                        });
+                        }, { once: true });
 
                     } else {
                         console.log('No files selected.');
