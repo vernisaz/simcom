@@ -23,7 +23,7 @@ mmcblk0     179:0    0 29.7G  0 disk
 └─mmcblk0p2 179:2    0 29.2G  0 part /
 ```
 
-You need to create a mount point for the device firt:
+You need to create a mount point for the device first:
 
 > root2@pi:~ $ sudo mkdir /media/usbdrive
 
@@ -47,7 +47,7 @@ Add a new record as below based on *blkid* information as:
 UUID=\[UUID] \[MOUNT POINT] \[TYPE] defaults,auto,users,rw,nofail,noatime 0 0
 ```
 
-e.g.
+has to be added, e.g.
 
 ```
 UUID=A2CA0AEBCA0ABC13 /media/usbdrive ntfs defaults,auto,users,rw,nofail,noatime 0 0
@@ -73,7 +73,7 @@ An entry as below can be added:
 ```
 
 *your_share_name* and *path* will depend on your preferences. Unless you set *public* to `yes`, you need also add
-a Samba use using:
+a Samba user using:
 
 > sudo smbpasswd -a <USERNAME>
 
@@ -124,7 +124,7 @@ Run the
 
 ### Install 7Bee
 
-You do not need to install the product. The **jar** from it will be enough, therefor go to [the page](https://sourceforge.net/projects/seven-bee/)
+You do not need to install the product. The **jar** from it will be enough, therefore go to [the page](https://sourceforge.net/projects/seven-bee/)
 and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/lib* inside *projects* and extract *bee.jar* there.
 
 ### Build rb
