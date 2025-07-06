@@ -307,10 +307,17 @@
                 document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
                 requestPanel(panelId);
               } else {
-                    const link = document.createElement("a");
-                    link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
-                    link.download = file.name;
-                    link.click();
+                    if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
+                        const el = document.querySelector('.file:hover');
+                        if (el) {
+                            el.classList.toggle('selectedd');
+                        }
+                    } else {
+                        const link = document.createElement("a");
+                        link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
+                        link.download = file.name;
+                        link.click();
+                    }
               }
             };
             filesDiv.appendChild(div);
@@ -364,7 +371,7 @@
                         '<input type="hidden" value="' + response.file + '" />';
                     modified = response.modified; // TODO should be hidden field too    
                 } else {
-                    div.innerHTML = '<pre style="padding: 1em 2em;">' + response.content + '</pre>'
+                    div.innerHTML = '<pre style="padding: 1em 2em;overflow-wrap: break-word;">' + response.content + '</pre>'
                 }
                 div.className = 'overlay wide'
                 document.body.appendChild(div)
