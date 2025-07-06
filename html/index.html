@@ -371,7 +371,7 @@
                         '<input type="hidden" value="' + response.file + '" />';
                     modified = response.modified; // TODO should be hidden field too    
                 } else {
-                    div.innerHTML = '<pre style="padding: 1em 2em;overflow-wrap: break-word;">' + response.content + '</pre>'
+                    div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>'
                 }
                 div.className = 'overlay wide'
                 document.body.appendChild(div)
