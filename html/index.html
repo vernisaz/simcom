@@ -362,15 +362,15 @@
         }
         
         wskt.onmessage = (event) => {
-           /* accum += event.data
+            accum += event.data
             if (!accum.endsWith('\n'))
                return;
-            const lines = accum.split(/\r?\n|\r|\n/g)
+            /*const lines = accum.split(/\r?\n|\r|\n/g)
             if (lines.length > 2) {
                 alert('glued '+lines.length)
             }*/
-            const response = JSON.parse(event.data);
-            //accum = ''
+            const response = JSON.parse(accum);
+            accum = ''
             if (response.panel == 'center' || response.op == 'edit') {
                 let lastChild = document.body.children[document.body.children.length - 1];
                 if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
