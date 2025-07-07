@@ -342,9 +342,10 @@
             div_size.className = 'file-size'
             filesDiv.appendChild(div_size);
             const div_date = document.createElement('div');
-            const dateFromMilliseconds = new Date(file.timestamp);
-
-            div_date.textContent = dateFromMilliseconds.toLocaleString("en-US");
+            if (file.timestamp) {
+                const dateFromMilliseconds = new Date(file.timestamp);
+                div_date.textContent = dateFromMilliseconds.toLocaleString("en-US");
+            }
             div_date.className = 'file-timestamp'
             filesDiv.appendChild(div_date);
           });

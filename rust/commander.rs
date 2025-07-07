@@ -397,12 +397,12 @@ fn save_state(state:State) -> io::Result<()> {
     Ok(())
 }
 
-fn get_dir(dir: &str) -> Result<String,std::io::Error> {
+fn get_dir(dir: &str) -> io::Result<String> {
     let mut init = String::new();
     let path = Path::new(&dir);
-    if let Some(parent_path) = path.parent() {
-        let timestamp = fs::metadata(parent_path)?.modified()?;
-        write!(init,r#"{{"name":"{}", "dir":{}, "timestamp":{}}}"#,"..",true,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
+    if let Some(_parent_path) = path.parent() {
+        //let timestamp = fs::metadata(parent_path)?.modified()?;
+        write!(init,r#"{{"name":"..", "dir":true}}"#).unwrap()//,"..",true)//,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
     };
     Ok(read_dir(dir)?.fold(init,
        |mut res,cur| {if let Ok(cur) = cur {
