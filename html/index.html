@@ -317,6 +317,14 @@
                     if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
                         const el = document.querySelector('.file:hover');
                         if (el) {
+                            if (el.classList.contains('selectedd')) {
+                                if (confirm(`Would you like download ${file.name}`)) {
+                                    const link = document.createElement("a");
+                                    link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
+                                    link.download = file.name;
+                                    link.click();
+                                }
+                            };
                             el.classList.toggle('selectedd');
                         }
                     } else {
