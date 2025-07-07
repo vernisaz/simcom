@@ -129,6 +129,32 @@
         grid-template-columns: 1fr;
     }
     
+    .float-button {
+          background-color: #3d5d91;
+          border: none;
+          color: #e9ebf0;
+          padding: 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 40%;
+          z-index: 1001;
+    }
+    
+    .btn-back {
+          position: fixed; 
+          bottom: 0;
+          right: 0;
+    }
+    .btn-save {
+          position: fixed; 
+          bottom: 62px;
+          right: 0;
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -247,28 +273,9 @@
       } else if (event.key == 'F16') {
           handleFunction('F4')
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
-          let lastChild = document.body.children[document.body.children.length - 1];
-          if (lastChild.id == "view-edit") {
-            document.body.removeChild(lastChild);
-            event.preventDefault();
-          }
-          if (lastChild.id == "preview-upload") {
-              document.body.removeChild(lastChild);
-              event.preventDefault();
-          }
-          if (lastChild.id == "help-panel") {
-              document.body.removeChild(lastChild);
-              event.preventDefault();
-          }
+          goBack()
       } else if (event.ctrlKey && event.code == 'KeyS') {
-          const editArea = document.querySelector('textarea');
-          if (editArea) {
-              event.preventDefault();
-              const filePath = document.querySelector('input[type="hidden"]').value;
-              const dirInputLeft = document.getElementById(`left-dir`);
-              const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
-              wskt .send(JSON.stringify({op:'save', panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
-          }
+          saveEdited()
       } 
     });
     
@@ -368,10 +375,12 @@
                 if (response.op == 'edit') {
                     div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;" autofocus>'
                         + response.content + '</textarea>' +
+                        ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button class="float-button btn-save" onclick="saveEdited()">⎙</button><button onclick="goBack()" class="float-button btn-back">⌫</button>':'') +
                         '<input type="hidden" value="' + response.file + '" />';
                     modified = response.modified; // TODO should be hidden field too    
                 } else {
-                    div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>'
+                    div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>' +
+                        ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button onclick="goBack()" class="float-button btn-back">⌫</button>':'');
                 }
                 div.className = 'overlay wide'
                 document.body.appendChild(div)
@@ -420,7 +429,7 @@
                   if (!zipName.endsWith('.zip')) {
                       zipName += '.zip'
                   }
-                  wskt .send(JSON.stringify({op:'zip', src:zipDirInput.value, panel:srcPanel, zip:zipName, files:files}))
+                  wsktSend(JSON.stringify({op:'zip', src:zipDirInput.value, panel:srcPanel, zip:zipName, files:files}))
                 }, { once: true });
                 dlg.showModal();
                 break
@@ -430,10 +439,10 @@
                     // TODO look up to find appropriate panel dir
                     if (el.parentElement.nodeName == 'DIV') {
                         const actPanel = el.parentElement.id.split('-', 1)[0]
-                        wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:el.textContent}))
+                        wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:el.textContent}))
                     }
                 } else if (files && files.length == 1) {
-                    wskt .send(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
+                    wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
                 }
                 break
             case 'F5': 
@@ -458,7 +467,7 @@
                             createBtn.addEventListener("click", (e) => {
                               e.preventDefault();
                               const newName = dlg.querySelector("#some_txt").value;
-                              wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
+                              wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
                             }, { once: true });
                             dlg.showModal()
                         } 
@@ -469,7 +478,7 @@
                     extraTxt.required = false
                     createBtn.style.visibility = "hidden"
                     dlg.show()
-                    wskt .send(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files}))
+                    wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files}))
                 }
                 break
             case 'F8':
@@ -487,7 +496,7 @@
                     createBtn.addEventListener("click", (e) => {
                       e.preventDefault();
                       const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-                      wskt .send(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
+                      wsktSend(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
                     }, { once: true });
                     dlg.showModal()
                 }
@@ -504,7 +513,7 @@
                   //dlg.close();
                   const dirName = dlg.querySelector("#some_txt").value;
                   const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-                  wskt .send(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
+                  wsktSend(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
                 }, { once: true });
                 dlg.showModal();
                 break
@@ -527,10 +536,10 @@
                 if (elEd) {
                     if (elEd.parentElement.nodeName == 'DIV') {
                         const actPanel = elEd.parentElement.id.split('-', 1)[0]
-                        wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
+                        wsktSend(JSON.stringify({op:'edit', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:elEd.textContent}))
                     }
                 } else if (files && files.length == 1) {
-                    wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
+                    wsktSend(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
                 } else { // create one
                     msg.innerHTML = 'What\'s the file name?'
                     const extraInput = dlg.querySelector("p#extra_input")
@@ -542,7 +551,7 @@
                       e.preventDefault();
                       dlg.close();
                       const fileName = dlg.querySelector("#some_txt").value;
-                      wskt .send(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
+                      wsktSend(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
                     }, { once: true });
                     dlg.showModal();
                 }
@@ -610,6 +619,17 @@
         return res
     }
     
+    function saveEdited() {
+          const editArea = document.querySelector('textarea');
+          if (editArea) {
+              event.preventDefault();
+              const filePath = document.querySelector('input[type="hidden"]').value;
+              const dirInputLeft = document.getElementById(`left-dir`);
+              const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+              wsktSend(JSON.stringify({op:'save', panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
+          }
+    }
+    
     function sendFile(file, panel, progressBar) {
         const uri = `${UPL_URL}/simupld`; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
@@ -658,6 +678,22 @@
         } else {
             wskt.send(load)
         }
+    }
+    
+    function goBack() {
+          let lastChild = document.body.children[document.body.children.length - 1];
+          if (lastChild.id == "view-edit") {
+            document.body.removeChild(lastChild);
+            event.preventDefault();
+          }
+          if (lastChild.id == "preview-upload") {
+              document.body.removeChild(lastChild);
+              event.preventDefault();
+          }
+          if (lastChild.id == "help-panel") {
+              document.body.removeChild(lastChild);
+              event.preventDefault();
+          }
     }
     
     function showHelp() {
