@@ -373,51 +373,53 @@
             accum += event.data
             if (!accum.endsWith('\n'))
                return;
-            /*const lines = accum.split(/\r?\n|\r|\n/g)
-            if (lines.length > 2) {
-                alert('glued '+lines.length)
-            }*/
-            const response = JSON.parse(accum);
-            accum = ''
-            if (response.panel == 'center' || response.op == 'edit') {
-                let lastChild = document.body.children[document.body.children.length - 1];
-                if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
-                    alert('last child with id '+lastChild.id+', ignored')
-                    return
-                }
-                const div = document.createElement('div');
-                div.style = "overflow:scroll"
-                div.id = "view-edit"
-                //div.textContent = response.content;
-                if (response.op == 'edit') {
-                    div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;" autofocus>'
-                        + response.content + '</textarea>' +
-                        ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button class="float-button btn-save" onclick="saveEdited()">⎙</button><button onclick="goBack()" class="float-button btn-back">⌫</button>':'') +
-                        '<input type="hidden" value="' + response.file + '" />';
-                    modified = response.modified; // TODO should be hidden field too    
+            for (const chunk of accum.split(/\r?\n|\r|\n/g)) {
+                if (!chunk)
+                    continue;
+            
+                const response = JSON.parse(chunk);
+                //accum = ''
+                if (response.panel == 'center' || response.op == 'edit') {
+                    let lastChild = document.body.children[document.body.children.length - 1];
+                    if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
+                        alert('last child with id '+lastChild.id+', ignored')
+                        return
+                    }
+                    const div = document.createElement('div');
+                    div.style = "overflow:scroll"
+                    div.id = "view-edit"
+                    //div.textContent = response.content;
+                    if (response.op == 'edit') {
+                        div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;" autofocus>'
+                            + response.content + '</textarea>' +
+                            ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button class="float-button btn-save" onclick="saveEdited()">⎙</button><button onclick="goBack()" class="float-button btn-back">⌫</button>':'') +
+                            '<input type="hidden" value="' + response.file + '" />';
+                        modified = response.modified; // TODO should be hidden field too    
+                    } else {
+                        div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>' +
+                            ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button onclick="goBack()" class="float-button btn-back">⌫</button>':'');
+                    }
+                    div.className = 'overlay wide'
+                    document.body.appendChild(div)
+                } else if (response.panel == 'control') {
+                    DRIVE = response.root
+                    SEP = response.separator
+                    const dirInputLeft = document.getElementById(`left-dir`);
+                    const dirInputRight = document.getElementById(`right-dir`);
+                    dirInputLeft.value = response.left? response.left:DRIVE + SEP
+                    dirInputRight.value = response.right? response.right:DRIVE + SEP
+                    requestPanel('left');
+                    requestPanel('right');
+                } else if (response.panel == 'info') {
+                    modified = response.modified || 0;
+                    if (response.message) {
+                        alert(response.message)
+                    }
                 } else {
-                    div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>' +
-                        ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button onclick="goBack()" class="float-button btn-back">⌫</button>':'');
+                    loadPanel (response)
                 }
-                div.className = 'overlay wide'
-                document.body.appendChild(div)
-            } else if (response.panel == 'control') {
-                DRIVE = response.root
-                SEP = response.separator
-                const dirInputLeft = document.getElementById(`left-dir`);
-                const dirInputRight = document.getElementById(`right-dir`);
-                dirInputLeft.value = response.left? response.left:DRIVE + SEP
-                dirInputRight.value = response.right? response.right:DRIVE + SEP
-                requestPanel('left');
-                requestPanel('right');
-            } else if (response.panel == 'info') {
-                modified = response.modified || 0;
-                if (response.message) {
-                    alert(response.message)
-                }
-            } else {
-                loadPanel (response)
             }
+            accum = ''
         }
     }
     
@@ -513,7 +515,8 @@
                     createBtn.addEventListener("click", (e) => {
                       e.preventDefault();
                       const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-                      wsktSend(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, files:files}))
+                      const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
+                      wsktSend(JSON.stringify({op:'del', src:srcDirInput.value, panel:srcPanel, same:same, files:files}))
                     }, { once: true });
                     dlg.showModal()
                 }
@@ -530,7 +533,8 @@
                   //dlg.close();
                   const dirName = dlg.querySelector("#some_txt").value;
                   const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-                  wsktSend(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, file:dirName}))
+                  const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
+                  wsktSend(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, same:same, file:dirName}))
                 }, { once: true });
                 dlg.showModal();
                 break
@@ -643,7 +647,8 @@
               const filePath = document.querySelector('input[type="hidden"]').value;
               const dirInputLeft = document.getElementById(`left-dir`);
               const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
-              wsktSend(JSON.stringify({op:'save', panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
+              const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
+              wsktSend(JSON.stringify({op:'save', same:same, panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
           }
     }
     

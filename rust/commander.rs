@@ -7,7 +7,7 @@ use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite,
     env::consts, env,
 };
 
-use simjson::{JsonData::{Data,Text,Arr,Num},parse_fragment};
+use simjson::{JsonData::{Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
 
@@ -199,7 +199,14 @@ fn main() -> io::Result<()> {
                             }
                             src_path.pop();
                         }
-                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        if json.get("same") == Some(&Bool(true)) {
+                            let dir = get_dir(&src).unwrap();
+                            println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                            io::stdout().flush()?;
+                            println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                        } else {
+                            println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        }
                         io::stdout().flush()?;
                     }
                     "mkdir" => {
@@ -214,7 +221,15 @@ fn main() -> io::Result<()> {
                         let mut create_path = PathBuf::from(&src);
                         create_path.push(file);
                         match fs::create_dir(&create_path) {
-                            Ok(()) => { println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                            Ok(()) => { 
+                            if json.get("same") == Some(&Bool(true)) {
+                                let dir = get_dir(&src).unwrap();
+                                println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                io::stdout().flush()?;
+                                println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                            } else {
+                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                            }
                             io::stdout().flush()?;},
                             Err(_) => eprintln!("can't create dir {create_path:?}"),
                         }
@@ -258,9 +273,6 @@ fn main() -> io::Result<()> {
                                 json_encode(&edit_path.display().to_string()));
                             io::stdout().flush()?;
                         }
-                        // and update directory
-                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                        io::stdout().flush()?;
                     }
                     "save" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -301,7 +313,14 @@ fn main() -> io::Result<()> {
                             io::stdout().flush()?;
                             if new_file {
                                 save_path.pop();
-                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
+                                if json.get("same") == Some(&Bool(true)) {
+                                    let dir = get_dir(&save_path.display().to_string()).unwrap();
+                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    io::stdout().flush()?;
+                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                } else {
+                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
+                                }
                                 io::stdout().flush()?;
                             }
                         }
