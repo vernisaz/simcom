@@ -119,6 +119,7 @@
     .help {
         display: flex;
         justify-content:space-around;
+        flex-wrap: wrap;
     }
     
     .narrow {
@@ -196,8 +197,8 @@
   </div>
 
   <footer>
-      <button onclick="handleFunction('F1')">F1 Left</button>
-    <button onclick="handleFunction('F2')">F2 Right</button>
+      <button onclick="handleFunction('F1')">F1 Help</button>
+    <button onclick="handleFunction('F2')">F2 Panel</button>
     <button onclick="handleFunction('F3')">F3 View</button>
     <button onclick="handleFunction('F4')">F4 Edit</button>
     <button onclick="handleFunction('F5')">F5 Copy</button>
@@ -256,10 +257,6 @@
               if (event.key == 'F2') {
                   alignPanel('left')
               }
-          } else if (event.altKey) {
-              if (event.key == 'F1') {
-                  showHelp()
-              }
           } else if (event.shiftKey) {
          
           } else {
@@ -267,16 +264,16 @@
           }
       } else if (event.key == 'F13') {
            event.preventDefault();
-           handleFunction('F1')
+           handleFunction('F3')
       } else if (event.key == 'F14') {
           event.preventDefault();
-          handleFunction('F2')
+          handleFunction('F4')
       } else if (event.key == 'F15') {
           event.preventDefault();
-          handleFunction('F3')
+          handleFunction('F2')
       } else if (event.key == 'F16') {
           event.preventDefault();
-          handleFunction('F4')
+          handleFunction('F5')
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
           event.preventDefault();
           goBack()
@@ -585,14 +582,14 @@
                 dlg.showModal();
                 break
             case 'F1':
+                showHelp()
+                break
+            case 'F2':
                 if (!dirInputLeft.classList.contains('selected-panel')) {
                     dirInputRight.classList.remove('selected-panel')
                     dirInputLeft.classList.add('selected-panel')
-                    document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
-                }
-                break
-            case 'F2':
-                if (!dirInputRight.classList.contains('selected-panel')) {
+                    document.title = getLastPathComponent(dirInputLeft.value) + ' LightCommander'
+                } else {
                     dirInputLeft.classList.remove('selected-panel')
                     dirInputRight.classList.add('selected-panel')
                     document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
@@ -768,12 +765,18 @@
         const helpDiv = document.createElement('DIV');
         helpDiv.id = "help-panel"
         helpDiv.className = 'help'
-        helpDiv.innerHTML = '<p>Alt+F1 - this screen</p>'+
-        '<p>F2 - make active right panel</p>' +
+        helpDiv.innerHTML = '<p>F1 - this screen</p>'+
+        '<p>F2 - switch active panel</p>' +
         '<p>F3 - view hover or selected file</p>' +
         '<p>F4 - edit hover or selected file</p>' +
         '<p>F5 - copy selected file(s)</p>' +
-        '<p>F6 - move selected file(s)</p>'
+        '<p>F6 - move selected file(s)</p>' +
+        '<p>F7 - make a directory</p>' +
+        '<p>F8 - delete selected file(s)</p>' +
+        '<p>F9 - upload selected file(s)</p>' +
+        '<p>F10 - zip selected file(s)</p>' +
+        '<p>Esc - exit view, help or edit screen</p>' +
+        '<p>^S - save edited content</p>'
         document.body.appendChild(helpDiv)
     }
     
