@@ -495,12 +495,18 @@
                         div.id = "view-edit"
                         const pic = document.createElement('img')
                         const dir = document.getElementById(`${srcPanel}-dir`).value
-                        const fileName = files[0]
-                        pic.src = `${UPL_URL}/simdown/${dir}${SEP}${fileName}?show=image`
+                        pic.src = `${UPL_URL}/simdown/${dir}${SEP}${files[0]}?show=image`
                         pic.style.marginLeft='auto'
                         pic.style.marginRight='auto'
                         div.appendChild(pic)
                         div.className = 'overlay wide'
+                        if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
+                            const btn = document.createElement('button')
+                            btn.className ='float-button btn-back'
+                            btn.textContent = '⌫'
+                            btn.addEventListener("click", (e) => {goBack()}, { once: true }); 
+                            div.appendChild(btn)
+                        }
                         document.body.appendChild(div)
                     } else
                         wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
@@ -526,7 +532,6 @@
                              dlg.querySelector("#some_txt").value = files[0]
                             createBtn.style.visibility = "visible"
                             createBtn.addEventListener("click", (e) => {
-                              e.preventDefault();
                               const newName = dlg.querySelector("#some_txt").value;
                               wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
                             }, { once: true });
@@ -571,8 +576,7 @@
                 const createBtn = dlg.querySelector("#confirmBtn");
                 createBtn.style.visibility = "visible"
                 createBtn.addEventListener("click", (e) => {
-                  //e.preventDefault();
-                  //dlg.close();
+
                   const dirName = dlg.querySelector("#some_txt").value;
                   const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                   const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
