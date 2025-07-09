@@ -6,7 +6,7 @@ comp opts=[]
 
 version=1.02
 simhttp proj=..${~/~}simhttp
-simupload proj=..${~/~}simupld
+simupload proj=..${~/~}simupload
 
 if {
 	eq(${~os~},windows)
