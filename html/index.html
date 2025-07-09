@@ -266,19 +266,26 @@
              handleFunction(event.key)
           }
       } else if (event.key == 'F13') {
+           event.preventDefault();
            handleFunction('F1')
       } else if (event.key == 'F14') {
+          event.preventDefault();
           handleFunction('F2')
       } else if (event.key == 'F15') {
+          event.preventDefault();
           handleFunction('F3')
       } else if (event.key == 'F16') {
+          event.preventDefault();
           handleFunction('F4')
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
+          event.preventDefault();
           goBack()
       } else if (event.ctrlKey) {
           if (event.code == 'KeyS') {
+              event.preventDefault();
               saveEdited()
           } else if (event.code == 'KeyH') {
+              event.preventDefault();
               showHelp()
           }
       } 
@@ -481,7 +488,22 @@
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                     }
                 } else if (files && files.length == 1) {
-                    wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
+                    const fileExt = files[0].slice((Math.max(0, files[0].lastIndexOf(".")) || Infinity) + 1).toUpperCase();
+                    if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'PWEB' || fileExt == 'GIF') {
+                        const div = document.createElement('div');
+                        div.style = "overflow:scroll"
+                        div.id = "view-edit"
+                        const pic = document.createElement('img')
+                        const dir = document.getElementById(`${srcPanel}-dir`).value
+                        const fileName = files[0]
+                        pic.src = `${UPL_URL}/simdown/${dir}${SEP}${fileName}?show=image`
+                        pic.style.marginLeft='auto'
+                        pic.style.marginRight='auto'
+                        div.appendChild(pic)
+                        div.className = 'overlay wide'
+                        document.body.appendChild(div)
+                    } else
+                        wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
                 }
                 break
             case 'F5': 
