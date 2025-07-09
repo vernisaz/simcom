@@ -2,7 +2,7 @@
 
 ## Purpose
 I usually setup Java for any device I can reach by my hands to. But some devices are
-really small, so I decided to test Rust on them.
+really small, so I decided to test Rust on them instead.
 
 ## Initial setup
 Use the
@@ -23,11 +23,11 @@ mmcblk0     179:0    0 29.7G  0 disk
 └─mmcblk0p2 179:2    0 29.2G  0 part /
 ```
 
-You need to create a mount point for the device first:
+Note a name of the device. You need to create a mount point for it first:
 
 > root2@pi:~ $ sudo mkdir /media/usbdrive
 
-and then issue:
+A name of a directory can be any not clashing with system directories names, and then issue:
 
 > sudo blkid /dev/sda1
 
@@ -41,20 +41,21 @@ Now you can edit *fstab*
 
 > sudo nano /etc/fstab
 
-Add a new record as below based on *blkid* information as:
+and add a new record as below based on *blkid* information and the created directory as:
 
 ```
 UUID=\[UUID] \[MOUNT POINT] \[TYPE] defaults,auto,users,rw,nofail,noatime 0 0
 ```
 
-has to be added, e.g.
+, e.g.
 
 ```
 UUID=A2CA0AEBCA0ABC13 /media/usbdrive ntfs defaults,auto,users,rw,nofail,noatime 0 0
 ```
+**note**: that `noatime` attribute makes sense for SSD drives only.
 
 ## Install Samba
-Issue the:
+This step is optional and required in a case if you like to share the added drive. Issue the -
 
 > sudo apt install samba samba-common-bin
 
@@ -92,9 +93,9 @@ Issue the
 
 > curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-Select a desired instalation type.
+Select a desired installation type.
 
-You will need to reloging in SSH session or restart the terminal after the instllation finished.
+You will need to reloging in SSH session or restart the terminal after the installation's finished.
 
 ## Build Rust crates and final web server with apps
 
@@ -129,7 +130,8 @@ and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/l
 
 ### Build rb
 
-Create an empty directory called *crates* in the projects. Navigate to *rusthub/src/rust/rustbee* and edtit *bee-rust.xml* there. You need to modify only,
+Create an empty directory called *crates* in the **projects**. Navigate to *rusthub/src/rust/rustbee*
+and edtit *bee-rust.xml* there. You need to modify only,
 
 ```
 <!ENTITY crates "/Users/root2/projects/crates">
@@ -146,14 +148,20 @@ The RustBee tool will be built after. You can install it issuing,
 
 or simple specify path to *rb*, if you do not want an installation.
 
-## Building Rust apps
-All my Rust applications have web UI.Therefor first application will be a web server.
+You can also add the path to **rb** in *PATH* environment variable.
 
-Cone the following repositories in the *projects*,
+## Building Rust apps
+All my Rust applications have web UI. Therefor first application will be a web server.
+
+Clone the following repositories in the *projects*,
 
 - [RightSlash](https://github.com/vernisaz/right_slash)
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
 - [SimWEb](https://github.com/vernisaz/simweb)
+
+And them run **rb** in every of them. It will build required common crates.
+
+### SimHTTP
 
 
