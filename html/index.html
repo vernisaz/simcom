@@ -130,7 +130,6 @@
     
     .wide {
         grid-template-columns: 1fr;
-        opacity:1.0;
     }
     
     .float-button {
@@ -482,34 +481,48 @@
                             pic.style.marginRight='auto'
                             div.appendChild(pic)
                             div.className = 'overlay wide'
-                            //div.style.opacity = '1.0'
+                            div.style.opacity = '1.0'
                             document.body.appendChild(div)
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                     }
-                } else if (files && files.length == 1) {
-                    const fileExt = files[0].slice((Math.max(0, files[0].lastIndexOf(".")) || Infinity) + 1).toUpperCase();
-                    if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'PWEB' || fileExt == 'GIF') {
-                        const div = document.createElement('div');
-                        div.style = "overflow:scroll"
-                        div.id = "view-edit"
-                        const pic = document.createElement('img')
-                        const dir = document.getElementById(`${srcPanel}-dir`).value
-                        pic.src = `${UPL_URL}/simdown/${dir}${SEP}${files[0]}?show=image`
-                        pic.style.marginLeft='auto'
-                        pic.style.marginRight='auto'
-                        div.appendChild(pic)
-                        div.className = 'overlay wide'
-                        if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
-                            const btn = document.createElement('button')
-                            btn.className ='float-button btn-back'
-                            btn.textContent = '⌫'
-                            btn.addEventListener("click", (e) => {goBack()}, { once: true }); 
-                            div.appendChild(btn)
+                } else {
+                    var showFile = ''
+                    var actPanel = srcPanel
+                    if (files && files.length == 1) {
+                        showFile = files[0];
+                    } else {
+                        actPanel = srcPanel == 'left'?'right':'left'
+                        const altFiles = getSelected(actPanel)
+                        if (altFiles && altFiles.length == 1) {
+                            showFile = altFiles[0];
                         }
-                        document.body.appendChild(div)
-                    } else
-                        wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:files[0]}))
+                    }
+                    if (showFile) {
+                        const fileExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
+                        if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'PWEB' || fileExt == 'GIF') {
+                            const div = document.createElement('div');
+                            div.style = "overflow:scroll"
+                            div.style.opacity = '1.0'
+                            div.id = "view-edit"
+                            const pic = document.createElement('img')
+                            const dir = document.getElementById(`${actPanel}-dir`).value
+                            pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
+                            pic.style.marginLeft='auto'
+                            pic.style.marginRight='auto'
+                            div.appendChild(pic)
+                            div.className = 'overlay wide'
+                            if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
+                                const btn = document.createElement('button')
+                                btn.className ='float-button btn-back'
+                                btn.textContent = '⌫'
+                                btn.addEventListener("click", (e) => {goBack()}, { once: true }); 
+                                div.appendChild(btn)
+                            }
+                            document.body.appendChild(div)
+                        } else
+                            wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
+                    }
                 }
                 break
             case 'F5': 
