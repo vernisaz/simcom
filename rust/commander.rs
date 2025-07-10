@@ -2,7 +2,7 @@ extern crate simjson;
 extern crate simweb;
 extern crate simtime;
 extern crate simzip;
-use std::{io::{self,Read,stdin,Write}, fmt::Write as FmtWrite, 
+use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
     env::consts, env,
 };
@@ -105,7 +105,7 @@ fn main() -> io::Result<()> {
                                 if let Text(file) = &files[0] {
                                     dst_path.push(dst_file);
                                     src_path.push(file);
-                                    fs::copy(&src_path,&dst_path).unwrap();
+                                    let _ = fs::copy(&src_path,&dst_path);
                                     need_copy = false;
                                 }
                             }
@@ -115,7 +115,7 @@ fn main() -> io::Result<()> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                fs::copy(&src_path,&dst_path).unwrap();
+                                let _ = fs::copy(&src_path,&dst_path);
                                 src_path.pop();
                                 dst_path.pop();
                             }
@@ -165,7 +165,17 @@ fn main() -> io::Result<()> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                fs::rename(&src_path,&dst_path).unwrap();
+                                match fs::rename(&src_path,&dst_path) {
+                                    Err(err) => {
+                                        if err.kind() == ErrorKind:: CrossesDevices {
+                                            match fs::copy(&src_path,&dst_path) {
+                                                Ok(_) => {let _ = fs::remove_file(&src_path);}
+                                                Err(_) => (),
+                                            }
+                                        }
+                                    }
+                                    _ => ()
+                                }
                                 src_path.pop();
                                 dst_path.pop();
                             }
@@ -193,14 +203,14 @@ fn main() -> io::Result<()> {
                             let Text(file) = file else { continue };
                             src_path.push(file);
                             if src_path.is_file() {
-                                fs::remove_file(&src_path).unwrap();
+                                let _ =fs::remove_file(&src_path);
                             } else if src_path.is_dir() {
-                                fs::remove_dir_all(&src_path).unwrap();
+                                let _ = fs::remove_dir_all(&src_path);
                             }
                             src_path.pop();
                         }
                         if json.get("same") == Some(&Bool(true)) {
-                            let dir = get_dir(&src).unwrap();
+                            let dir = get_dir(&src).unwrap(); // TODO add if Ok(dir)
                             println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
                             io::stdout().flush()?;
                             println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
