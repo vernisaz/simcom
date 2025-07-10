@@ -148,20 +148,33 @@ The RustBee tool will be built after. You can install it issuing,
 
 or simple specify path to *rb*, if you do not want an installation.
 
-You can also add the path to **rb** in *PATH* environment variable.
+You can also add the path to **rb** in the *PATH* environment variable.
 
 ## Building Rust apps
-All my Rust applications have web UI. Therefor first application will be a web server.
+All my Rust applications have a web UI. Therefore first application will be a web server.
 
 Clone the following repositories in the *projects*,
 
 - [RightSlash](https://github.com/vernisaz/right_slash)
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
-- [SimWEb](https://github.com/vernisaz/simweb)
+- [SimWeb](https://github.com/vernisaz/simweb)
 
 And them run **rb** in every of them. It will build required common crates.
 
+The crates are actually required to build a web server, and can be use in other
+applications.
+
 ### SimHTTP
+
+First check out its git [repository](https://github.com/vernisaz/simhttp) in **projects** and then execute **rb** in it.
+Do not execute the server yet, because [env.conf](https://github.com/vernisaz/simhttp/blob/master/env.conf) needs
+to be modified to specify the server port number and serviced directories.
+
+### A developer paradise
+
+If you do a development using Rust, then I will recommend to install Rust Development Studio
+([RDS](https://sourceforge.net/projects/rustdevelopmentstudio/)), you can download it or build.
+
 
 
