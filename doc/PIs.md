@@ -31,7 +31,7 @@ A name of a directory can be any not clashing with system directories names, and
 
 > sudo blkid /dev/sda1
 
-You get a result as:
+You get a result like:
 
 ```
 /dev/sda1: LABEL="My Book" BLOCK_SIZE="4096" UUID="A2CA0AEBCA0ABC13" TYPE="ntfs"
@@ -41,7 +41,7 @@ Now you can edit *fstab*
 
 > sudo nano /etc/fstab
 
-and add a new record as below based on *blkid* information and the created directory as:
+and add a new record as below based on *blkid* information and the created directory,
 
 ```
 UUID=\[UUID] \[MOUNT POINT] \[TYPE] defaults,auto,users,rw,nofail,noatime 0 0
