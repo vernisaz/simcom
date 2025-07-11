@@ -165,6 +165,19 @@
           transform: translateY(-50%);
     }
     
+    .btn-left {
+          position: fixed;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+    }
+    
+    .btn-mark {
+          position: fixed;
+          right: 0;
+          top: 0;
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -528,11 +541,12 @@
                             }
                             const btnRight = document.createElement('button')
                             btnRight.className ='float-button btn-right'
-                            btnRight.textContent = '▷' // ◁
+                            btnRight.textContent = '▷' // ◁  🗑 ✓
                             btnRight.addEventListener("click", (e) => {
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 var after = false
                                 for (const child of filesDiv.children) {
+                                    // filter only divs with class == file
                                     if  (after) {
                                         showFile = child.textContent
                                         const showExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
@@ -547,6 +561,43 @@
                                 }
                             }); 
                             div.appendChild(btnRight)
+                            // left
+                            const btnLeft = document.createElement('button')
+                            btnLeft.className ='float-button btn-left'
+                            btnLeft.textContent = '◁'
+                            btnLeft.addEventListener("click", (e) => {
+                                const filesDiv = document.getElementById(`${actPanel}-files`);
+                                var beforeFile = ''
+                                for (const child of filesDiv.children) {
+                                    if (child.textContent == showFile) {
+                                        if (beforeFile) {
+                                            showFile = beforeFile
+                                            pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
+                                            break
+                                        }
+                                    }
+                                    const currentFile = child.textContent
+                                    const beforeExt = currentFile.slice((Math.max(0, currentFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
+                                    if (beforeExt == 'JPEG' || beforeExt == 'JPG' || beforeExt == 'PNG' || beforeExt == 'PWEB' || beforeExt == 'GIF') {
+                                        beforeFile = child.textContent
+                                    }
+                                }
+                            }); 
+                            div.appendChild(btnLeft)
+                            // mark
+                            const btnMark = document.createElement('button')
+                            btnMark.className ='float-button btn-mark'
+                            btnMark.textContent = '✓'
+                            btnMark.addEventListener("click", (e) => {
+                                const filesDiv = document.getElementById(`${actPanel}-files`);
+                                for (const child of filesDiv.children) {
+                                    if (child.textContent == showFile) {
+                                        child.classList.add('selectedd')
+                                        break
+                                    }
+                                }
+                            });
+                            div.appendChild(btnMark)
                             document.body.appendChild(div)
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
@@ -738,11 +789,7 @@
               wsktSend(JSON.stringify({op:'save', same:same, panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
           }
     }
-    
-    function nextPicDown(image,dir,showFile,actPanel) { // better pass an array of names and position, and return also position
-        
-    }
-    
+
     function sendFile(file, panel, progressBar) {
         const uri = `${UPL_URL}/simupld`; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
