@@ -158,6 +158,13 @@
           right: 0;
     }
     
+    .btn-right {
+          position: fixed;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -519,6 +526,27 @@
                                 btn.addEventListener("click", (e) => {goBack()}, { once: true }); 
                                 div.appendChild(btn)
                             }
+                            const btnRight = document.createElement('button')
+                            btnRight.className ='float-button btn-right'
+                            btnRight.textContent = '▷' // ◁
+                            btnRight.addEventListener("click", (e) => {
+                                const filesDiv = document.getElementById(`${actPanel}-files`);
+                                var after = false
+                                for (const child of filesDiv.children) {
+                                    if  (after) {
+                                        showFile = child.textContent
+                                        const showExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
+                                        if (showExt == 'JPEG' || showExt == 'JPG' || showExt == 'PNG' || showExt == 'PWEB' || showExt == 'GIF') {
+                                            pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
+                                            break
+                                        }
+                                    }
+                                    if (child.textContent == showFile) {
+                                        after = true
+                                    }
+                                }
+                            }); 
+                            div.appendChild(btnRight)
                             document.body.appendChild(div)
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
@@ -709,6 +737,10 @@
               const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
               wsktSend(JSON.stringify({op:'save', same:same, panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
           }
+    }
+    
+    function nextPicDown(image,dir,showFile,actPanel) { // better pass an array of names and position, and return also position
+        
     }
     
     function sendFile(file, panel, progressBar) {
