@@ -603,6 +603,8 @@
                             document.body.appendChild(div)
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
+                    } else {
+                        alert('Please select one item to show first')
                     }
                 }
                 break
