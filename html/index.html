@@ -546,7 +546,7 @@
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 var after = false
                                 for (const child of filesDiv.children) {
-                                    // filter only divs with class == file
+                                    if (!child.classList.contains('file') || child.classList.contains('directory'))  continue;
                                     if  (after) {
                                         showFile = child.textContent
                                         const showExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
@@ -569,6 +569,7 @@
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 var beforeFile = ''
                                 for (const child of filesDiv.children) {
+                                    if (!child.classList.contains('file') || child.classList.contains('directory'))  continue;
                                     if (child.textContent == showFile) {
                                         if (beforeFile) {
                                             showFile = beforeFile
@@ -591,6 +592,7 @@
                             btnMark.addEventListener("click", (e) => {
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 for (const child of filesDiv.children) {
+                                    if (!child.classList.contains('file') || child.classList.contains('directory'))  continue;
                                     if (child.textContent == showFile) {
                                         child.classList.add('selectedd')
                                         break
