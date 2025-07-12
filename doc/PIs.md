@@ -171,10 +171,30 @@ First check out its git [repository](https://github.com/vernisaz/simhttp) in **p
 Do not execute the server yet, because [env.conf](https://github.com/vernisaz/simhttp/blob/master/env.conf) needs
 to be modified to specify the server port number and serviced directories.
 
+### Run SimHTTP as a service
+It is a covinient to run the server as a service. First,  create a directory where the server will reside. Using a development
+location for a system service isn't a good idea. Onle two files need to be copied there, simhttp and env.conf.
+
+Second, you need to edit file [rustcom.service](https://github.com/vernisaz/simcom/blob/master/cfg/rustcom.service) specifying the
+selected location for the server.
+
+Last, copy the service file to /usr/lib/systemd/system/, as:
+
+> sudo cp rustcom.service /usr/lib/systemd/system/
+
+The following set of commands is used to control the service,
+
+- enable - `sudo systemctl enable rustcom`
+- start - `sudo systemctl start rustcom`
+- stop - `sudo systemctl stop rustcom`
+- disable - `sudo systemctl disable rustcom`
+
 ### A developer paradise
 
-If you do a development using Rust, then I will recommend to install Rust Development Studio
+If you do a development using Rust, then I will recommend to install the Rust Development Studio
 ([RDS](https://sourceforge.net/projects/rustdevelopmentstudio/)), you can download it or build.
+
+Now you can use a web browser to develop, debug, test and run Rust applications and crates.
 
 
 
