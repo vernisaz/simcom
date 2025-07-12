@@ -19,7 +19,7 @@ struct State {
 }
 
 fn main() -> io::Result<()> {
-    let web = simweb::WebData::new();
+    //let web = simweb::WebData::new();
     let mut buffer = [0_u8;MAX_BLOCK_LEN];
     let os_drive =
     if "windows" == consts::OS {
@@ -256,8 +256,14 @@ fn main() -> io::Result<()> {
                         let mut show_path = PathBuf::from(&src);
                         show_path.push(file);
                         if show_path.is_file() {
-                            let file_contents = fs::read_to_string(show_path)?;
-                             println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&html_encode(&file_contents)));
+                            match fs::read_to_string(&show_path) {
+                                Ok(file_contents)  => {
+                                    println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&html_encode(&file_contents)));
+                                }
+                                Err(err) => {
+                                    println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {show_path:?} can't be shown, because {err}")));
+                                }
+                            }
                             io::stdout().flush()?;
                         }
                     }
@@ -273,10 +279,14 @@ fn main() -> io::Result<()> {
                         let mut edit_path = PathBuf::from(&src);
                         edit_path.push(file);
                         if edit_path.is_file() {
-                            let modified = get_file_modified(&edit_path);
-                            let file_contents = fs::read_to_string(&edit_path)?;
-                             println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
-                                json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
+                            match fs::read_to_string(&edit_path) {
+                                Ok(file_contents) => {
+                                    let modified = get_file_modified(&edit_path);
+                                    println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
+                                        json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
+                                }
+                                Err(err) => println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {edit_path:?} can't be edited, because {err}"))),
+                            }
                             io::stdout().flush()?;
                         } else if !edit_path.exists() {
                             println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#, 
