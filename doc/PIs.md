@@ -107,7 +107,8 @@ Copy you SSH keys (if needed)
 
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
-Create a projects directory, unless you already have some and willing to reuse.
+Create a projects directory, unless you already have some and willing to reuse. The guide will refer the directory
+as _projects_ assuming that you can select any other name of your choise.
 
 Clone git repositories to the directory,
 
@@ -130,7 +131,7 @@ and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/l
 
 ### Build rb
 
-Create an empty directory called *crates* in the **projects**. Navigate to *rusthub/src/rust/rustbee*
+Create an empty directory called _crates_ in the **projects**. Navigate to *rusthub/src/rust/rustbee*
 and edit *bee-rust.xml* there. You need to modify only,
 
 ```
@@ -146,7 +147,7 @@ The RustBee tool will be built after. You can install it issuing,
 
 > sudo ./rb install
 
-or simple specify path to *rb*, if you do not want an installation.
+or simply specify the path to *rb*, if you do not want an installation.
 
 You can also add the path to **rb** in the *PATH* environment variable.
 
