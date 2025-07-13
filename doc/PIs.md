@@ -108,7 +108,7 @@ Copy you SSH keys (if needed)
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
 Create a projects directory, unless you already have some and willing to reuse. The guide will refer the directory
-as _projects_ assuming that you can select any other name of your choise.
+as _projects_ assuming that you can select any other name of your choice.
 
 Clone git repositories to the directory,
 
