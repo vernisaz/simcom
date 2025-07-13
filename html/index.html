@@ -416,16 +416,16 @@
                         return
                     }
                     const div = document.createElement('div');
-                    div.style = "overflow:scroll"
                     div.id = "view-edit"
-                    //div.textContent = response.content;
                     if (response.op == 'edit') {
+                        div.style.padding='0 1em' 
                         div.innerHTML = '<textarea style="font-size: large; width: 100%; -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;" autofocus>'
                             + response.content + '</textarea>' +
                             ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button class="float-button btn-save" onclick="saveEdited()">⎙</button><button onclick="goBack()" class="float-button btn-back">⌫</button>':'') +
                             '<input type="hidden" value="' + response.file + '" />';
                         modified = response.modified; // TODO should be hidden field too    
                     } else {
+                        div.style = "overflow:scroll"
                         div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>' +
                             ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button onclick="goBack()" class="float-button btn-back">⌫</button>':'');
                     }

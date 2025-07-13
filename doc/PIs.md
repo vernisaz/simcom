@@ -9,7 +9,7 @@ Use the
 
 > sudo raspi-config
 
-and in Iterfaces section, enable SSH.
+and in Interfaces section, enable SSH.
 
 If you have USB drives, as I do, you need to mount them first. Issue:
 
@@ -95,7 +95,7 @@ Issue the
 
 Select a desired installation type.
 
-You will need to reloging in SSH session or restart the terminal after the installation's finished.
+You will need to relogining in SSH session or restart the terminal after the installation's finished.
 
 ## Build Rust crates and final web server with apps
 
@@ -131,7 +131,7 @@ and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/l
 ### Build rb
 
 Create an empty directory called *crates* in the **projects**. Navigate to *rusthub/src/rust/rustbee*
-and edtit *bee-rust.xml* there. You need to modify only,
+and edit *bee-rust.xml* there. You need to modify only,
 
 ```
 <!ENTITY crates "/Users/root2/projects/crates">
@@ -151,19 +151,19 @@ or simple specify path to *rb*, if you do not want an installation.
 You can also add the path to **rb** in the *PATH* environment variable.
 
 ## Building Rust apps
-All my Rust applications have a web UI. Therefore first application will be a web server.
+All my Rust applications have a web UI. Therefore, first application will be a web server.
 
-Clone the following repositories in the *projects*,
+Start with cloning the following repositories in the *projects*,
 
 - [RightSlash](https://github.com/vernisaz/right_slash)
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
 - [SimWeb](https://github.com/vernisaz/simweb)
 
-And them run **rb** in every of them. It will build required common crates.
+And then run **rb** in every of them. It will build required common crates.
 
-The crates are actually required to build a web server, and can be use in other
-applications.
+The crates are actually required to build a web server, and can be used in other
+applications too.
 
 ### SimHTTP
 
@@ -172,8 +172,8 @@ Do not execute the server yet, because [env.conf](https://github.com/vernisaz/si
 to be modified to specify the server port number and serviced directories.
 
 ### Run SimHTTP as a service
-It is a covinient to run the server as a service. First,  create a directory where the server will reside. Using a development
-location for a system service isn't a good idea. Onle two files need to be copied there, simhttp and env.conf.
+It is a convenient to run the server as a service. First,  create a directory where the server will reside. Using a development
+location for a system service isn't a good idea. Only two files needed to be copied there, simhttp and env.conf.
 
 Second, you need to edit file [rustcom.service](https://github.com/vernisaz/simcom/blob/master/cfg/rustcom.service) specifying the
 selected location for the server.
@@ -188,6 +188,8 @@ The following set of commands is used to control the service,
 - start - `sudo systemctl start rustcom`
 - stop - `sudo systemctl stop rustcom`
 - disable - `sudo systemctl disable rustcom`
+
+You can selected any other name for the service not clashing with already existing services.
 
 ### A developer paradise
 
