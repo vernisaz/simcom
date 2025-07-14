@@ -476,7 +476,7 @@ fn copy_directory_contents(
     destination_dir: &Path,
 ) -> io::Result<u64> {
     fs::create_dir_all(destination_dir)?; // Create the destination directory if it doesn't exist
-    let mut cont = 0u64;
+    let mut count = 0u64;
     for entry in fs::read_dir(source_dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -489,10 +489,21 @@ fn copy_directory_contents(
                 })?;
             let dest_path = destination_dir.join(file_name);
             fs::copy(&path, &dest_path)?;
-            cont += 1;
+            count += 1;
             eprintln!("Copied file: {:?} to {:?}", path, dest_path);
+        } else if path.is_dir() {
+            let file_name = path
+                .file_name()
+                .ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name")
+                })?;
+            let dest_path = destination_dir.join(file_name);
+            match copy_directory_contents(&path, &dest_path) {
+                Ok(files) => count += files,
+                Err(err) => return Err(err)
+            }
         }
     }
-    Ok(cont)
+    Ok(count)
 }
 
