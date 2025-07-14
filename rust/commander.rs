@@ -470,7 +470,7 @@ fn get_file_modified(path: &PathBuf) -> u64 { // in seconds
     }
 }
 
-// from AI offered
+// from AI offerring
 fn copy_directory_contents(
     source_dir: &Path,
     destination_dir: &Path,
@@ -490,7 +490,7 @@ fn copy_directory_contents(
             let dest_path = destination_dir.join(file_name);
             fs::copy(&path, &dest_path)?;
             cont += 1;
-            println!("Copied file: {:?} to {:?}", path, dest_path);
+            eprintln!("Copied file: {:?} to {:?}", path, dest_path);
         }
     }
     Ok(cont)
