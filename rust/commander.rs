@@ -115,7 +115,12 @@ fn main() -> io::Result<()> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                let _ = fs::copy(&src_path,&dst_path);
+                                let _ = 
+                                if src_path.is_file() {
+                                    fs::copy(&src_path,&dst_path)
+                                } else if src_path.is_dir() {
+                                    copy_directory_contents(&src_path,&dst_path)
+                                } else { Ok(0)};
                                 src_path.pop();
                                 dst_path.pop();
                             }
@@ -464,3 +469,30 @@ fn get_file_modified(path: &PathBuf) -> u64 { // in seconds
         _ => 0
     }
 }
+
+// from AI offered
+fn copy_directory_contents(
+    source_dir: &Path,
+    destination_dir: &Path,
+) -> io::Result<u64> {
+    fs::create_dir_all(destination_dir)?; // Create the destination directory if it doesn't exist
+    let mut cont = 0u64;
+    for entry in fs::read_dir(source_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file() {
+            let file_name = path
+                .file_name()
+                .ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name")
+                })?;
+            let dest_path = destination_dir.join(file_name);
+            fs::copy(&path, &dest_path)?;
+            cont += 1;
+            println!("Copied file: {:?} to {:?}", path, dest_path);
+        }
+    }
+    Ok(cont)
+}
+
