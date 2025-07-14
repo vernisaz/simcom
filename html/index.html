@@ -25,16 +25,23 @@
       background-color: var(--bg-color);
       color: var(--text-color);
     }
-
-    .main-content {
-      display: flex;
-      flex: 1;
+    
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex:1;
+      overflow-y: auto;
+    }
+    
+    .wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .panel {
       flex: 1;
       border: 1px solid #ccc;
-      overflow-y: auto;
     }
 
     .panel-header {
@@ -51,6 +58,7 @@
     .panel-files {
         display: grid;
         grid-template-columns: 3fr 1fr 2fr;
+        
     }
     
     .file-size {
@@ -89,6 +97,7 @@
       padding: 10px;
       display: flex;
       justify-content: space-around;
+      margin-top: auto;
     }
 
     footer button {
@@ -199,11 +208,12 @@
   <script src="/cmd/js/common.js" language="Javascript"></script>
 </head>
 <body>
-  <div class="main-content">
+<div class="wrapper">
+  <main>
     <div class="panel" id="left-panel">
       <div class="panel-header">
         <input type="text" id="left-dir" value="/" class="selected-panel" />
-        <button onclick="requestPanel('left')">Go</button>
+        <button onclick="requestPanel('left')">🔄</button>
       </div>
       <div id="left-files" class="panel-files"></div>
     </div>
@@ -211,11 +221,11 @@
     <div class="panel" id="right-panel">
       <div class="panel-header">
         <input type="text" id="right-dir" value="/" />
-        <button onclick="requestPanel('right')">Go</button>
+        <button onclick="requestPanel('right')">🔁</button>
       </div>
       <div id="right-files" class="panel-files"></div>
     </div>
-  </div>
+  </main>
 
   <footer>
       <button onclick="handleFunction('F1')">F1 Help</button>
@@ -229,7 +239,7 @@
     <button onclick="handleFunction('F9')">F9 Upload</button>
     <button onclick="handleFunction('F10')">F10 Zip</button>
   </footer>
-  
+  </div>
     <dialog >
       <p></p>
       <form method="dialog">
