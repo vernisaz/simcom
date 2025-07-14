@@ -173,14 +173,25 @@ fn main() -> io::Result<()> {
                                 match fs::rename(&src_path,&dst_path) {
                                     Err(err) => {
                                         if err.kind() == ErrorKind:: CrossesDevices {
-                                            match fs::copy(&src_path,&dst_path) {
-                                                Ok(_) => {let _ = fs::remove_file(&src_path);}
-                                                Err(_) => (),
+                                            if src_path.is_file() {
+                                                match fs::copy(&src_path,&dst_path) {
+                                                    Ok(_) => {let _ = fs::remove_file(&src_path);}
+                                                    Err(_) => (),
+                                                }
+                                            } else if src_path.is_dir() {
+                                                match copy_directory_contents(&src_path,&dst_path) {
+                                                    Ok(_) => {
+                                                        // TODO decide in cases when only some files were copied
+                                                        let _ = fs::remove_dir_all(&src_path);
+                                                    }
+                                                    Err(err) => eprintln!("Can't copy {src_path:?} because {err:?}")
+                                                }
                                             }
                                         }
                                     }
                                     _ => ()
                                 }
+                                
                                 src_path.pop();
                                 dst_path.pop();
                             }
