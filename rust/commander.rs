@@ -151,17 +151,34 @@ fn main() -> io::Result<()> {
                             continue
                         };
                         let mut dst_path = PathBuf::from(&dst);
-                        if let Some(Text(dst_file)) = json.get("file") {
-                            dst_path.push(dst_file)
-                        }
                         let mut was_move = false;
-                        if dst_path .is_file() || !dst_path.exists() { // potential renaming can happen in a new directory
+                        if let Some(Text(dst_file)) = json.get("file") {
                             if files.len() == 1 {
-                                if let Text(file) = &files[0] {
-                                    src_path.push(file);
-                                    match fs::rename(&src_path,&dst_path) {
-                                        Ok(()) => was_move = true,
-                                        Err(err) => eprintln!("not renamed {src_path:?} to {dst_path:?} because {err}")
+                                dst_path.push(dst_file);
+                                if !dst_path.exists() {
+                                    if let Text(file) = &files[0] {
+                                        src_path.push(file);
+                                        match fs::rename(&src_path,&dst_path) {
+                                            Ok(()) => was_move = true,
+                                            Err(err) => {
+                                                if err.kind() == ErrorKind:: CrossesDevices {
+                                                    if src_path.is_file() {
+                                                        match fs::copy(&src_path,&dst_path) {
+                                                            Ok(_) => {let _ = fs::remove_file(&src_path); was_move = true;}
+                                                            Err(_) => (),
+                                                        }
+                                                    } else if src_path.is_dir() {
+                                                        match copy_directory_contents(&src_path,&dst_path) {
+                                                            Ok(_) => {
+                                                                // TODO decide in cases when only some files were copied
+                                                                let _ = fs::remove_dir_all(&src_path); was_move = true;
+                                                            }
+                                                            Err(err) => eprintln!("Can't move {src_path:?} to {dst_path:?}, because {err:?}")
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
