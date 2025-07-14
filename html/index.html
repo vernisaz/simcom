@@ -308,6 +308,26 @@
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
           event.preventDefault();
           goBack()
+      } else if (event.code == 'NumpadMultiply') {
+          event.preventDefault();
+          const dirInputLeft = document.getElementById(`left-dir`);
+          const panel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+          const filesDiv = document.getElementById(`${panel}-files`);
+          for (const child of filesDiv.children) {
+              if (!child.classList.contains('file') && !child.classList.contains('directory'))  continue;
+              if  (child.textContent == '..') { continue; }
+              child.classList.toggle('selectedd');
+          }
+      } else if (event.code == 'NumpadDivide') { // NumpadSubtract NumpadAdd
+          event.preventDefault();
+          const dirInputLeft = document.getElementById(`left-dir`);
+          const panel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+          const filesDiv = document.getElementById(`${panel}-files`);
+          for (const child of filesDiv.children) {
+              if (!child.classList.contains('file') && !child.classList.contains('directory'))  continue;
+              if  (child.textContent == '..') { continue; }
+              child.classList.remove('selectedd');
+          }
       } else if (event.ctrlKey) {
           if (event.code == 'KeyS') {
               event.preventDefault();
@@ -892,6 +912,8 @@
         '<p>F9 - upload selected file(s)</p>' +
         '<p>F10 - zip selected file(s)</p>' +
         '<p>Esc - exit view, help or edit screen</p>' +
+        '<p>Numpad * - invert selection</p>' +
+        '<p>Numpad / - clear selection</p>' +
         '<p>^S - save edited content</p>'
         document.body.appendChild(helpDiv)
     }
