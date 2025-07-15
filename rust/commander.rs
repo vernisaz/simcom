@@ -500,8 +500,7 @@ fn copy_directory_contents(
                     io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name")
                 })?;
             let dest_path = destination_dir.join(file_name);
-            fs::copy(&path, &dest_path)?;
-            count += 1;
+            count += fs::copy(&path, &dest_path)?;
             eprintln!("Copied file: {:?} to {:?}", path, dest_path);
         } else if path.is_dir() {
             let file_name = path
