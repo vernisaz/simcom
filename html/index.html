@@ -112,7 +112,7 @@
       background-color: #555;
     }
     
-    .overlay, .help {
+    .overlay, div#help-panel {
         opacity:0.9;
         background-color:#ddd;
         position:fixed;
@@ -125,11 +125,12 @@
         z-index:1000;
     }
     
-    .help {
+    div#help-panel {
         display: flex;
         justify-content:space-around;
         flex-wrap: wrap;
         gap: 2em;
+        align-items: flex-start;
     }
     
     .narrow {
@@ -199,7 +200,7 @@
         .panel-header, .file:hover {
              background-color: #738584;
         }
-        .overlay, .help {
+        .overlay, div#help-panel {
             opacity:0.9;
             background-color:#333;
         }
@@ -900,7 +901,6 @@
     function showHelp() {
         const helpDiv = document.createElement('DIV');
         helpDiv.id = "help-panel"
-        helpDiv.className = 'help'
         helpDiv.innerHTML = '<p>F1 - this screen</p>'+
         '<p>F2 - switch active panel</p>' +
         '<p>F3 - view hover or selected file</p>' +
