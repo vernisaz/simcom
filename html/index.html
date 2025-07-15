@@ -528,7 +528,7 @@
                         const actPanel = el.parentElement.id.split('-', 1)[0]
                         const fileName = el.textContent
                         const fileExt = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
-                        if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'PWEB' || fileExt == 'GIF') {
+                        if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'WEBP' || fileExt == 'GIF') {
                             const div = document.createElement('div');
                             div.style.overflow = "scroll"
                             div.id = "view-edit"
@@ -558,7 +558,7 @@
                     }
                     if (showFile) {
                         const fileExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
-                        if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'PWEB' || fileExt == 'GIF') {
+                        if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'WEBP' || fileExt == 'GIF') {
                             const div = document.createElement('div');
                             div.style = "overflow:scroll"
                             div.style.opacity = '1.0'
@@ -588,7 +588,7 @@
                                     if  (after) {
                                         showFile = child.textContent
                                         const showExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
-                                        if (showExt == 'JPEG' || showExt == 'JPG' || showExt == 'PNG' || showExt == 'PWEB' || showExt == 'GIF') {
+                                        if (showExt == 'JPEG' || showExt == 'JPG' || showExt == 'PNG' || showExt == 'WEBP' || showExt == 'GIF') {
                                             pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
                                             break
                                         }
@@ -617,7 +617,7 @@
                                     }
                                     const currentFile = child.textContent
                                     const beforeExt = currentFile.slice((Math.max(0, currentFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
-                                    if (beforeExt == 'JPEG' || beforeExt == 'JPG' || beforeExt == 'PNG' || beforeExt == 'PWEB' || beforeExt == 'GIF') {
+                                    if (beforeExt == 'JPEG' || beforeExt == 'JPG' || beforeExt == 'PNG' || beforeExt == 'WEBP' || beforeExt == 'GIF') {
                                         beforeFile = child.textContent
                                     }
                                 }
