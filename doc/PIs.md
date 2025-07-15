@@ -112,9 +112,9 @@ as _projects_ assuming that you can select any other name of your choice.
 
 Clone git repositories to the directory,
 
-- https://gitlab.com/tools6772135/rusthub.git
-- https://github.com/vernisaz/simtime.git
-- https://github.com/vernisaz/simple\_rust_zip.git
+- [https://gitlab.com/tools6772135/rusthub.git](https://gitlab.com/tools6772135/rusthub/-/tree/master)
+- [https://github.com/vernisaz/simtime.git](https://github.com/vernisaz/simtime)
+- [https://github.com/vernisaz/simple\_rust_zip.git](https://github.com/vernisaz/simple_rust_zip)
 
 ### Install Java
 
