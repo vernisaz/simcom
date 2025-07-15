@@ -127,10 +127,11 @@
     
     div#help-panel {
         display: flex;
-        justify-content:space-around;
+        justify-content: center;
         flex-wrap: wrap;
         gap: 2em;
         align-items: flex-start;
+        align-content: center;
     }
     
     .narrow {
@@ -267,8 +268,8 @@
     var modified = 0
     
     window.addEventListener('keydown', function(event) {
-      console.log('Key Pressed:', event.key);
-      console.log('Key Code:', event.code);
+      //console.log('Key Pressed:', event.key);
+      //console.log('Key Code:', event.code);
        
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
@@ -939,6 +940,7 @@
         '<p>Numpad * - invert selection</p>' +
         '<p>Numpad / - clear selection</p>' +
         '<p>Numpad = - compare panels, no size or type counted</p>' +
+        '<p>^I - getting info on panel)</p>' +
         '<p>^S - save edited content</p>'
         document.body.appendChild(helpDiv)
     }
