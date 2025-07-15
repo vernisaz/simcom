@@ -267,8 +267,8 @@
     var modified = 0
     
     window.addEventListener('keydown', function(event) {
-      //console.log('Key Pressed:', event.key);
-      //console.log('Key Code:', event.code);
+      console.log('Key Pressed:', event.key);
+      console.log('Key Code:', event.code);
        
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
@@ -328,6 +328,30 @@
               if (!child.classList.contains('file') && !child.classList.contains('directory'))  continue;
               if  (child.textContent == '..') { continue; }
               child.classList.remove('selectedd');
+          }
+      } else if (event.code == 'NumpadEqual') { // =
+          const leftPanel = document.getElementById(`left-files`);
+          const rightPanel = document.getElementById(`right-files`);
+          const thisChilds = leftPanel.children.length < rightPanel.children.length?leftPanel.children:rightPanel.children
+          const otherChilds = leftPanel.children.length < rightPanel.children.length?rightPanel.children:leftPanel.children
+          for (const child of otherChilds) {
+              if (!child.classList.contains('file') && !child.classList.contains('directory'))  continue;
+              if  (child.textContent == '..') { continue; }
+              child.classList.add('selectedd');
+          }
+          for (const child of thisChilds) {
+              if (!child.classList.contains('file') && !child.classList.contains('directory'))  continue;
+              if  (child.textContent == '..') { continue; }
+              child.classList.add('selectedd');
+              for (const childOther of otherChilds) {
+                  if (!childOther.classList.contains('file') && !childOther.classList.contains('directory'))  continue;
+                  if  (childOther.textContent == '..') { continue; }
+                  if (childOther.textContent == child.textContent) { // compare also class and size
+                      childOther.classList.remove('selectedd');
+                      child.classList.remove('selectedd');
+                      break
+                  }
+              }
           }
       } else if (event.ctrlKey) {
           if (event.code == 'KeyS') {
@@ -914,6 +938,7 @@
         '<p>Esc - exit view, help or edit screen</p>' +
         '<p>Numpad * - invert selection</p>' +
         '<p>Numpad / - clear selection</p>' +
+        '<p>Numpad = - compare panels, no size or type counted</p>' +
         '<p>^S - save edited content</p>'
         document.body.appendChild(helpDiv)
     }
