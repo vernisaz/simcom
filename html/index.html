@@ -132,6 +132,7 @@
         gap: 2em;
         align-items: flex-start;
         align-content: center;
+        
     }
     
     .narrow {
@@ -519,8 +520,9 @@
                     if (response.kind) {
                         if (response.kind == 'exif') {
                             const infoDiv = document.createElement('div')
-                            infoDiv.className = 'overlay wide'
+                            infoDiv.id = 'help-panel'; // good for info also
                             infoDiv.style.overflow = "scroll"
+                            infoDiv.style.flexWrap = 'nowrap'
                             const infoUl = document.createElement('ul')
                             for (const prop of response.details) {
                                 const infoLi = document.createElement('li')
@@ -529,7 +531,7 @@
                             }
                             infoDiv.appendChild(infoUl)
                             infoDiv.addEventListener("click", (e) => {
-                               e.preventDefault();
+                               e.stopPropagation();
                                let lastChild = document.body.children[document.body.children.length - 1];
                                 document.body.removeChild(lastChild);
                             }, { once: true });
@@ -568,7 +570,7 @@
                 const zipBtn = dlg.querySelector("#confirmBtn");
                 zipBtn.style.visibility = "visible"
                 zipBtn.addEventListener("click", (e) => {
-                  e.preventDefault();
+                  e.stopPropagation();
                   var zipName = dlg.querySelector("#some_txt").value;
                   const zipDirInput = document.getElementById(`${srcPanel}-dir`);
                   if (!zipName.endsWith('.zip')) {
@@ -601,6 +603,7 @@
                             div.style.opacity = '1.0'
                             document.body.appendChild(div)
                             div.addEventListener('click', (event) => {
+                                event.stopPropagation();
                                 //if (event.code == 'KeyI') {
                                  //   event.stopPropagation()
                                     wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
@@ -640,13 +643,14 @@
                                 const btn = document.createElement('button')
                                 btn.className ='float-button btn-back'
                                 btn.textContent = '⌫'
-                                btn.addEventListener("click", (e) => {goBack()}, { once: true }); 
+                                btn.addEventListener("click", (e) => {e.stopPropagation(); goBack()}, { once: true }); 
                                 div.appendChild(btn)
                             }
                             const btnRight = document.createElement('button')
                             btnRight.className ='float-button btn-right'
                             btnRight.textContent = '▷' // ◁  🗑 ✓
                             btnRight.addEventListener("click", (e) => {
+                                e.stopPropagation();
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 var after = false
                                 for (const child of filesDiv.children) {
@@ -670,6 +674,7 @@
                             btnLeft.className ='float-button btn-left'
                             btnLeft.textContent = '◁'
                             btnLeft.addEventListener("click", (e) => {
+                                e.stopPropagation();
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 var beforeFile = ''
                                 for (const child of filesDiv.children) {
@@ -694,6 +699,7 @@
                             btnMark.className ='float-button btn-mark'
                             btnMark.textContent = '✓'
                             btnMark.addEventListener("click", (e) => {
+                                e.stopPropagation();
                                 const filesDiv = document.getElementById(`${actPanel}-files`);
                                 for (const child of filesDiv.children) {
                                     if (!child.classList.contains('file') || child.classList.contains('directory'))  continue;
@@ -704,6 +710,13 @@
                                 }
                             });
                             div.appendChild(btnMark)
+                            div.addEventListener('click', (event) => {
+                                event.stopPropagation();
+                                //if (event.code == 'KeyI') {
+                                 //   event.stopPropagation()
+                                    wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
+                               // }
+                            })
                             document.body.appendChild(div)
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
@@ -983,6 +996,13 @@
         '<p>Numpad = - compare panels, no size or type counted</p>' +
         '<p>^I - getting info on panel)</p>' +
         '<p>^S - save edited content</p>'
+        if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
+            const btn = document.createElement('button')
+            btn.className ='float-button btn-back'
+            btn.textContent = '⌫'
+            btn.addEventListener("click", (e) => {e.stopPropagation(); goBack()}, { once: true }); 
+            helpDiv.appendChild(btn)
+        }
         document.body.appendChild(helpDiv)
     }
     
