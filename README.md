@@ -18,6 +18,9 @@ Currently the project has 4 direct dependecies:
 - [SimTime](https://github.com/vernisaz/simtime)
 - [SimZip](https://github.com/vernisaz/simple_rust_zip)
 
+The project uses also 2 3rd party dependencis for viewing an info of image files. How to get and build them described in
+[dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md).
+
 ## Web server
 Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp)
 can be used to run it now,
