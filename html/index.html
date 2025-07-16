@@ -311,6 +311,10 @@
           event.preventDefault();
           goBack()
       } else if (event.code == 'NumpadMultiply') {
+          let lastChild = document.body.children[document.body.children.length - 1];
+          if (lastChild.id == "view-edit") {
+              return
+          }
           event.preventDefault();
           const dirInputLeft = document.getElementById(`left-dir`);
           const panel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
@@ -321,6 +325,10 @@
               child.classList.toggle('selectedd');
           }
       } else if (event.code == 'NumpadDivide') { // NumpadSubtract NumpadAdd
+           let lastChild = document.body.children[document.body.children.length - 1];
+          if (lastChild.id == "view-edit") {
+              return
+          }
           event.preventDefault();
           const dirInputLeft = document.getElementById(`left-dir`);
           const panel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
@@ -331,6 +339,11 @@
               child.classList.remove('selectedd');
           }
       } else if (event.code == 'NumpadEqual') { // =
+        let lastChild = document.body.children[document.body.children.length - 1];
+          if (lastChild.id == "view-edit") {
+              return
+          }
+        event.preventDefault();
           const leftPanel = document.getElementById(`left-files`);
           const rightPanel = document.getElementById(`right-files`);
           const thisChilds = leftPanel.children.length < rightPanel.children.length?leftPanel.children:rightPanel.children
@@ -470,12 +483,11 @@
                 } catch (e) {
                     console.error(e); // error in the above string (in this case, yes)!
                     alert('Invalid server response: '+trimString(chunk,50))
-                    
                 }
                 if (response.panel == 'center' || response.op == 'edit') {
                     let lastChild = document.body.children[document.body.children.length - 1];
                     if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
-                        alert('last child with id '+lastChild.id+', ignored')
+                        alert(`last child with id ${lastChild.id}, ignored`)
                         return
                     }
                     const div = document.createElement('div');
@@ -504,9 +516,30 @@
                     requestPanel('left');
                     requestPanel('right');
                 } else if (response.panel == 'info') {
-                    modified = response.modified || 0;
-                    if (response.message) {
-                        alert(response.message)
+                    if (response.kind) {
+                        if (response.kind == 'exif') {
+                            const infoDiv = document.createElement('div')
+                            infoDiv.className = 'overlay wide'
+                            infoDiv.style.overflow = "scroll"
+                            const infoUl = document.createElement('ul')
+                            for (const prop of response.details) {
+                                const infoLi = document.createElement('li')
+                                infoLi.textContent = `${prop.tag} – ${prop.value}`
+                                infoUl.appendChild(infoLi)
+                            }
+                            infoDiv.appendChild(infoUl)
+                            infoDiv.addEventListener("click", (e) => {
+                               e.preventDefault();
+                               let lastChild = document.body.children[document.body.children.length - 1];
+                                document.body.removeChild(lastChild);
+                            }, { once: true });
+                            document.body.appendChild(infoDiv)
+                        }
+                    } else {
+                        modified = response.modified || 0;
+                        if (response.message) {
+                            alert(response.message)
+                        }
                     }
                 } else {
                     loadPanel (response)
@@ -557,6 +590,7 @@
                             const div = document.createElement('div');
                             div.style.overflow = "scroll"
                             div.id = "view-edit"
+                            div.tabindex = 0
                             const pic = document.createElement('img')
                             const dir = document.getElementById(`${actPanel}-dir`).value
                             pic.src = `${UPL_URL}/simdown/${dir}${SEP}${fileName}?show=image`
@@ -566,6 +600,13 @@
                             div.className = 'overlay wide'
                             div.style.opacity = '1.0'
                             document.body.appendChild(div)
+                            div.addEventListener('click', (event) => {
+                                //if (event.code == 'KeyI') {
+                                 //   event.stopPropagation()
+                                    wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
+                               // }
+                            })
+                            div.focus()
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                     }
