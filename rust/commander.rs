@@ -408,22 +408,27 @@ fn main() -> io::Result<()> {
                             eprintln!("no dir to get info");
                             continue
                         };
-                        let mut path = PathBuf::from(&dir);
-                        path.push(file);
-                        let file = std::fs::File::open(path)?;
-                        let mut bufreader = std::io::BufReader::new(&file);
-                        let exifreader = exif::Reader::new();
-                        let exif = exifreader.read_from_container(&mut bufreader).map_err(|e| io::Error::new(ErrorKind::Other, format!("Exif parsing err: {e:?}")))?;
-                        let mut info = String::from("[");
-                        
-                        for f in exif.fields() {
-                            if info.len() > 1 {
-                                info.push(',');
+                        let obtain_info = || -> io::Result<String> {
+                            let mut path = PathBuf::from(&dir);
+                            path.push(file);
+                            let file = std::fs::File::open(path)?;
+                            let mut bufreader = std::io::BufReader::new(&file);
+                            let exifreader = exif::Reader::new();
+                            let exif = exifreader.read_from_container(&mut bufreader).map_err(|e| io::Error::new(ErrorKind::Other, format!("Exif parsing err: {e:?}")))?;
+                            let mut info = String::from("[");
+                            
+                            for f in exif.fields() {
+                                if info.len() > 1 {
+                                    info.push(',');
+                                }
+                                let _ = write!(info, r#"{{"tag":"{}", "id":"{}", "value":"{}"}}"#,
+                                              f.tag, f.ifd_num, json_encode(&first_n_chars(&f.display_value().with_unit(&exif).to_string(),120)));
                             }
-                            let _ = write!(info, r#"{{"tag":"{}", "id":"{}", "value":"{}"}}"#,
-                                          f.tag, f.ifd_num, json_encode(&first_n_chars(&f.display_value().with_unit(&exif).to_string(),120)));
-                        }
-                        info.push(']');
+                            info.push(']');
+                            Ok(info)};
+                        let Ok(info) = obtain_info() else {
+                            continue
+                        };
                         println!(r#"{{"panel":"info", "kind":"exif", "details":{}}}"#, info);
                         io::stdout().flush()?;
                     }
