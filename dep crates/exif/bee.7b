@@ -1,7 +1,7 @@
 # from https://github.com/kamadak/exif-rs
 crate  =exif
 main=src/lib
-dep_crates=[]
+dep_crates=[--extern,mutate_once]
 comp opts=[]
 test file=tests/rwrcmp
 common =..${~/~}..${~/~}simscript${~/~}comm-crate.7b:file

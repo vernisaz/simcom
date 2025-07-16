@@ -2,7 +2,6 @@
 crate  =mutate_once
 main=src/lib
 dep_crates=[]
-#comp opts=[--cfg,feature="supports-colors"]
 comp opts=[]
 test file=test
 common =..${~/~}..${~/~}simscript${~/~}comm-crate.7b:file
