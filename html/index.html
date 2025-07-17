@@ -257,6 +257,7 @@
   <script>
     const WSKT_URL = './com'
     const UPL_URL = './upload';
+    const PRG_NAME = ' LightCommander'
     var wskt = new WebSocket(WSKT_URL)
     initWSHandlers()
     //document.body.dataset.theme = 'dark';
@@ -419,7 +420,8 @@
                 dirInput.value = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
                 dirInput.value = normalizePath(dirInput.value,SEP,DRIVE)
                 // TODO update title if it's an active panel
-                document.title = getLastPathComponent(dirInput.value) + ' LightCommander'
+                if (dirInput.classList.contains('selected-panel'))
+                     document.title = getLastPathComponent(dirInput.value) + PRG_NAME
                 requestPanel(panelId);
               } else {
                     if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
@@ -804,11 +806,11 @@
                 if (!dirInputLeft.classList.contains('selected-panel')) {
                     dirInputRight.classList.remove('selected-panel')
                     dirInputLeft.classList.add('selected-panel')
-                    document.title = getLastPathComponent(dirInputLeft.value) + ' LightCommander'
+                    document.title = getLastPathComponent(dirInputLeft.value) + PRG_NAME
                 } else {
                     dirInputLeft.classList.remove('selected-panel')
                     dirInputRight.classList.add('selected-panel')
-                    document.title = getLastPathComponent(dirInputRight.value) + ' LightCommander'
+                    document.title = getLastPathComponent(dirInputRight.value) + PRG_NAME
                 }
                 break
             case 'F4': 
