@@ -1,11 +1,11 @@
-# Setup Simple Commander on Raspberry Pi like devices
+# Setup the Simple Commander on Raspberry Pi like devices
 
 ## Purpose
-I usually setup Java for any device I can reach by my hands to. But some devices are
-really small, so I decided to test Rust on them instead.
+I usually setup Java on any device I can reach to. But some devices are
+really basic, so I decided to test Rust on them instead.
 
 ## Initial setup
-Use the
+Use the (or a similar command)
 
 > sudo raspi-config
 
@@ -41,7 +41,7 @@ Now you can edit *fstab*
 
 > sudo nano /etc/fstab
 
-and add a new record as below based on *blkid* information and the created directory,
+and add a new record like below based on *blkid* information and the created directory,
 
 ```
 UUID=\[UUID] \[MOUNT POINT] \[TYPE] defaults,auto,users,rw,nofail,noatime 0 0
@@ -99,7 +99,7 @@ You will need to relogining in SSH session or restart the terminal after the ins
 
 ## Build Rust crates and final web server with apps
 
-Install git unless you already have it,
+Install _git_ unless you already have it,
 
 > sudo apt install git
 
@@ -107,7 +107,7 @@ Copy you SSH keys (if needed)
 
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
-Create a projects directory, unless you already have some and willing to reuse. The guide will refer the directory
+Create a projects directory, unless you already have some and willing to reuse it. The guide will refer the directory
 as _projects_ assuming that you can select any other name of your choice.
 
 Clone git repositories to the directory,
@@ -118,7 +118,8 @@ Clone git repositories to the directory,
 
 ### Install Java
 
-It's required to bootstrap **rb** tool building. 
+It's required to bootstrap **rb** tool building. (Since the guide claims - No Java, 
+_rb_ can be built on other machine in a cross compilation mode).
 
 Run the
 
@@ -161,7 +162,7 @@ Start with cloning the following repositories in the *projects*,
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
 - [SimWeb](https://github.com/vernisaz/simweb)
 
-And then run **rb** in every of them. It will build required common crates.
+And then run **rb** in each of them. It will build required common crates.
 
 The crates are actually required to build a web server, and can be used in other
 applications too.
