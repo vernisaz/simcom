@@ -22,9 +22,9 @@ The project uses also 2 3rd party dependencis for viewing an info of image files
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md).
 
 ## Web server
-Since the project uses the websocket, only the [SimHTTP](https://github.com/vernisaz/simhttp)
-can be used to run it now,
-because the project implementation is WS CGI based.
+Since the project uses the websocket endpoint implemented on WS CGI technology,
+only the [SimHTTP](https://github.com/vernisaz/simhttp)
+can be used to run it currently.
 It isn't a drawback since the server exists on all platforms.
 Hopefully more vendors will adopt the WS CGI soon and the list of supporting servers will be extended after.
 
@@ -41,11 +41,12 @@ from the directory where the installation archive was opened. The access URL wil
 
 > http://localhost:3000/cmd/
 
-You cam edit **env.conf** to change a host name or port.
+You cam edit **env.conf** to change the host name or port.
 
 ## No-Cargo build
-This product uses an alternative to Cargo building tool. It makes  sense especially for products
-having 0 delendency on the crates.io.
+This product uses an alternative tool to Cargo building tool. It makes  sense especially for products
+having 0 dependency on the crates.io. Some 3rd party dependency exists though, however it can be built
+without Cargo as well.
 
 ## Status
-There is a beta version you can try.
+It's a beta version.
