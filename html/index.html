@@ -956,7 +956,7 @@
     function wsktSend(load) {
         if (!wskt || wskt.readyState !== WebSocket.OPEN && wskt.readyState !== WebSocket.CONNECTING) { 
             pending.push(load)
-            wskt = new WebSocket(WSKT_URL)
+            wskt = new WebSocket(WSKT_URL + '?restart')
             initWSHandlers()
         } else {
             wskt.send(load)

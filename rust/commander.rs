@@ -40,9 +40,14 @@ fn main() -> io::Result<()> {
         state.left = stored_state.left;
         state.right = stored_state.right;
     }
-    println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
-        os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
-    io::stdout().flush()?;
+    match env::var("QUERY_STRING") {
+        Ok(value) if value == "restart" => (),
+        _ => {
+            println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
+                 os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
+            io::stdout().flush()?;
+        },
+    }
     loop {
         let Ok(len) = stdin().read(&mut buffer) else {break};
         if len == 0 { break }
