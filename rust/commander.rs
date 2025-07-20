@@ -14,6 +14,8 @@ use simzip::{ZipEntry,ZipInfo};
 
 const MAX_BLOCK_LEN : usize = 40960;
 
+const VERSION: &str = "1.02";
+
 struct State {
     left: String,
     right: String,
@@ -383,7 +385,7 @@ fn main() -> io::Result<()> {
                         };
                         let mut src_path = PathBuf::from(&src);
                         src_path.push(zip);
-                        let mut zip_file = ZipInfo::new_with_comment(&src_path, "The zip created using simcommander 1.02");
+                        let mut zip_file = ZipInfo::new_with_comment(&src_path, &format!("The zip's created using simcommander {VERSION}"));
                         for file in files {
                             let Text(file) = file else { continue };
                             src_path.pop();
