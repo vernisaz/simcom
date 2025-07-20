@@ -158,12 +158,14 @@ All my Rust applications have a web UI. Therefore, first application will be a w
 
 Start with cloning the following repositories in the *projects*,
 
+- [SimScript](https://github.com/vernisaz/simscript.git) - the repository has only RustBee scripts required for
+building other projects
 - [RightSlash](https://github.com/vernisaz/right_slash)
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
 - [SimWeb](https://github.com/vernisaz/simweb)
 
-And then run **rb** in each of them. It will build required common crates.
+And then run **rb** in each of them (except the first with scripts). It will build required common crates.
 
 The crates are actually required to build a web server, and can be used in other
 applications too.
