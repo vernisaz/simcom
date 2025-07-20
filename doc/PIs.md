@@ -9,7 +9,7 @@ Use the (or a similar command)
 
 > sudo raspi-config
 
-and in Interfaces section, enable SSH.
+and in the Interfaces section, enable SSH.
 
 If you have USB drives, as I do, you need to mount them first. Issue:
 
@@ -95,7 +95,7 @@ Issue the
 
 Select a desired installation type.
 
-You will need to relogining in SSH session or restart the terminal after the installation's finished.
+You will need to relogin in SSH session or restart the terminal after the installation's finished.
 
 ## Build Rust crates and final web server with apps
 
@@ -119,7 +119,7 @@ Clone git repositories to the directory,
 ### Install Java
 
 It's required to bootstrap **rb** tool building. (Since the guide claims - No Java, 
-_rb_ can be built on other machine in a cross compilation mode).
+_rb_ can be built on other machine in a cross compilation mode. Rust itself requires Python for own build.)
 
 Run the
 
@@ -127,7 +127,8 @@ Run the
 
 ### Install 7Bee
 
-You do not need to install the product. The **jar** from it will be enough, therefore go to [the page](https://sourceforge.net/projects/seven-bee/)
+You do not need to install the product. The **jar** from it will be enough, therefore go to 
+[the page](https://sourceforge.net/projects/seven-bee/)
 and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/lib* inside *projects* and extract *bee.jar* there.
 
 ### Build rb
@@ -170,7 +171,7 @@ applications too.
 ### SimHTTP
 
 First check out its git [repository](https://github.com/vernisaz/simhttp) in **projects** and then execute **rb** in it.
-Do not execute the server yet, because [env.conf](https://github.com/vernisaz/simhttp/blob/master/env.conf) needs
+Do not start the server yet, because [env.conf](https://github.com/vernisaz/simhttp/blob/master/env.conf) needs
 to be modified to specify the server port number and serviced directories.
 
 ### Run SimHTTP as a service
