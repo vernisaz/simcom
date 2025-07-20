@@ -158,7 +158,7 @@ All my Rust applications have a web UI. Therefore, first application will be a w
 
 Start with cloning the following repositories in the *projects*,
 
-- [SimScript](https://github.com/vernisaz/simscript.git) - the repository has only RustBee scripts required for
+- [SimScript](https://github.com/vernisaz/simscript) - the repository has only RustBee scripts required for
 building other projects
 - [RightSlash](https://github.com/vernisaz/right_slash)
 - [SimJSON](https://github.com/vernisaz/simjson)
