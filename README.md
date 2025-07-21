@@ -11,7 +11,7 @@ This application doesn't use HTTP besides of loading the 'index' page. All excha
 are the websocket based. Every websocket packet is a JSON object.
 
 ## Dependencies
-Currently the project has 4 direct dependecies:
+Currently the project has 4 direct dependencies:
 
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimWEb](https://github.com/vernisaz/simweb)
@@ -20,10 +20,10 @@ Currently the project has 4 direct dependecies:
 
 You will need also common [scripts](https://github.com/vernisaz/simscript) to build them.
 
-The project uses also 2 3rd party dependencis for viewing an info of image files. How to get and build them is described in
+The project uses also 2 3rd party dependencies for viewing an info of image files. How to get and build them is described in
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md). Since the crate
 requires a license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
-if plan to distribute the Simple Comminder.
+if plan to distribute the Simple Commander.
 
 ## Web server
 Since the project uses the websocket endpoint implemented on WS CGI technology,
@@ -45,7 +45,7 @@ from the directory where the installation archive was opened. The access URL wil
 
 > http://localhost:3000/cmd/
 
-You cam edit **env.conf** to change the host name or port.
+You can edit **env.conf** to change the host name or port.
 
 ## No-Cargo build
 This product uses an alternative tool to Cargo building tool. It makes  sense especially for products
