@@ -29,20 +29,6 @@ function getOffsetTop (el) {
   return ot;
 }
 
-function makeArrText(up) {
-  return up?'&#9660':'&#9650;';
-}
-
-function getFormField(el_name, form_name) {
-	if (form_name) 
-		return document.forms[form_name].elements[el_name];
-	else {
-		if (formName) 
-			return document.forms[formName].elements[el_name];
-		return document.forms[0].elements[el_name];
-	}
-}
-
 function centerElement(el)  {
 	  var left=0, top=0;
 	  if( self.pageYOffset ) {
