@@ -306,7 +306,7 @@ fn main() -> io::Result<()> {
                         if edit_path.is_file() {
                             match fs::read_to_string(&edit_path) {
                                 Ok(file_contents) => {
-                                    let modified = get_file_modified(&edit_path);
+                                    let (modified,_) = get_file_modified(&edit_path);
                                     println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
                                         json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
                                 }
@@ -331,7 +331,7 @@ fn main() -> io::Result<()> {
                         };
                         let mut save_path = PathBuf::from(&file);
                         let (new_file, modified) = if save_path.exists() {
-                            (false, get_file_modified(&save_path))
+                            (false, get_file_modified(&save_path).0)
                         } else {
                             (true, 0)
                         };
@@ -353,8 +353,9 @@ fn main() -> io::Result<()> {
                                 }
                                 _ => (),
                             }
-                            let modified = get_file_modified(&save_path);
-                            println!(r#"{{"panel":"info", "modified":{modified}}}"#);
+                            let (modified,size) = get_file_modified(&save_path);
+                            println!(r#"{{"panel":"info", "modified":{modified}, "file":"{}", "size":{size}}}"#,
+                                json_encode(&file));
                             io::stdout().flush()?;
                             if new_file {
                                 save_path.pop();
@@ -514,12 +515,12 @@ fn get_dir(dir: &str) -> io::Result<String> {
     ))
 }
 
-fn get_file_modified(path: &PathBuf) -> u64 { // in seconds
+fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
     match fs::metadata(path) {
-        Ok(metadata) => if let Ok(time) = metadata.modified() {time.duration_since(SystemTime::UNIX_EPOCH)
+        Ok(metadata) => (if let Ok(time) = metadata.modified() {time.duration_since(SystemTime::UNIX_EPOCH)
                 .unwrap_or_default()
-                .as_secs()} else {0}
-        _ => 0
+                .as_secs()} else {0}, metadata.len()) ,
+        _ => (0,0)
     }
 }
 

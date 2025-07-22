@@ -258,6 +258,7 @@
     const WSKT_URL = './com'
     const UPL_URL = './upload';
     const PRG_NAME = ' LightCommander'
+    const LOCALE = "en-US"
     var wskt = new WebSocket(WSKT_URL)
     initWSHandlers()
     //document.body.dataset.theme = 'dark';
@@ -541,6 +542,13 @@
                         }
                     } else {
                         modified = response.modified || 0;
+                        let filePath = respose.file.split(SEP)
+                        const fileName = filePath.pop()
+                        const dir = filePath.join(SEP)
+                        if (document.getElementById(`left-dir`).value == dir)
+                            updateFile('left', fileName, modified, response.size)
+                        if (document.getElementById(`right-dir`).value == dir)
+                            updateFile('right', fileName, modified, response.size)
                         if (response.message) {
                             alert(response.message)
                         }
@@ -899,6 +907,27 @@
         var res = []
         filesDiv.querySelectorAll('div.selectedd').forEach((divEl) => { res.push(divEl.textContent) })
         return res
+    }
+    
+    function updateFile(panelId, fileName, modified, size) {
+        const filesDiv = document.getElementById(`${panelId}-files`);
+        var update = false
+        for (const child of filesDiv.children) {
+            if (update) {
+                if (child.classList.contains('file-size')) {
+                    child.textContent = ''+size
+                }
+                if (child.classList.contains('file-timestamp')) {
+                    const dateFromMilliseconds = new Date(modified);
+                    child.textContent = dateFromMilliseconds.toLocaleString("en-US");
+                    break
+                }
+            }
+            if (!child.classList.contains('file') || child.classList.contains('directory'))  continue;
+            if (child.textContent == fileName) {
+                update = true
+            }
+        }
     }
     
     function saveEdited() {
