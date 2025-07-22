@@ -542,7 +542,7 @@
                         }
                     } else {
                         modified = response.modified || 0;
-                        let filePath = respose.file.split(SEP)
+                        let filePath = response.file.split(SEP)
                         const fileName = filePath.pop()
                         const dir = filePath.join(SEP)
                         if (document.getElementById(`left-dir`).value == dir)
@@ -916,6 +916,7 @@
             if (update) {
                 if (child.classList.contains('file-size')) {
                     child.textContent = ''+size
+                    continue
                 }
                 if (child.classList.contains('file-timestamp')) {
                     const dateFromMilliseconds = new Date(modified);
