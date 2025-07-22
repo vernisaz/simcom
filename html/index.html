@@ -919,7 +919,7 @@
                     continue
                 }
                 if (child.classList.contains('file-timestamp')) {
-                    const dateFromMilliseconds = new Date(modified);
+                    const dateFromMilliseconds = new Date(modified*1000);
                     child.textContent = dateFromMilliseconds.toLocaleString("en-US");
                     break
                 }
