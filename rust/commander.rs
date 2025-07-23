@@ -532,8 +532,7 @@ fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
 }
 
 fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Result<()> {
-    let dir = dir.read_dir()?;
-    for entry in dir {
+    for entry in dir.read_dir()? {
         let entry = entry?; 
         if let Ok(file_type) = entry.file_type() { 
             let name = entry.file_name().to_str().unwrap().to_owned();
