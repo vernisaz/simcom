@@ -400,7 +400,7 @@ fn main() -> io::Result<()> {
                                         io::stdout().flush()?;
                                         continue
                                     }
-                                };
+                                }
                             }
                         }
                         match zip_file.store() {
@@ -551,7 +551,6 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
     }
     Ok(())
 }
-
 
 // from AI offerring
 fn copy_directory_contents(
