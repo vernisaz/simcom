@@ -394,6 +394,13 @@ fn main() -> io::Result<()> {
                             if src_path . is_file() {
                                 zip_file.add(ZipEntry::from_file(&src_path, Some("")));
                             } else if src_path . is_dir() {
+                                match zip_dir(&mut zip_file, &src_path, Some(file)) {
+                                    Ok(()) => (),
+                                    Err(err) => {println!(r#"{{"panel":"info", "message":"Can't zip dir {}"}}"#, json_encode(&format!("{err:?}")));
+                                        io::stdout().flush()?;
+                                        continue
+                                    }
+                                };
                             }
                         }
                         match zip_file.store() {
@@ -523,6 +530,28 @@ fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
         _ => (0,0)
     }
 }
+
+fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Result<()> {
+    let dir = dir.read_dir()?;
+    for entry in dir {
+        let entry = entry?; 
+        if let Ok(file_type) = entry.file_type() { 
+            let name = entry.file_name().to_str().unwrap().to_owned();
+            if file_type.is_file() {
+                zip.add(simzip::ZipEntry::from_file(&entry.path().as_os_str().to_str().unwrap().to_string(),
+                    path.map(str::to_string).as_ref()));
+            }  else if file_type.is_dir() {
+                let zip_path = match path {
+                    None => name,
+                    Some(path) => path.to_owned() + "/" + &name
+                };
+                zip_dir(zip, &entry.path(), Some(&zip_path))?
+            }   
+        }
+    }
+    Ok(())
+}
+
 
 // from AI offerring
 fn copy_directory_contents(
