@@ -14,7 +14,7 @@ use simzip::{ZipEntry,ZipInfo};
 
 const MAX_BLOCK_LEN : usize = 40960;
 
-const VERSION: &str = "1.02";
+const VERSION: &str = env!("VERSION");
 
 struct State {
     left: String,

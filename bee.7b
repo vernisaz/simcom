@@ -4,7 +4,7 @@ common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
 comp opts=[]
 
-version=1.02
+version=1.03
 simhttp proj=..${~/~}simhttp
 simupload proj=..${~/~}simupload
 
@@ -22,6 +22,8 @@ if {
 ./bin/simhttp $1&")
 	}
 }
+
+set_env(VERSION,version)
 
 target kill {
 	dependency{true}
