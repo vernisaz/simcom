@@ -377,6 +377,10 @@
           } else if (event.code == 'KeyH') {
               event.preventDefault();
               showHelp()
+          } else if (event.code == 'KeyR') {
+              event.preventDefault();
+              requestPanel('left')
+              requestPanel('right')
           }
       } 
     });
@@ -1027,6 +1031,7 @@
         '<p>Numpad / - clear selection</p>' +
         '<p>Numpad = - compare panels, no size or type counted</p>' +
         '<p>^I - getting info on panel)</p>' +
+        '<p>^R - refresh panels</p>' +
         '<p>^S - save edited content</p>'
         if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
             const btn = document.createElement('button')
