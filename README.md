@@ -23,7 +23,7 @@ You will need also common [scripts](https://github.com/vernisaz/simscript) to bu
 The project uses also 2 3rd party dependencies for viewing an info of image files. How to get and build them is described in
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md). Since the crate
 requires a license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
-if plan to distribute the Simple Commander.
+if you plan to distribute the Simple Commander.
 
 ## Web server
 Since the project uses the websocket endpoint implemented on WS CGI technology,
@@ -48,8 +48,9 @@ from the directory where the installation archive was opened. The access URL wil
 You can edit **env.conf** to change the host name or port.
 
 ## No-Cargo build
-This product uses an alternative tool to Cargo building tool. It makes  sense especially for products
-having 0 dependency on the crates.io. Some 3rd party dependency exists though, however it can be built
+This product uses an [alternative tool](https://gitlab.com/tools6772135/rusthub/-/tree/master) to the Cargo building tool.
+It makes  sense especially for products
+having 0 dependency on the crates.io. Some 3rd party dependency exists though, however they can be built
 without Cargo as well.
 
 ## Status
