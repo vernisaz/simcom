@@ -32,6 +32,8 @@ can be used to run it currently.
 It isn't a drawback since the server exists on all platforms.
 Hopefully more vendors will adopt the WS CGI soon and the list of supporting servers will be extended after.
 
+Read a note in the above server page regarding running it in a background mode withous setup as a service.
+
 ## File upload
 The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
 configured properly accordingly your web server settings. Default value is **./upload**.
