@@ -5,7 +5,7 @@ extern crate simzip;
 extern crate exif;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
-    env::consts, env,
+    env::consts, env, convert::TryInto,
 };
 
 use simjson::{JsonData::{Data,Text,Arr,Num,Bool},parse_fragment};
@@ -23,7 +23,7 @@ struct State {
 
 fn main() -> io::Result<()> {
     //let web = simweb::WebData::new();
-    let mut buffer = [0_u8;MAX_BLOCK_LEN];
+    let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
     let os_drive =
     if "windows" == consts::OS {
         match env::var("SystemDrive") {
@@ -51,7 +51,7 @@ fn main() -> io::Result<()> {
         },
     }
     loop {
-        let Ok(len) = stdin().read(&mut buffer) else {break};
+        let Ok(len) = stdin().read(&mut buffer[..]) else {break};
         // loop until entire payload read
         if len == 0 { break }
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
