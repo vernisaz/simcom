@@ -12,7 +12,7 @@ use simjson::{JsonData::{Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
 
-const MAX_BLOCK_LEN : usize = 40960;
+const MAX_BLOCK_LEN : usize = 4*1024*1024;
 
 const VERSION: &str = env!("VERSION");
 
@@ -52,21 +52,22 @@ fn main() -> io::Result<()> {
     }
     loop {
         let Ok(len) = stdin().read(&mut buffer) else {break};
+        // loop until entire payload read
         if len == 0 { break }
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
             
             break
         }
         let commands = String::from_utf8_lossy(&buffer[0..len]);
-        //eprintln!("parsing {commands}");
+        //eprintln!("parsing json of {len}");
         let mut chars = commands.chars();
         loop {
             let res = parse_fragment(&mut chars);
             let json = match res.0 {
                 Data(json) => json,
-                _ => break,
+                _ => {eprintln!("invalid json {:?}", res.0);break},
             };
-        
+       // eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
                     continue
             };
