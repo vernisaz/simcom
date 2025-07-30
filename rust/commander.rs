@@ -8,7 +8,7 @@ use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite,
     env::consts, env, convert::TryInto,
 };
 
-use simjson::{JsonData::{Data,Text,Arr,Num,Bool},parse_fragment};
+use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
 
@@ -65,6 +65,7 @@ fn main() -> io::Result<()> {
             let res = parse_fragment(&mut chars);
             let json = match res.0 {
                 Data(json) => json,
+                JsonData::None => break,
                 _ => {eprintln!("invalid json {:?}", res.0);break},
             };
        // eprintln!("parsed {json:?}");
