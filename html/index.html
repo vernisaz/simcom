@@ -545,6 +545,10 @@
                             document.body.appendChild(infoDiv)
                         }
                     } else {
+                        if (response.message) {
+                            alert(response.message)
+                            continue
+                        }
                         modified = response.modified || 0;
                         let filePath = response.file.split(SEP)
                         const fileName = filePath.pop()
@@ -553,9 +557,6 @@
                             updateFile('left', fileName, modified, response.size)
                         if (document.getElementById(`right-dir`).value == dir)
                             updateFile('right', fileName, modified, response.size)
-                        if (response.message) {
-                            alert(response.message)
-                        }
                     }
                 } else {
                     loadPanel (response)

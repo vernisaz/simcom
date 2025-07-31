@@ -229,10 +229,17 @@ fn main() -> io::Result<()> {
                         for file in files {
                             let Text(file) = file else { continue };
                             src_path.push(file);
+                            let err;
                             if src_path.is_file() {
-                                let _ =fs::remove_file(&src_path);
+                                err =fs::remove_file(&src_path);
                             } else if src_path.is_dir() {
-                                let _ = fs::remove_dir_all(&src_path);
+                                err = fs::remove_dir_all(&src_path);
+                            } else {
+                                err = Ok(())
+                            }
+                            if let Err(err) = err {
+                                println!(r#"{{"panel":"info", "message":"Can't delete because {}"}}"#, json_encode(&err.to_string()));
+                                io::stdout().flush()?;
                             }
                             src_path.pop();
                         }
@@ -259,17 +266,20 @@ fn main() -> io::Result<()> {
                         create_path.push(file);
                         match fs::create_dir(&create_path) {
                             Ok(()) => { 
-                            if json.get("same") == Some(&Bool(true)) {
-                                let dir = get_dir(&src).unwrap();
-                                println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                                io::stdout().flush()?;
-                                println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
-                            } else {
-                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                            }
-                            io::stdout().flush()?;},
-                            Err(_) => eprintln!("can't create dir {create_path:?}"),
+                                if json.get("same") == Some(&Bool(true)) {
+                                    let dir = get_dir(&src).unwrap();
+                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    io::stdout().flush()?;
+                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                } else {
+                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                                }
+                            },
+                            Err(err) => {
+                                println!(r#"{{"panel":"info", "message":"Can't make a directory  because {}"}}"#, json_encode(&err.to_string()));
+                                eprintln!("can't create dir {create_path:?}")},
                         }
+                        io::stdout().flush()?;
                     }
                     "show" => {
                         let Some(Text(src)) = json.get("src") else {
