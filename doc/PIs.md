@@ -201,7 +201,10 @@ You can selected any other name for the service not clashing with already existi
 If you do a development using Rust, then I will recommend to install the Rust Development Studio
 ([RDS](https://sourceforge.net/projects/rustdevelopmentstudio/)), you can download it or build.
 
-Now you can use a web browser to develop, debug, test and run Rust applications and crates.
+Now you can use a web browser to develop, debug, test crates and run Rust applications.
 
-
-
+## Simple Commander
+If you read the guide, it means that you can clone (unless already did it) its repository. You will
+need to clone one more repository before executing **rb** to build the _Commander_. All details are
+provided in [README.md](https://github.com/vernisaz/simcom/blob/master/README.md).
+in it 
