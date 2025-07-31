@@ -4,7 +4,7 @@ common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
 comp opts=[]
 
-version=1.04
+version=1.05-dev
 simhttp proj=..${~/~}simhttp
 simupload proj=..${~/~}simupload
 
@@ -49,7 +49,7 @@ target package {
                   \"out _comment_\": \"file|stdout\",
                   \"name\": \"simcom-${0}\",
                   \"path\":\".${~/~}log\",
-                  \"max lines\": 100000,
+                  \"max lines\": 59000,
                   \"max files\": 20
           },
           \"level\":2

@@ -215,7 +215,7 @@
   <main>
     <div class="panel" id="left-panel">
       <div class="panel-header">
-        <input type="text" id="left-dir" value="/" class="selected-panel" />
+        <input type="text" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
         <button onclick="requestPanel('left')">🔄</button>
       </div>
       <div id="left-files" class="panel-files"></div>
@@ -223,7 +223,7 @@
 
     <div class="panel" id="right-panel">
       <div class="panel-header">
-        <input type="text" id="right-dir" value="/" />
+        <input type="text" id="right-dir" value="/" onfocus="selectPanel(this)" />
         <button onclick="requestPanel('right')">🔁</button>
       </div>
       <div id="right-files" class="panel-files"></div>
@@ -904,6 +904,14 @@
                 // Implement file operation based on key
                 alert(`${key} pressed!`);
         }
+    }
+    
+    function  selectPanel(editLine) {
+        if (editLine.classList.contains('selected-panel'))
+            return
+        const otherPanel = document.getElementById(`left-dir`) == editLine? document.getElementById(`right-dir`):document.getElementById(`left-dir`)
+        editLine.classList.add('selected-panel')
+        otherPanel.classList.remove('selected-panel')
     }
 
     function getSelected(panelId) {
