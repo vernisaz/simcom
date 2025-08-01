@@ -171,7 +171,7 @@ fn main() -> io::Result<()> {
                                         src_path.push(file);
                                         match fs::rename(&src_path,&dst_path) {
                                             Ok(()) => was_move = true,
-                                            Err(err) => {eprintln!("Can't move {src_path:?} to {dst_path:?}, because {err:?}");}
+                                            Err(err) => report(&format!("Can't move {src_path:?} to {dst_path:?}, because {err:?}"))?
                                         }
                                     }
                                 }
@@ -192,7 +192,7 @@ fn main() -> io::Result<()> {
                                             } else if src_path.is_dir() {
                                                 match copy_directory_contents(&src_path,&dst_path) {
                                                     Ok(_) => {
-                                                        // TODO decide in cases when only some files were copied
+                                                        // TODO decide of cases when only some files were copied
                                                         let _ = fs::remove_dir_all(&src_path);
                                                     }
                                                     Err(err) => eprintln!("Can't copy {src_path:?} because {err:?}")
@@ -202,7 +202,6 @@ fn main() -> io::Result<()> {
                                     }
                                     _ => ()
                                 }
-                                
                                 src_path.pop();
                                 dst_path.pop();
                             }
@@ -238,8 +237,7 @@ fn main() -> io::Result<()> {
                                 err = Ok(())
                             }
                             if let Err(err) = err {
-                                println!(r#"{{"panel":"info", "message":"Can't delete because {}"}}"#, json_encode(&err.to_string()));
-                                io::stdout().flush()?;
+                                report(&format!("Can't delete {src_path:?} because {err:?}"))?
                             }
                             src_path.pop();
                         }
@@ -274,12 +272,10 @@ fn main() -> io::Result<()> {
                                 } else {
                                     println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                                 }
+                                io::stdout().flush()?;
                             },
-                            Err(err) => {
-                                println!(r#"{{"panel":"info", "message":"Can't make a directory  because {}"}}"#, json_encode(&err.to_string()));
-                                eprintln!("can't create dir {create_path:?}")},
+                            Err(err) => report(&format!("Can't make directory {create_path:?} because {err:?}"))?,
                         }
-                        io::stdout().flush()?;
                     }
                     "show" => {
                         let Some(Text(src)) = json.get("src") else {
@@ -560,6 +556,13 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
             }   
         }
     }
+    Ok(())
+}
+
+fn report(msg: &str) -> io::Result<()> {
+    eprintln!("{msg}");
+    println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&msg));
+    io::stdout().flush()?;
     Ok(())
 }
 
