@@ -57,7 +57,7 @@ fn main() -> io::Result<()> {
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
             break
         }
-        let commands = String::from_utf8_lossy(&buffer[0..len]);
+        let commands = String::from_utf8_lossy(&buffer[..len]);
         let mut chars = commands.chars();
         loop {
             let res = parse_fragment(&mut chars);
