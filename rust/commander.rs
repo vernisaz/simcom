@@ -51,21 +51,20 @@ fn main() -> io::Result<()> {
         },
     }
     loop {
-        let Ok(len) = stdin().read(&mut buffer[..]) else {break};
+        let Ok(len) = stdin().read(&mut buffer[0..]) else {break};
         // loop until entire payload read
         if len == 0 { break }
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
             break
         }
         let commands = String::from_utf8_lossy(&buffer[0..len]);
-        //eprintln!("parsing json of {len}");
         let mut chars = commands.chars();
         loop {
             let res = parse_fragment(&mut chars);
             let json = match res.0 {
                 Data(json) => json,
                 JsonData::None => break,
-                _ => {eprintln!("invalid json {:?} of {commands}", res.0);break},
+                _ => {eprintln!("invalid json {:?} of {commands} - {len}", res.0);break},
             };
        // eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
