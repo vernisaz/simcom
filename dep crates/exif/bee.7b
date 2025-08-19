@@ -1,6 +1,6 @@
 # from https://github.com/kamadak/exif-rs
 crate  =exif
-main=src/lib
+crate main=src/lib
 dep_crates=[--extern,mutate_once]
 comp opts=[]
 test file=tests/rwrcmp
