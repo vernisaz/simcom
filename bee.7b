@@ -24,10 +24,17 @@ if {
 }
 
 set_env(VERSION,version)
+mode=mode:prop
+if {
+	eq(mode,release) then {
+		array(-C,opt-level=3)
+		assign(comp opts, ~~)
+	}
+}
 
 target kill {
 	dependency{true}
-	display( ps aux | grep -i ./bin/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1)
+	display( ps aux | grep ./bin/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1)
 }
 
 target package {
