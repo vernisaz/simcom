@@ -246,10 +246,10 @@
     <dialog >
       <p></p>
       <form method="dialog">
-          <p id="extra_input" hidden><input type="text" id="some_txt" name="some_txt" required /></p>
+          <p id="extra_input" hidden><input type="text" id="some_txt" name="some_txt" required tabindex="2"/></p>
         <div>
-          <button value="cancel" autofocus formmethod="dialog" formnovalidate>Cancel</button>
-          <button id="confirmBtn" value="default">Confirm</button>
+          <button value="cancel" autofocus formmethod="dialog" formnovalidate tabindex="0">Cancel</button>
+          <button id="confirmBtn" value="default" tabindex="1">Confirm</button>
         </div>
       </form>
     </dialog>
