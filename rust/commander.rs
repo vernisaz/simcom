@@ -84,7 +84,7 @@ fn main() -> io::Result<()> {
                                 println!(r#"{{"panel":"{panel}", "dir":[{dir}]}}"#);
                                 io::stdout().flush()?;
                             }
-                            _ => eprintln!("an error in reading {dir} "),
+                            Err(err) => report(&format!("an error {err:?} in reading {dir}"))?,
                         }
                         
                     }
