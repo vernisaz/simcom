@@ -86,7 +86,6 @@ fn main() -> io::Result<()> {
                             }
                             Err(err) => report(&format!("an error {err:?} in reading {dir}"))?,
                         }
-                        
                     }
                     "copy" => {
                         let Some(Arr(files)) = json.get("files") else {
