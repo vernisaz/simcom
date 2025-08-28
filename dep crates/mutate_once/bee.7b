@@ -1,6 +1,8 @@
 # from https://github.com/kamadak/mutate_once-rs
+# the repository location - workspace/side/mutate_once-rs
 crate  =mutate_once
-crate main=src/lib
+crate main=lib
+crate_src=src
 dep_crates=[]
 comp opts=[]
 test file=test
