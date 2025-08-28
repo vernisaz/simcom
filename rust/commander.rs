@@ -112,7 +112,11 @@ fn main() -> io::Result<()> {
                                 if let Text(file) = &files[0] {
                                     dst_path.push(dst_file);
                                     src_path.push(file);
-                                    let _ = fs::copy(&src_path,&dst_path);
+                                    if src_path.is_dir() {
+                                        let _ = copy_directory_contents(&src_path,&dst_path);
+                                    } else if src_path.is_file() {
+                                        let _ = fs::copy(&src_path,&dst_path);
+                                    }
                                     need_copy = false;
                                 }
                             }
