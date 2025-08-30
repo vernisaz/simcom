@@ -393,9 +393,10 @@
         }
     });
     
-    function requestPanel(panelId) {
-        const dirInput = document.getElementById(`${panelId}-dir`);
-        wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:panelId}));
+    function requestPanel(panelId,newDir) {
+        if (!newDir)
+            newDir = document.getElementById(`${panelId}-dir`).value;
+        wsktSend(JSON.stringify({op:'dir', dir:newDir, panel:panelId}));
     }
     
     function alignPanel(panelId) {
@@ -410,8 +411,8 @@
         const panelId = response.panel;
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
-        const dir = dirInput.value;
-
+        const dir = response.path;
+        dirInput.value = dir
           filesDiv.innerHTML = '';
           response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
               if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
@@ -422,12 +423,12 @@
             div.className = `file ${file.dir ? 'directory' : ''}`;
             div.onclick = () => {
               if (file.dir) {
-                dirInput.value = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
-                dirInput.value = normalizePath(dirInput.value,SEP,DRIVE)
+                let newDir = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
+                newDir = normalizePath(newDir,SEP,DRIVE)
                 // TODO update title if it's an active panel
                 if (dirInput.classList.contains('selected-panel'))
                      document.title = getLastPathComponent(dirInput.value) + PRG_NAME
-                requestPanel(panelId);
+                requestPanel(panelId, newDir);
               } else {
                     if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
                         const el = document.querySelector('.file:hover');

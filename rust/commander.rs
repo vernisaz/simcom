@@ -80,8 +80,9 @@ fn main() -> io::Result<()> {
                         };
                         if panel == "right" { state.right =  dir.clone() } else { state.left =  dir.clone()}
                         match get_dir(dir) {
-                            Ok(dir) => {
-                                println!(r#"{{"panel":"{panel}", "dir":[{dir}]}}"#);
+                            Ok(dir_contents) => {
+                                println!(r#"{{"panel":"{panel}", "dir":[{dir_contents}], "path":"{}"}}"#,
+                                json_encode(dir));
                                 io::stdout().flush()?;
                             }
                             Err(err) => report(&format!("an error {err:?} in reading {dir}"))?,
@@ -522,7 +523,7 @@ fn get_dir(dir: &str) -> io::Result<String> {
        |mut res,cur| {if let Ok(cur) = cur {
             let md = cur.metadata().unwrap(); 
              write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
-             simweb::json_encode(&cur.file_name().display().to_string()),
+             json_encode(&cur.file_name().display().to_string()),
              md.is_dir(),
              md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
             }
