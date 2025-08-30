@@ -411,7 +411,7 @@
         const panelId = response.panel;
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
-        const dir = response.path;
+        const dir = response.path?response.path:dirInput.value;
         dirInput.value = dir
           filesDiv.innerHTML = '';
           response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
