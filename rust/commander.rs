@@ -416,7 +416,14 @@ fn main() -> io::Result<()> {
                         match zip_file.store() {
                             Ok(()) => {
                                 src_path.pop();
-                                println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src_path.display().to_string()).unwrap());
+                                let dir = get_dir(&src_path.display().to_string()).unwrap();
+                                if json.get("same") == Some(&Bool(true)) {
+                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    io::stdout().flush()?;
+                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                } else {
+                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                }
                                 io::stdout().flush()?;
                             },
                             Err(msg) => {println!(r#"{{"panel":"info", "message":"Can't zip because {}"}}"#, json_encode(&format!("{msg:?}")));

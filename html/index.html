@@ -417,6 +417,7 @@
           response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
               if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
           })
+          //alert('load of '+response.dir.length)
           for (const fileEntry of response.dir) { 
             const div = document.createElement('div');
             div.textContent = fileEntry.name;
