@@ -258,7 +258,7 @@
     const WSKT_URL = './com'
     const UPL_URL = './upload';
     const PRG_NAME = ' LightCommander'
-    const LOCALE = "en-US"
+    const LOCALE = navigator.language
     var wskt = new WebSocket(WSKT_URL)
     initWSHandlers()
     //document.body.dataset.theme = 'dark';
@@ -417,13 +417,13 @@
           response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
               if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
           })
-          response.dir.forEach(file => {
+          for (const fileEntry of response.dir) { 
             const div = document.createElement('div');
-            div.textContent = file.name;
-            div.className = `file ${file.dir ? 'directory' : ''}`;
+            div.textContent = fileEntry.name;
+            div.className = `file ${fileEntry.dir ? 'directory' : ''}`;
             div.onclick = () => {
-              if (file.dir) {
-                let newDir = dir != (DRIVE + SEP) ? `${dir}${SEP}${file.name}`:`${dir}${file.name}`;
+              if (fileEntry.dir) {
+                let newDir = dir != (DRIVE + SEP) ? `${dir}${SEP}${fileEntry.name}`:`${dir}${fileEntry.name}`;
                 newDir = normalizePath(newDir,SEP,DRIVE)
                 // TODO update title if it's an active panel
                 if (dirInput.classList.contains('selected-panel'))
@@ -434,10 +434,10 @@
                         const el = document.querySelector('.file:hover');
                         if (el) {
                             if (el.classList.contains('selectedd')) {
-                                if (confirm(`Would you like download ${file.name}`)) {
+                                if (confirm(`Would you like download ${fileEntry.name}`)) {
                                     const link = document.createElement("a");
-                                    link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
-                                    link.download = file.name;
+                                    link.href = `${UPL_URL}/simdown/${dir}${SEP}${fileEntry.name}`;
+                                    link.download = fileEntry.name;
                                     link.click();
                                 }
                             };
@@ -445,26 +445,26 @@
                         }
                     } else {
                         const link = document.createElement("a");
-                        link.href = `${UPL_URL}/simdown/${dir}${SEP}${file.name}`;
-                        link.download = file.name;
+                        link.href = `${UPL_URL}/simdown/${dir}${SEP}${fileEntry.name}`;
+                        link.download = fileEntry.name;
                         link.click();
                     }
               }
             };
             filesDiv.appendChild(div);
             const div_size = document.createElement('div');
-            if (!file.dir)
-                div_size.textContent = file.size;
+            if (!fileEntry.dir)
+                div_size.textContent = fileEntry.size;
             div_size.className = 'file-size'
             filesDiv.appendChild(div_size);
             const div_date = document.createElement('div');
-            if (file.timestamp) {
-                const dateFromMilliseconds = new Date(file.timestamp);
-                div_date.textContent = dateFromMilliseconds.toLocaleString("en-US");
+            if (fileEntry.timestamp) {
+                const dateFromMilliseconds = new Date(fileEntry.timestamp);
+                div_date.textContent = dateFromMilliseconds.toLocaleString(LOCALE);
             }
             div_date.className = 'file-timestamp'
             filesDiv.appendChild(div_date);
-          });
+          }
     }
     
     function initWSHandlers () {
@@ -940,7 +940,7 @@
                 }
                 if (child.classList.contains('file-timestamp')) {
                     const dateFromMilliseconds = new Date(modified*1000);
-                    child.textContent = dateFromMilliseconds.toLocaleString("en-US");
+                    child.textContent = dateFromMilliseconds.toLocaleString(LOCALE);
                     break
                 }
             }
