@@ -434,8 +434,17 @@ fn main() -> io::Result<()> {
                         }
                     }
                     "search" => {
-                    
-                        
+                        let Some(Text(dir)) = json.get("dir") else {
+                            continue
+                        };
+                        let Some(Text(search)) = json.get("file") else {
+                            continue
+                        };
+                        let mut sub_dir = String::new();
+                        let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
+                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{dir}"}}"#
+                            );
+                        io::stdout().flush()?;
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -531,6 +540,40 @@ fn get_dir(dir: &str) -> io::Result<String> {
          res
         }
     ))
+}
+
+fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<String> {
+    let mut res = String::new();
+    let mut cur_dir = PathBuf::from(dir);
+    if !sub_dir.is_empty() {
+        cur_dir.push(&mut *sub_dir)
+    }
+    res = read_dir(&cur_dir)?.fold(res,
+       |mut res,cur| {if let Ok(cur) = cur {
+            let md = cur.metadata().unwrap();
+            if cur.file_name().display().to_string().contains(search) {
+                 
+                write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
+                 json_encode(&cur.file_name().display().to_string()),
+                 md.is_dir(),
+                 md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
+            }
+            if md.is_dir() {
+                cur_dir.push(cur.path());
+                *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
+                let cur_res = search_in_dir(dir, sub_dir, search).unwrap();
+                if !cur_res.is_empty() {
+                    if !res.is_empty() {
+                        write!(res,",").unwrap();
+                    }
+                    write!(res,"{}", cur_res).unwrap();
+                    }
+                }
+            }
+            res
+        }
+    );
+    Ok(res)
 }
 
 fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes

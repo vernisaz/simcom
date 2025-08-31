@@ -944,7 +944,7 @@
           const searchStr = dlg.querySelector("#some_txt").value;
           const srcDirInput = document.getElementById(`${srcPanel}-dir`);
           const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
-          wsktSend(JSON.stringify({op:'search', src:srcDirInput.value, panel:srcPanel, same:same, file:searchStr}))
+          wsktSend(JSON.stringify({op:'search', dir:srcDirInput.value, panel:srcPanel, same:same, file:searchStr}))
         }, { once: true });
         dlg.showModal();
     }
