@@ -23,6 +23,16 @@ struct State {
     right: String,
 }
 
+trait IgnoreCase {
+    fn contains_ignore_case(&self, other: &str) -> bool;
+}
+
+impl IgnoreCase for String {
+    fn contains_ignore_case(&self, other: &str) -> bool {
+        self.to_lowercase().contains(&other.to_lowercase())
+    }
+}
+
 fn main() -> io::Result<()> {
     //let web = simweb::WebData::new();
     let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
@@ -551,7 +561,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
     res = read_dir(&cur_dir)?.fold(res,
        |mut res,cur| {if let Ok(cur) = cur {
             let md = cur.metadata().unwrap();
-            if cur.file_name().display().to_string().contains(search) {
+            if cur.file_name().display().to_string().contains_ignore_case(search) {
                  
                 write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
                  json_encode(&cur.file_name().display().to_string()),

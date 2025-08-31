@@ -237,7 +237,7 @@
     <button onclick="handleFunction('F4')">F4 Edit</button>
     <button onclick="handleFunction('F5')">F5 Copy</button>
     <button onclick="handleFunction('F6')">F6 Move</button>
-    <button onclick="handleFunction('F7')">F7 Mkdir</button>
+    <button onclick="handleFunction('F7',event)">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
     <button onclick="handleFunction('F9')">F9 Upload</button>
     <button onclick="handleFunction('F10')">F10 Zip</button>
@@ -576,7 +576,7 @@
         }
     }
     
-    function handleFunction(key) {
+    function handleFunction(key,e) {
         const dlg = document.querySelector('dialog')
         const msg = dlg.querySelector('p')
         const dirInputLeft = document.getElementById(`left-dir`);
@@ -807,6 +807,10 @@
                 }
                 break
             case 'F7':
+                if (e && e.shiftKey) {
+                    openSearch()
+                    return
+                }
                 msg.innerHTML = 'What\'s the directory name?'
                 const extraInput = dlg.querySelector("p#extra_input")
                 extraInput.style.display = 'block'
