@@ -3,6 +3,7 @@ extern crate simweb;
 extern crate simtime;
 extern crate simzip;
 extern crate exif;
+extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
     env::consts, env, convert::TryInto,
@@ -11,6 +12,7 @@ use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite,
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
+use crate::simcfg::get_config_root;
 
 const MAX_BLOCK_LEN : usize = 4*1024*1024;
 
@@ -197,7 +199,7 @@ fn main() -> io::Result<()> {
                                                         // TODO decide of cases when only some files were copied
                                                         let _ = fs::remove_dir_all(&src_path);
                                                     }
-                                                    Err(err) => eprintln!("Can't copy {src_path:?} because {err:?}")
+                                                    Err(err) => report(&format!("Can't copy {src_path:?} because {err:?}"))?
                                                 }
                                             }
                                         }
@@ -476,18 +478,12 @@ fn main() -> io::Result<()> {
 }
 
 fn read_state() -> Option<State> {
-    let home = if "windows" == consts::OS {
-        env::var("USERPROFILE")
-        } else {
-            env::var("HOME")
-        };
-    let Ok(home ) = home else {
+    let Ok(mut config) = get_config_root() else {
         return None
     };
-    let mut home = PathBuf::from(home);
-    home.push(".sc");
-    if home.exists() {
-        let file_contents = fs::read_to_string(home).ok()?; 
+    config.push(".sc");
+    if config.exists() {
+        let file_contents = fs::read_to_string(config).ok()?; 
         if let Some(pair) = file_contents.split_once('\n') {
             if let Some((panel,dir)) = pair.0.split_once('=' ) {
                 if let Some((other_panel,other_dir)) = pair.1.split_once('=' ) {
@@ -503,19 +499,13 @@ fn read_state() -> Option<State> {
 }
 
 fn save_state(state:State) -> io::Result<()> {
-    let home = if "windows" == consts::OS {
-        env::var("USERPROFILE")
-        } else {
-            env::var("HOME")
-        };
-    let Ok(home ) = home else {
-        return Ok(())
+    let Ok(mut config) = get_config_root() else {
+        return Err(io::Error::new(io::ErrorKind::Other, "no config directory".to_string()))
     };
-    let mut home = PathBuf::from(home);
-    home.push(".sc");
+    config.push(".sc");
     let mut state_str = String::new();
     write!(state_str,"left={}\nright={}",state.left,state.right).unwrap();
-    fs::write(home, state_str)?;
+    fs::write(config, state_str)?;
     Ok(())
 }
 

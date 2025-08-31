@@ -17,6 +17,7 @@ Currently the project has 4 direct dependencies:
 - [SimWEb](https://github.com/vernisaz/simweb)
 - [SimTime](https://github.com/vernisaz/simtime)
 - [SimZip](https://github.com/vernisaz/simple_rust_zip)
+- [SimConfig](https://github.com/vernisaz/simconfig)
 
 You will need also common [scripts](https://github.com/vernisaz/simscript) to build them.
 
@@ -28,9 +29,9 @@ if you plan to distribute the Simple Commander.
 ## Web server
 Since the project uses the websocket endpoint implemented on WS CGI technology,
 only the [SimHTTP](https://github.com/vernisaz/simhttp)
-can be used to run it currently.
+can be used to run it properly.
 It isn't a drawback since the server exists on all platforms.
-Hopefully more vendors will adopt the WS CGI soon and the list of supporting servers will be extended after.
+Hopefully, more vendors will adopt the WS CGI soon and the list of supporting servers will be extended.
 
 Read a note in the above server page regarding running it in a background mode withous setup as a service.
 
@@ -50,10 +51,10 @@ from the directory where the installation archive was opened. The access URL wil
 You can edit **env.conf** to change the host name or port.
 
 ## No-Cargo build
-This product uses an [alternative tool](https://gitlab.com/tools6772135/rusthub/-/tree/master) to the Cargo building tool.
+This product uses an [alternative tool](https://github.com/vernisaz/rust_bee) to the Cargo building tool.
 It makes  sense especially for products
-having 0 dependency on the crates.io. Some 3rd party dependency exists though, however they can be built
+having 0 dependencies on the _crates.io_. Some 3rd party dependency exists though, however they can be built
 without Cargo as well.
 
 ## Status
-It's a beta version.
+The product is in the beta state.
