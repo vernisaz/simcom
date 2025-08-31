@@ -294,7 +294,9 @@
                   alignPanel('left')
               }
           } else if (event.shiftKey) {
-         
+              if (event.key == 'F7') {
+                  openSearch()
+              }
           } else {
              handleFunction(event.key)
           }
@@ -930,6 +932,23 @@
         return res
     }
     
+    function openSearch() {
+        msg.innerHTML = 'What\'s to search?'
+        const extraInput = dlg.querySelector("p#extra_input")
+        extraInput.style.display = 'block'
+        dlg.querySelector("#some_txt").value = ''
+        const createBtn = dlg.querySelector("#confirmBtn");
+        createBtn.style.visibility = "visible"
+        createBtn.addEventListener("click", (e) => {
+
+          const searchStr = dlg.querySelector("#some_txt").value;
+          const srcDirInput = document.getElementById(`${srcPanel}-dir`);
+          const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
+          wsktSend(JSON.stringify({op:'search', src:srcDirInput.value, panel:srcPanel, same:same, file:searchStr}))
+        }, { once: true });
+        dlg.showModal();
+    }
+    
     function updateFile(panelId, fileName, modified, size) {
         const filesDiv = document.getElementById(`${panelId}-files`);
         var update = false
@@ -1043,11 +1062,12 @@
         '<p>F8 - delete selected file(s)</p>' +
         '<p>F9 - upload selected file(s)</p>' +
         '<p>F10 - zip selected file(s)</p>' +
+        '<p>Shift+F7 - search</p>' +
         '<p>Esc - exit view, help or edit screen</p>' +
         '<p>Numpad * - invert selection</p>' +
         '<p>Numpad / - clear selection</p>' +
         '<p>Numpad = - compare panels, no size or type counted</p>' +
-        '<p>^I - getting info on panel)</p>' +
+        '<p>^I - getting info on the panel</p>' +
         '<p>^R - refresh panels</p>' +
         '<p>^S - save edited content</p>'
         if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {

@@ -433,6 +433,10 @@ fn main() -> io::Result<()> {
                             }
                         }
                     }
+                    "search" => {
+                    
+                        
+                    }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
                             eprintln!("no file to get info");
