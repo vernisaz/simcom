@@ -807,8 +807,8 @@
                 }
                 break
             case 'F7':
-                if (e && e.shiftKey) {
-                    openSearch()
+                if (e && e.shiftKey || true) {
+                    openSearch(srcPanel)
                     return
                 }
                 msg.innerHTML = 'What\'s the directory name?'
@@ -936,8 +936,10 @@
         return res
     }
     
-    function openSearch() {
-        msg.innerHTML = 'What\'s to search?'
+    function openSearch(srcPanel) {
+        const dlg = document.querySelector('dialog')
+        const msg = dlg.querySelector('p')
+        msg.innerHTML = 'What\'s to find?'
         const extraInput = dlg.querySelector("p#extra_input")
         extraInput.style.display = 'block'
         dlg.querySelector("#some_txt").value = ''

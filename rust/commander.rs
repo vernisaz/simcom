@@ -452,6 +452,7 @@ fn main() -> io::Result<()> {
                         };
                         let mut sub_dir = String::new();
                         let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
+                        eprintln!("search resulr {res}");
                         println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{dir}"}}"#
                             );
                         io::stdout().flush()?;
