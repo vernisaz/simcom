@@ -451,8 +451,8 @@ fn main() -> io::Result<()> {
                             continue
                         };
                         let mut sub_dir = String::new();
-                        let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
-                        eprintln!("search resulr {res}");
+                        let res = format!(r#"{{"name":"..", "dir":true}},{}"#,
+                            search_in_dir(&dir,  &mut sub_dir, &search).unwrap());
                         println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{dir}"}}"#
                             );
                         io::stdout().flush()?;
@@ -564,8 +564,8 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
             let md = cur.metadata().unwrap();
             if cur.file_name().display().to_string().contains_ignore_case(search) {
                  
-                write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
-                 json_encode(&cur.file_name().display().to_string()),
+                write!(res,r#"{}{{"name":"{sub_dir}{}{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
+                 if sub_dir.is_empty() {""} else {"/"}, json_encode(&cur.file_name().display().to_string()),
                  md.is_dir(),
                  md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
             }
