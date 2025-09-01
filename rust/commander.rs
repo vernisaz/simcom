@@ -493,10 +493,12 @@ fn main() -> io::Result<()> {
                         println!(r#"{{"panel":"info", "kind":"exif", "details":{}}}"#, info);
                         io::stdout().flush()?;
                     }
-                    _ => continue
+                    _ => ()
                 }
-                _ => continue
+                _ => ()
             }
+            println!(r#"{{"panel":"none"}}"#);
+            io::stdout().flush()?;
         }
     }
     // ws close

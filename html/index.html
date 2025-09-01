@@ -497,7 +497,9 @@
                     alert('Invalid server response: '+trimString(chunk,50))
                     continue
                 }
-                if (response.panel == 'center' || response.op == 'edit') {
+                if (response.panel == 'none') {
+                    continue // like a ping
+                } else if (response.panel == 'center' || response.op == 'edit') {
                     let lastChild = document.body.children[document.body.children.length - 1];
                     if (lastChild.id == "view-edit" || lastChild.id == "preview-upload" || lastChild.id == "help-panel") {
                         accum = ''
