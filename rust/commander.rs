@@ -5,7 +5,7 @@ extern crate simzip;
 extern crate exif;
 extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
-    fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path},
+    fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
     env::consts, env, convert::TryInto,
 };
 
@@ -453,8 +453,8 @@ fn main() -> io::Result<()> {
                         let mut sub_dir = String::new();
                         let res = format!(r#"{{"name":"..", "dir":true}},{}"#,
                             search_in_dir(&dir,  &mut sub_dir, &search).unwrap());
-                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{dir}"}}"#
-                            );
+                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
+                            json_encode(&dir));
                         io::stdout().flush()?;
                     }
                     "info" => {
@@ -563,10 +563,11 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
        |mut res,cur| {if let Ok(cur) = cur {
             let md = cur.metadata().unwrap();
             if cur.file_name().display().to_string().contains_ignore_case(search) {
-                 
-                write!(res,r#"{}{{"name":"{sub_dir}{}{}", "dir":{}, "size":{}, "timestamp":{}}}"#, if res.is_empty() {""} else {","},
-                 if sub_dir.is_empty() {""} else {"/"}, json_encode(&cur.file_name().display().to_string()),
-                 md.is_dir(),
+                let path = format!("{sub_dir}{}{}",  if sub_dir.is_empty() {""} else {MAIN_SEPARATOR_STR},
+                    &cur.file_name().display().to_string());
+                write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, 
+                    if res.is_empty() {""} else {","},
+                    json_encode(&path), md.is_dir(),
                  md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
             }
             if md.is_dir() {

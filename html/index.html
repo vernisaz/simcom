@@ -490,7 +490,7 @@
             
                 //const response = JSON.parse(chunk);
                 let response;
-                try {
+                try {console.log(chunk);
                      response = JSON.parse(chunk);
                 } catch (e) {
                     console.error(e); // error in the above string (in this case, yes)!
@@ -808,7 +808,7 @@
                 break
             case 'F7':
                 if (e && e.shiftKey) {
-                    openSearch(srcPanel)
+                    openSearch()
                     return
                 }
                 msg.innerHTML = 'What\'s the directory name?'
@@ -936,7 +936,9 @@
         return res
     }
     
-    function openSearch(srcPanel) {
+    function openSearch() {
+        const dirInputLeft = document.getElementById(`left-dir`);
+        const srcPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
         const dlg = document.querySelector('dialog')
         const msg = dlg.querySelector('p')
         msg.innerHTML = 'What\'s to find?'
@@ -949,7 +951,7 @@
 
           const searchStr = dlg.querySelector("#some_txt").value;
           const srcDirInput = document.getElementById(`${srcPanel}-dir`);
-          const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
+          const same = dirInputLeft.value == document.getElementById(`right-dir`).value
           wsktSend(JSON.stringify({op:'search', dir:srcDirInput.value, panel:srcPanel, same:same, file:searchStr}))
         }, { once: true });
         dlg.showModal();
