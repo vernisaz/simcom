@@ -454,12 +454,11 @@ fn main() -> io::Result<()> {
                         let search = search.to_lowercase();
                         let mut sub_dir = String::new();
                         let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
-                        if !res.is_empty() {
-                            let res = format!(r#"{{"name":"..", "dir":true}},{}"#, res);
-                            println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
-                                json_encode(&dir));
-                            io::stdout().flush()?;
-                        }
+                        let res = format!(r#"{{"name":"..", "dir":true}}{}{}"#, 
+                            if res.is_empty() {""} else {","}, res);
+                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
+                            json_encode(&dir));
+                        io::stdout().flush()?;
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -565,27 +564,27 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
     }
     res = read_dir(&cur_dir)?.fold(res,
        |mut res,cur| {if let Ok(cur) = cur {
-            let md = cur.metadata().unwrap();
-            if cur.file_name().display().to_string().contains_ignore_case(search) {
-                let path = format!("{sub_dir}{}{}",  if sub_dir.is_empty() {""} else {MAIN_SEPARATOR_STR},
-                    &cur.file_name().display().to_string());
-                write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, 
-                    if res.is_empty() {""} else {","},
-                    json_encode(&path), md.is_dir(),
-                 md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
-            }
-            if cur.file_type().is_ok() && cur.file_type().unwrap().is_dir() {
-                cur_dir.push(cur.path());
-                *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
-                let cur_res = search_in_dir(dir, sub_dir, search).unwrap();
-                if !cur_res.is_empty() {
-                    if !res.is_empty() {
-                        write!(res,",").unwrap();
-                    }
-                    write!(res,"{}", cur_res).unwrap();
-                    }
+                let md = cur.metadata().unwrap();
+                if cur.file_name().display().to_string().contains_ignore_case(search) {
+                    let path = format!("{sub_dir}{}{}",  if sub_dir.is_empty() {""} else {MAIN_SEPARATOR_STR},
+                        &cur.file_name().display().to_string());
+                    write!(res,r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#, 
+                        if res.is_empty() {""} else {","},
+                        json_encode(&path), md.is_dir(),
+                     md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
                 }
-                cur_dir.pop();
+                if cur.file_type().is_ok() && cur.file_type().unwrap().is_dir() {
+                    cur_dir.push(cur.path());
+                    *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
+                    let cur_res = search_in_dir(dir, sub_dir, search).unwrap();
+                    if !cur_res.is_empty() {
+                        if !res.is_empty() {
+                            write!(res,",").unwrap();
+                        }
+                        write!(res,"{}", cur_res).unwrap();
+                    }
+                    cur_dir.pop();
+                }
             }
             res
         }
