@@ -70,6 +70,7 @@ fn main() -> io::Result<()> {
             break
         }
         let commands = String::from_utf8_lossy(&buffer[..len]);
+        //eprintln!("read {commands:?}");
         let mut chars = commands.chars();
         loop {
             let res = parse_fragment(&mut chars);
@@ -78,7 +79,7 @@ fn main() -> io::Result<()> {
                 JsonData::None => break,
                 _ => {eprintln!("invalid json {:?} of {commands} - {len}", res.0);break},
             };
-       // eprintln!("parsed {json:?}");
+            // eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
                     continue
             };
@@ -450,12 +451,15 @@ fn main() -> io::Result<()> {
                         let Some(Text(search)) = json.get("file") else {
                             continue
                         };
+                        let search = search.to_lowercase();
                         let mut sub_dir = String::new();
-                        let res = format!(r#"{{"name":"..", "dir":true}},{}"#,
-                            search_in_dir(&dir,  &mut sub_dir, &search).unwrap());
-                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
-                            json_encode(&dir));
-                        io::stdout().flush()?;
+                        let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
+                        if !res.is_empty() {
+                            let res = format!(r#"{{"name":"..", "dir":true}},{}"#, res);
+                            println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
+                                json_encode(&dir));
+                            io::stdout().flush()?;
+                        }
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -570,7 +574,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     json_encode(&path), md.is_dir(),
                  md.len(),md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap();
             }
-            if md.is_dir() {
+            if cur.file_type().is_ok() && cur.file_type().unwrap().is_dir() {
                 cur_dir.push(cur.path());
                 *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
                 let cur_res = search_in_dir(dir, sub_dir, search).unwrap();
@@ -581,6 +585,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     write!(res,"{}", cur_res).unwrap();
                     }
                 }
+                cur_dir.pop();
             }
             res
         }

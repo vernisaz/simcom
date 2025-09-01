@@ -945,6 +945,7 @@
         const extraInput = dlg.querySelector("p#extra_input")
         extraInput.style.display = 'block'
         dlg.querySelector("#some_txt").value = ''
+        dlg.querySelector("#some_txt").focus()
         const createBtn = dlg.querySelector("#confirmBtn");
         createBtn.style.visibility = "visible"
         createBtn.addEventListener("click", (e) => {
