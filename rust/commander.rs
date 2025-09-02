@@ -454,7 +454,7 @@ fn main() -> io::Result<()> {
                         let search = search.to_lowercase();
                         let mut sub_dir = String::new();
                         let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
-                        let res = format!(r#"{{"name":"..", "dir":true}}{}{}"#, 
+                        let res = format!(r#"{{"name":".", "dir":true}}{}{}"#, 
                             if res.is_empty() {""} else {","}, res);
                         println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
                             json_encode(&dir));
