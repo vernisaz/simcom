@@ -8,11 +8,22 @@ use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite,
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
     env::consts, env, convert::TryInto,
 };
-
+use std::sync::mpsc; 
+use std::thread;
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
 use crate::simcfg::get_config_root;
+
+macro_rules! message {
+    ($arg1:ident, $($arg:tt)*) => (
+        let s = format!($($arg)* ) ;
+        match $arg1.send(s) {
+            Ok(_) => (),
+            Err(x) => panic!("Unable to send: {}", x),
+        }
+    )
+}
 
 const MAX_BLOCK_LEN : usize = 4*1024*1024;
 
@@ -62,6 +73,15 @@ fn main() -> io::Result<()> {
             io::stdout().flush()?;
         },
     }
+    let (send, recv) = mpsc::channel();
+    thread::spawn(move || {
+        for received in recv  {
+            println!("{}", received);
+            if io::stdout().flush().is_err() {
+                break
+            }
+        }
+    });
     loop {
         let Ok(len) = stdin().read(&mut buffer[0..]) else {break};
         // loop until entire payload read
@@ -72,6 +92,7 @@ fn main() -> io::Result<()> {
         let commands = String::from_utf8_lossy(&buffer[..len]);
         //eprintln!("read {commands:?}");
         let mut chars = commands.chars();
+        // TODO send should be managed in a separate thread
         loop {
             let res = parse_fragment(&mut chars);
             let json = match res.0 {
@@ -81,7 +102,7 @@ fn main() -> io::Result<()> {
             };
             // eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
-                    continue
+                continue
             };
             
             match json.get("op") {
@@ -94,9 +115,9 @@ fn main() -> io::Result<()> {
                         if panel == "right" { state.right =  dir.clone() } else { state.left =  dir.clone()}
                         match get_dir(dir) {
                             Ok(dir_contents) => {
-                                println!(r#"{{"panel":"{panel}", "dir":[{dir_contents}], "path":"{}"}}"#,
+                                message!(send, r#"{{"panel":"{panel}", "dir":[{dir_contents}], "path":"{}"}}"#,
                                 json_encode(dir));
-                                io::stdout().flush()?;
+                                //io::stdout().flush()?;
                             }
                             Err(err) => report(&format!("an error {err:?} in reading {dir}"))?,
                         }
@@ -497,8 +518,6 @@ fn main() -> io::Result<()> {
                 }
                 _ => ()
             }
-            println!(r#"{{"panel":"none"}}"#);
-            io::stdout().flush()?;
         }
     }
     // ws close
