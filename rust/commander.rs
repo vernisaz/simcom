@@ -6,10 +6,9 @@ extern crate exif;
 extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
-    env::consts, env, convert::TryInto,
+    env::consts, env, convert::TryInto, sync::mpsc::{self,Sender}, thread,
 };
-use std::sync::mpsc; 
-use std::thread;
+
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
@@ -65,14 +64,7 @@ fn main() -> io::Result<()> {
         state.left = stored_state.left;
         state.right = stored_state.right;
     }
-    match env::var("QUERY_STRING") {
-        Ok(value) if value == "restart" => (),
-        _ => {
-            println!(r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
-                 os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
-            io::stdout().flush()?;
-        },
-    }
+    
     let (send, recv) = mpsc::channel();
     thread::spawn(move || {
         for received in recv  {
@@ -82,6 +74,14 @@ fn main() -> io::Result<()> {
             }
         }
     });
+    match env::var("QUERY_STRING") {
+        Ok(value) if value == "restart" => (),
+        _ => {
+            message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
+                 os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
+            
+        },
+    }
     loop {
         let Ok(len) = stdin().read(&mut buffer[0..]) else {break};
         // loop until entire payload read
@@ -117,9 +117,9 @@ fn main() -> io::Result<()> {
                             Ok(dir_contents) => {
                                 message!(send, r#"{{"panel":"{panel}", "dir":[{dir_contents}], "path":"{}"}}"#,
                                 json_encode(dir));
-                                //io::stdout().flush()?;
+                                //
                             }
-                            Err(err) => report(&format!("an error {err:?} in reading {dir}"))?,
+                            Err(err) => report(&send, &format!("an error {err:?} in reading {dir}"))?,
                         }
                     }
                     "copy" => {
@@ -171,11 +171,11 @@ fn main() -> io::Result<()> {
                                 dst_path.pop();
                             }
                         }
-                        println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
-                        io::stdout().flush()?;
+                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                        
                         let other_panel = if panel == "left" { "right" } else { "left" };
-                        println!(r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                        io::stdout().flush()?;
+                        message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        
                         //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     "move" => {
@@ -207,7 +207,7 @@ fn main() -> io::Result<()> {
                                         src_path.push(file);
                                         match fs::rename(&src_path,&dst_path) {
                                             Ok(()) => was_move = true,
-                                            Err(err) => report(&format!("Can't move {src_path:?} to {dst_path:?}, because {err:?}"))?
+                                            Err(err) => report(&send, &format!("Can't move {src_path:?} to {dst_path:?}, because {err:?}"))?
                                         }
                                     }
                                 }
@@ -231,7 +231,7 @@ fn main() -> io::Result<()> {
                                                         // TODO decide of cases when only some files were copied
                                                         let _ = fs::remove_dir_all(&src_path);
                                                     }
-                                                    Err(err) => report(&format!("Can't copy {src_path:?} because {err:?}"))?
+                                                    Err(err) => report(&send, &format!("Can't copy {src_path:?} because {err:?}"))?
                                                 }
                                             }
                                         }
@@ -244,11 +244,11 @@ fn main() -> io::Result<()> {
                             was_move = true
                         }
                         if was_move {
-                             println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
-                            io::stdout().flush()?;
+                             message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                            
                             let other_panel = if panel == "left" { "right" } else { "left" };
-                            println!(r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                            io::stdout().flush()?;
+                            message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                            
                         }
                     }
                     "del" => {
@@ -273,19 +273,19 @@ fn main() -> io::Result<()> {
                                 err = Ok(())
                             }
                             if let Err(err) = err {
-                                report(&format!("Can't delete {src_path:?} because {err:?}"))?
+                                report(&send, &format!("Can't delete {src_path:?} because {err:?}"))?
                             }
                             src_path.pop();
                         }
                         if json.get("same") == Some(&Bool(true)) {
                             let dir = get_dir(&src).unwrap(); // TODO add if Ok(dir)
-                            println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                            io::stdout().flush()?;
-                            println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                            message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                            
+                            message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
                         } else {
-                            println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                            message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                         }
-                        io::stdout().flush()?;
+                        
                     }
                     "mkdir" => {
                         let Some(Text(src)) = json.get("src") else {
@@ -302,15 +302,15 @@ fn main() -> io::Result<()> {
                             Ok(()) => { 
                                 if json.get("same") == Some(&Bool(true)) {
                                     let dir = get_dir(&src).unwrap();
-                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                                    io::stdout().flush()?;
-                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    message!(send,r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    
+                                    message!(send,r#"{{"panel":"right", "dir":[{}]}}"#, dir);
                                 } else {
-                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                                    message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                                 }
-                                io::stdout().flush()?;
+                                
                             },
-                            Err(err) => report(&format!("Can't make directory {create_path:?} because {err:?}"))?,
+                            Err(err) => report(&send, &format!("Can't make directory {create_path:?} because {err:?}"))?,
                         }
                     }
                     "show" => {
@@ -327,13 +327,13 @@ fn main() -> io::Result<()> {
                         if show_path.is_file() {
                             match fs::read_to_string(&show_path) {
                                 Ok(file_contents)  => {
-                                    println!(r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&html_encode(&file_contents)));
+                                    message!(send,r#"{{"panel":"center", "content":"{}"}}"#, json_encode(&html_encode(&file_contents)));
                                 }
                                 Err(err) => {
-                                    println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {show_path:?} can't be shown, because {err}")));
+                                    message!(send,r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {show_path:?} can't be shown, because {err}")));
                                 }
                             }
-                            io::stdout().flush()?;
+                            
                         }
                     }
                     "edit" => {
@@ -351,16 +351,18 @@ fn main() -> io::Result<()> {
                             match fs::read_to_string(&edit_path) {
                                 Ok(file_contents) => {
                                     let (modified,_) = get_file_modified(&edit_path);
-                                    println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
+                                    message!(send,r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":"{}", "modified":{modified}}}"#, 
                                         json_encode(&edit_path.display().to_string()), json_encode(&html_encode(&file_contents)));
                                 }
-                                Err(err) => println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {edit_path:?} can't be edited, because {err}"))),
+                                Err(err) => { message!(send,r#"{{"panel":"info", "message":"{}"}}"#,
+                                    json_encode(&format!("The file {edit_path:?} can't be edited, because {err}")));}
+                                
                             }
-                            io::stdout().flush()?;
+                            
                         } else if !edit_path.exists() {
-                            println!(r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#, 
+                            message!(send,r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#, 
                                 json_encode(&edit_path.display().to_string()));
-                            io::stdout().flush()?;
+                            
                         }
                     }
                     "save" => {
@@ -380,8 +382,8 @@ fn main() -> io::Result<()> {
                             (true, 0)
                         };
                         if saved_modified < modified {
-                            println!(r#"{{"panel":"info", "message":"The file can't be saved, because it's been already modified"}}"#);
-                            io::stdout().flush()?;
+                            message!(send,r#"{{"panel":"info", "message":"The file can't be saved, because it's been already modified"}}"#);
+                            
                             continue
                         }
                         if save_path.is_file() || new_file {
@@ -391,27 +393,27 @@ fn main() -> io::Result<()> {
                             };
                             match fs::write(&save_path, content) {
                                 Err(err) => {
-                                    println!(r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
-                                    io::stdout().flush()?;
+                                    message!(send,r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
+                                    
                                     continue
                                 }
                                 _ => (),
                             }
                             let (modified,size) = get_file_modified(&save_path);
-                            println!(r#"{{"panel":"info", "modified":{modified}, "file":"{}", "size":{size}}}"#,
+                            message!(send,r#"{{"panel":"info", "modified":{modified}, "file":"{}", "size":{size}}}"#,
                                 json_encode(&file));
-                            io::stdout().flush()?;
+                            
                             if new_file {
                                 save_path.pop();
                                 if json.get("same") == Some(&Bool(true)) {
                                     let dir = get_dir(&save_path.display().to_string()).unwrap();
-                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                                    io::stdout().flush()?;
-                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    message!(send,r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    
+                                    message!(send,r#"{{"panel":"right", "dir":[{}]}}"#, dir);
                                 } else {
-                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
+                                    message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
                                 }
-                                io::stdout().flush()?;
+                                
                             }
                         }
                     }
@@ -440,8 +442,8 @@ fn main() -> io::Result<()> {
                             } else if src_path . is_dir() {
                                 match zip_dir(&mut zip_file, &src_path, Some(file)) {
                                     Ok(()) => (),
-                                    Err(err) => {println!(r#"{{"panel":"info", "message":"Can't zip dir {}"}}"#, json_encode(&format!("{err:?}")));
-                                        io::stdout().flush()?;
+                                    Err(err) => {message!(send,r#"{{"panel":"info", "message":"Can't zip dir {}"}}"#, json_encode(&format!("{err:?}")));
+                                        
                                         continue
                                     }
                                 }
@@ -452,16 +454,13 @@ fn main() -> io::Result<()> {
                                 src_path.pop();
                                 let dir = get_dir(&src_path.display().to_string()).unwrap();
                                 if json.get("same") == Some(&Bool(true)) {
-                                    println!(r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                                    io::stdout().flush()?;
-                                    println!(r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                    message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
                                 } else {
-                                    println!(r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                    message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
                                 }
-                                io::stdout().flush()?;
                             },
-                            Err(msg) => {println!(r#"{{"panel":"info", "message":"Can't zip because {}"}}"#, json_encode(&format!("{msg:?}")));
-                                io::stdout().flush()?;
+                            Err(msg) => {message!(send, r#"{{"panel":"info", "message":"Can't zip because {}"}}"#, json_encode(&format!("{msg:?}")));
                             }
                         }
                     }
@@ -477,9 +476,9 @@ fn main() -> io::Result<()> {
                         let res = search_in_dir(&dir,  &mut sub_dir, &search).unwrap();
                         let res = format!(r#"{{"name":".", "dir":true}}{}{}"#, 
                             if res.is_empty() {""} else {","}, res);
-                        println!(r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
+                        message!(send, r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
                             json_encode(&dir));
-                        io::stdout().flush()?;
+                        
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -511,8 +510,8 @@ fn main() -> io::Result<()> {
                         let Ok(info) = obtain_info() else {
                             continue
                         };
-                        println!(r#"{{"panel":"info", "kind":"exif", "details":{}}}"#, info);
-                        io::stdout().flush()?;
+                        message!(send, r#"{{"panel":"info", "kind":"exif", "details":{}}}"#, info);
+                        
                     }
                     _ => ()
                 }
@@ -642,10 +641,9 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
     Ok(())
 }
 
-fn report(msg: &str) -> io::Result<()> {
+fn report(send: &Sender<String>, msg: &str) -> io::Result<()> {
     eprintln!("{msg}");
-    println!(r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&msg));
-    io::stdout().flush()?;
+    message!(send, r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&msg));
     Ok(())
 }
 
