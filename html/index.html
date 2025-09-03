@@ -525,12 +525,8 @@
                 } else if (response.panel == 'control') {
                     DRIVE = response.root
                     SEP = response.separator
-                    const dirInputLeft = document.getElementById(`left-dir`);
-                    const dirInputRight = document.getElementById(`right-dir`);
-                    dirInputLeft.value = response.left? response.left:DRIVE + SEP
-                    dirInputRight.value = response.right? response.right:DRIVE + SEP
-                    //requestPanel('left');
-                    requestPanel('right');
+                    //requestPanel('left', response.left? response.left:DRIVE + SEP);
+                    requestPanel('right', response.right? response.right:DRIVE + SEP);
                 } else if (response.panel == 'info') {
                     if (response.kind) {
                         if (response.kind == 'exif') {
@@ -1040,7 +1036,7 @@
             wskt = new WebSocket(WSKT_URL + '?restart')
             initWSHandlers()
         } else {
-            wskt.send(load)
+            wskt.send(load + '\n')
         }
     }
     
