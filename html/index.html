@@ -526,7 +526,11 @@
                     DRIVE = response.root
                     SEP = response.separator
                     //requestPanel('left', response.left? response.left:DRIVE + SEP);
-                    requestPanel('right', response.right? response.right:DRIVE + SEP);
+                    //requestPanel('right', response.right? response.right:DRIVE + SEP);
+                    const newDirL = response.left? response.left:DRIVE + SEP
+                    const newDirR = response.right? response.right:DRIVE + SEP
+                    wsktSend(JSON.stringify({op:'dir', dir:newDirL, panel:'left'}) + '\n' +
+                      JSON.stringify({op:'dir', dir:newDirR, panel:'right'}));
                 } else if (response.panel == 'info') {
                     if (response.kind) {
                         if (response.kind == 'exif') {
