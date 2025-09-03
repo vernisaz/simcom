@@ -92,7 +92,6 @@ fn main() -> io::Result<()> {
         let commands = String::from_utf8_lossy(&buffer[..len]);
         //eprintln!("read {commands:?}");
         let mut chars = commands.chars();
-        // TODO send should be managed in a separate thread
         loop {
             let res = parse_fragment(&mut chars);
             let json = match res.0 {
@@ -100,7 +99,7 @@ fn main() -> io::Result<()> {
                 JsonData::None => break,
                 _ => {eprintln!("invalid json {:?} of {commands} - {len}", res.0);break},
             };
-            // eprintln!("parsed {json:?}");
+            //eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
                 continue
             };
