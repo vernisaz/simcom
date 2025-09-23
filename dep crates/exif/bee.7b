@@ -6,9 +6,10 @@ crate_src=src
 dep_crates=[--extern,mutate_once]
 comp opts=[]
 test file=tests/rwrcmp
+#all paths are relative assuming that the crate resides in projects/side/exif-rs
 common =..${~/~}..${~/~}simscript${~/~}comm-crate.7b:file
 common_test =..${~/~}..${~/~}simscript${~/~}comm-test.7b:file
-crate_dir=..${~/~}..${~/~}crates
+crate_dir=..${~/~}..${~/~}crates 
 
 include(common);
 
