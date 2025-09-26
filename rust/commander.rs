@@ -6,7 +6,7 @@ extern crate exif;
 extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
-    env::consts, env, convert::TryInto, sync::mpsc::{self,Sender}, thread,
+    env::consts, env, convert::TryInto, sync::mpsc::{self,Sender}, thread, error::Error,
 };
 
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
@@ -43,7 +43,7 @@ impl IgnoreCase for String {
     }
 }
 
-fn main() -> io::Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     //let web = simweb::WebData::new();
     let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
     let os_drive =
