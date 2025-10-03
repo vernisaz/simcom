@@ -192,6 +192,44 @@
           top: 0;
     }
     
+    /* Dropdown Button */
+    .dropbtn {
+      border: none;
+    }
+    
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+    
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {background-color: #ddd;}
+    
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {display: block;}
+    
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {background-color: #3e8e41;}
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -218,7 +256,15 @@
     <div class="panel" id="left-panel">
       <div class="panel-header">
         <input type="text" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
-        <button onclick="requestPanel('left')">🔄</button>
+        
+        <div class="dropdown">
+            <button class="dropbtn" onclick="requestPanel('left')">🔄</button>
+            <div class="dropdown-content">
+                <a href="javascript:sorts['left']==1?sorts['left']=0:sorts['left']=1">Z..A</a>
+                <a href="javascript:sorts['left']==2?sorts['left']=3:sorts['left']=2">Time</a>
+                <a href="javascript:sorts['left']==4?sorts['left']=5:sorts['left']=4">Size</a>
+            </div>
+        </div>
       </div>
       <div id="left-files" class="panel-files"></div>
     </div>
@@ -271,6 +317,7 @@
     
     var pending = []
     var modified = 0
+    let sorts = {}
     
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
@@ -410,16 +457,17 @@
         wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:targetPanel}))
     }
     
-    function loadPanel(response,sortCol) {
+    function loadPanel(response) {
         document.querySelector('dialog').close();
         const panelId = response.panel;
+        const sortCol = sorts[panelId]
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
         const dir = response.path?response.path:dirInput.value;
         dirInput.value = dir
           filesDiv.innerHTML = ''; //sortCol=5;
-          if (!sortCol || sortCol == 0) {
-              response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
+          if (!sortCol || sortCol == 0 || sortCol == 1) {
+              response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return sortCol == 1?b.name.localeCompare(a.name):a.name.localeCompare(b.name);
                   if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
               })
           } else if (sortCol == 2 || sortCol == 3) {
