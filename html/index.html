@@ -410,17 +410,35 @@
         wsktSend(JSON.stringify({op:'dir', dir:dirInput.value, panel:targetPanel}))
     }
     
-    function loadPanel(response) {
+    function loadPanel(response,sortCol) {
         document.querySelector('dialog').close();
         const panelId = response.panel;
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
         const dir = response.path?response.path:dirInput.value;
         dirInput.value = dir
-          filesDiv.innerHTML = '';
-          response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
-              if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
-          })
+          filesDiv.innerHTML = ''; //sortCol=5;
+          if (!sortCol || sortCol == 0) {
+              response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) return a.name.localeCompare(b.name);
+                  if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
+              })
+          } else if (sortCol == 2 || sortCol == 3) {
+              response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) {
+                     if (a.timestamp == b.timestamp) 
+                        return a.name.localeCompare(b.name);
+                     else return sortCol == 2?a.timestamp - b.timestamp:b.timestamp - a.timestamp
+                  }
+                  if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
+              })
+          } else if (sortCol == 4 || sortCol == 5) {
+              response.dir.sort((a, b) => {if (a.dir && b.dir || !a.dir && !b.dir) {
+                     if (a.size == b.size) 
+                        return a.name.localeCompare(b.name);
+                     else return sortCol == 4?a.size - b.size:b.size - a.size
+                  }
+                  if (a.dir && !b.dir) return -1; if (!a.dir && b.dir) return 1;
+              })
+          }
           //alert('load of '+response.dir.length)
           for (const fileEntry of response.dir) { 
             const div = document.createElement('div');
