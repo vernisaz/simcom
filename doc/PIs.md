@@ -112,7 +112,7 @@ as _projects_ assuming that you can select any other name of your choice.
 
 Clone git repositories to the directory,
 
-- [https://gitlab.com/tools6772135/rusthub.git](https://gitlab.com/tools6772135/rusthub/-/tree/master)
+- [https://github.com/vernisaz/rust_bee.git](https://github.com/vernisaz/rust_bee)
 - [https://github.com/vernisaz/simtime.git](https://github.com/vernisaz/simtime)
 - [https://github.com/vernisaz/simple\_rust_zip.git](https://github.com/vernisaz/simple_rust_zip)
 
@@ -125,15 +125,17 @@ Run the
 
 > sudo apt install openjdk-17-jdk-headless
 
-### Install 7Bee
+Note that current Java LTS is 25, so probaly choose the version just in case.
 
-You do not need to install the product. The **jar** from it will be enough, therefore go to 
+### Install (Java) 7Bee
+
+You do not need to install the product. The **jar** from it will be sufficient, therefore go to 
 [the page](https://sourceforge.net/projects/seven-bee/)
 and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/lib* inside *projects* and extract *bee.jar* there.
 
 ### Build rb
 
-Create an empty directory called _crates_ in the **projects**. Navigate to *rusthub/src/rust/rustbee*
+Create an empty directory called _crates_ in the **projects**. Navigate to the **RustBee** repository *rust_bee* 
 and edit *bee-rust.xml* there. You need to modify only,
 
 ```
@@ -143,15 +145,15 @@ specifying an absolute path to directory *crates* you created on the previous st
 
 Issue,
 
-> java -jar ../../../../7bee/lib/bee.jar
+> java -jar ../7bee/lib/bee.jar
 
-The RustBee tool will be built after. You can install it issuing,
+The RustBee tool will be built then. You can install it now issuing,
 
 > sudo ./rb install
 
 or simply specify the path to *rb*, if you do not want an installation.
 
-You can also add the path to **rb** in the *PATH* environment variable.
+You can also add the path to **rb** in the *PATH* environment variable. Check out [addpath.sh](https://github.com/vernisaz/rust_bee/blob/master/addpath.sh).
 
 ## Building Rust apps
 All my Rust applications have a web UI. Therefore, first application will be a web server.
@@ -167,7 +169,7 @@ building other projects
 
 And then run **rb** in each of them (except the first with scripts). It will build required common crates.
 
-The crates are actually required to build a web server, and can be used in other
+The crates are actually required to build the web server, and can be used in other
 applications too.
 
 ### SimHTTP
@@ -199,7 +201,7 @@ You can selected any other name for the service not clashing with already existi
 ### A developer paradise
 
 If you do a development using Rust, then I will recommend to install the Rust Development Studio
-([RDS](https://sourceforge.net/projects/rustdevelopmentstudio/)), you can download it or build.
+([RDS](https://github.com/vernisaz/rust_dev_studio/releases)), you can download it or build.
 
 Now you can use a web browser to develop, debug, test crates and run Rust applications.
 
