@@ -222,7 +222,7 @@
     }
     
     .marked::before {
-        content: "✓";
+        content: "✓"; /* &uarr;↑, &darr;↓ */
         color: #777;
         margin-right: 2px;
     }
@@ -273,7 +273,7 @@
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('left')">🔄</button>
             <div class="dropdown-content" id="myDiv">
-                <a href="javascript:sorts['left']==1?sorts['left']=0:sorts['left']=1;var aEls = document.getElementById('myDiv').querySelectorAll('a');aEls[0].classList.add('marked');aEls[1].classList.remove('marked');aEls[2].classList.remove('marked')">Z..A</a>
+                <a href="javascript:sorts['left']==1?sorts['left']=0:sorts['left']=1;var aEls = document.getElementById('myDiv').querySelectorAll('a');if (sorts['left']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked');aEls[1].classList.remove('marked');aEls[2].classList.remove('marked')">Z..A</a>
                 <a href="javascript:sorts['left']==2?sorts['left']=3:sorts['left']=2;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv').querySelector('a:nth-of-type(2)').classList.add('marked')">Time</a>
                 <a href="javascript:sorts['left']==4?sorts['left']=5:sorts['left']=4;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv').querySelector('a:nth-of-type(3)').classList.add('marked')">Size</a>
             </div>
