@@ -718,6 +718,7 @@
                                // }
                             })
                             div.focus()
+                            document.title = fileName
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                     }
@@ -754,6 +755,7 @@
                                 btn.addEventListener("click", (e) => {e.stopPropagation(); goBack()}, { once: true }); 
                                 div.appendChild(btn)
                             }
+                            document.title = showFile
                             const btnRight = document.createElement('button')
                             btnRight.className ='float-button btn-right'
                             btnRight.textContent = '▷' // ◁  🗑 ✓
@@ -768,6 +770,7 @@
                                         const showExt = showFile.slice((Math.max(0, showFile.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
                                         if (showExt == 'JPEG' || showExt == 'JPG' || showExt == 'PNG' || showExt == 'WEBP' || showExt == 'GIF') {
                                             pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
+                                            document.title = showFile
                                             break
                                         }
                                     }
@@ -791,6 +794,7 @@
                                         if (beforeFile) {
                                             showFile = beforeFile
                                             pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
+                                            document.title = showFile
                                             break
                                         }
                                     }
