@@ -595,7 +595,8 @@
                             + response.content + '</textarea>' +
                             ((navigator.maxTouchPoints > 0 || 'ontouchstart' in window)? '<button class="float-button btn-save" onclick="saveEdited()">⎙</button><button onclick="goBack()" class="float-button btn-back">⌫</button>':'') +
                             '<input type="hidden" value="' + response.file + '" />';
-                        modified = response.modified; // TODO should be a hidden field too    
+                        modified = response.modified; // TODO should be a hidden field too  
+                        document.title = getLastPathComponent(response.file) + PRG_NAME
                     } else {
                         div.style = "overflow:scroll"
                         div.innerHTML = '<p style="padding: 1em 2em;white-space: pre-wrap;">' + response.content + '</p>' +
@@ -697,7 +698,7 @@
                         const fileName = el.textContent
                         const fileExt = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1).toUpperCase();
                         if (fileExt == 'JPEG' || fileExt == 'JPG' || fileExt == 'PNG' || fileExt == 'WEBP' || fileExt == 'GIF') {
-                            const div = document.createElement('div');
+                            const div = document.createElement('DIV');
                             div.style.overflow = "scroll"
                             div.id = "view-edit"
                             div.tabindex = 0
@@ -712,10 +713,7 @@
                             document.body.appendChild(div)
                             div.addEventListener('click', (event) => {
                                 event.stopPropagation();
-                                //if (event.code == 'KeyI') {
-                                 //   event.stopPropagation()
-                                    wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
-                               // }
+                                wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                             })
                             div.focus()
                             document.title = fileName
@@ -755,7 +753,6 @@
                                 btn.addEventListener("click", (e) => {e.stopPropagation(); goBack()}, { once: true }); 
                                 div.appendChild(btn)
                             }
-                            document.title = showFile
                             const btnRight = document.createElement('button')
                             btnRight.className ='float-button btn-right'
                             btnRight.textContent = '▷' // ◁  🗑 ✓
@@ -824,16 +821,14 @@
                             div.appendChild(btnMark)
                             div.addEventListener('click', (event) => {
                                 event.stopPropagation();
-                                //if (event.code == 'KeyI') {
-                                 //   event.stopPropagation()
-                                    wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
-                               // }
+                                wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
                             })
                             document.body.appendChild(div)
+                            document.title = showFile
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:showFile}))
                     } else {
-                        alert('Please select one item to show first')
+                        alert('Please select an item to show first')
                     }
                 }
                 break
@@ -1143,6 +1138,7 @@
               document.body.removeChild(lastChild);
               event.preventDefault();
           }
+          document.title = PRG_NAME
     }
     
     function showHelp() {
