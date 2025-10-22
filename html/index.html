@@ -744,6 +744,7 @@
                             pic.src = `${UPL_URL}/simdown/${dir}${SEP}${showFile}?show=image`
                             pic.style.marginLeft='auto'
                             pic.style.marginRight='auto'
+                            pic.style.objectFit = 'none'
                             div.appendChild(pic)
                             div.className = 'overlay wide'
                             if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
