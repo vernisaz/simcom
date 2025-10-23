@@ -127,6 +127,10 @@
         z-index:1000;
     }
     
+    .image-with-button {
+        width: 100%;
+    }
+    
     div#help-panel {
         display: flex;
         justify-content: center;
@@ -747,7 +751,9 @@
                             pic.style.objectFit = 'none'
                             div.appendChild(pic)
                             div.className = 'overlay wide'
+                            // create div for buttons and add over
                             if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
+                                div.className = 'image-with-button'
                                 const btn = document.createElement('button')
                                 btn.className ='float-button btn-back'
                                 btn.textContent = '⌫'
