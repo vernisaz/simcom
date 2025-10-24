@@ -1127,7 +1127,7 @@
             wskt = new WebSocket(WSKT_URL + '?restart')
             initWSHandlers()
         } else {
-            wskt.send(load + '\n')
+            wskt.send(load + '\r\r\r\n')
         }
     }
     

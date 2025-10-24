@@ -24,9 +24,9 @@ macro_rules! message {
     )
 }
 
-const MAX_BLOCK_LEN : usize = 4*1024*1024;
-
 const VERSION: &str = env!("VERSION");
+
+const PACKET_END: &[u8] = b"\r\r\r\n";
 
 struct State {
     left: String,
@@ -45,7 +45,7 @@ impl IgnoreCase for String {
 
 fn main() -> Result<(), Box<dyn Error>> {
     //let web = simweb::WebData::new();
-    let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
+    //let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
     let os_drive =
     if "windows" == consts::OS {
         match env::var("SystemDrive") {
@@ -83,13 +83,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     }
     loop {
-        let Ok(len) = stdin().read(&mut buffer[0..]) else {break};
-        // loop until entire payload read
-        if len == 0 { break }
-        if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
-            break
-        }
-        let commands = String::from_utf8_lossy(&buffer[..len]);
+        let commands =
+        match read_packet() {
+            Some(res) => res,
+            _ => break
+        };
         //eprintln!("read {commands:?}");
         let mut chars = commands.chars();
         loop {
@@ -97,7 +95,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let json = match res.0 {
                 Data(json) => json,
                 JsonData::None => break,
-                _ => {eprintln!("invalid json {:?} of {commands} - {len}", res.0);break},
+                _ => {eprintln!("invalid json {:?} of {commands}", res.0);break},
             };
             //eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
@@ -609,6 +607,25 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
         }
     );
     Ok(res)
+}
+
+fn read_packet() -> Option<String> {
+    let mut buffer : Vec<u8> = vec![0u8; 1024*512].try_into().unwrap();
+    let mut res = vec![];
+    loop {
+        let Ok(len) = stdin().read(&mut buffer[0..]) else {return None};
+        // loop until entire payload read
+        if len == 0 { return None }
+        if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
+            return None
+        }
+        res.extend(&buffer[..len]);
+        if buffer[len-PACKET_END.len()..len] == *PACKET_END {
+            
+            break
+        }
+    }
+   Some(String::from_utf8_lossy(&res[..]).to_string()) 
 }
 
 fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
