@@ -651,6 +651,13 @@
                             updateFile('left', fileName, modified, response.size)
                         if (document.getElementById(`right-dir`).value == dir)
                             updateFile('right', fileName, modified, response.size)
+                        const savedDiv = document.createElement('div')
+                        savedDiv.textContent = 'saved'
+                        document.body.appendChild(savedDiv)
+                        
+                        setTimeout(function() {
+                            savedDiv.remove();
+                        }, 1200);
                     }
                 } else {
                     loadPanel (response)
