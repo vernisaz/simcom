@@ -380,7 +380,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                         };
                         if saved_modified < modified {
                             message!(send,r#"{{"panel":"info", "message":"The file can't be saved, because it's been already modified"}}"#);
-                            
                             continue
                         }
                         if save_path.is_file() || new_file {
@@ -391,7 +390,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                             match fs::write(&save_path, content) {
                                 Err(err) => {
                                     message!(send,r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
-                                    
                                     continue
                                 }
                                 _ => (),

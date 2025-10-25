@@ -150,6 +150,14 @@
         grid-template-columns: 1fr;
     }
     
+    .center-div {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+    }
+    
     .float-button {
           background-color: #3d5d91;
           border: none;
@@ -652,6 +660,7 @@
                         if (document.getElementById(`right-dir`).value == dir)
                             updateFile('right', fileName, modified, response.size)
                         const savedDiv = document.createElement('div')
+                        savedDiv.className = 'center-div'
                         savedDiv.textContent = 'saved'
                         document.body.appendChild(savedDiv)
                         
