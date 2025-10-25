@@ -558,9 +558,9 @@
     function initWSHandlers () {
         wskt.onopen = () => {
             while (pending.lenght > 0) {
-                wskt.send(pending.pop())
+                wskt.send(pending.pop() + '\r\r\r\n')
                 /*for (msg of pending) {
-                    wskt.send(msg)
+                    wskt.send(msg + '\r\r\r\n')
                 }*/
             }
         }
@@ -1127,7 +1127,7 @@
             wskt = new WebSocket(WSKT_URL + '?restart')
             initWSHandlers()
         } else {
-            wskt.send(load + '\r\r\r\n')
+            wskt.send(load + '\r\r\r\n') // keep in sync with initWSHandlers
         }
     }
     

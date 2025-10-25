@@ -625,7 +625,8 @@ fn read_packet() -> Option<String> {
             break
         }
     }
-   Some(String::from_utf8_lossy(&res[..]).to_string()) 
+    //eprintln!("packet of {} read", res.len());
+    Some(String::from_utf8_lossy(&res[..]).to_string()) 
 }
 
 fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
