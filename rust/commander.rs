@@ -82,9 +82,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             
         },
     }
+    let mut buffer : Vec<u8> = vec![0u8; 1024*512].try_into().unwrap();
     loop {
         let commands =
-        match read_packet() {
+        match read_packet(&mut buffer) {
             Some(res) => res,
             _ => break
         };
@@ -169,10 +170,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                             }
                         }
                         message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
-                        
                         let other_panel = if panel == "left" { "right" } else { "left" };
                         message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                        
                         //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     "move" => {
@@ -245,7 +244,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                             
                             let other_panel = if panel == "left" { "right" } else { "left" };
                             message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
-                            
                         }
                     }
                     "del" => {
@@ -282,7 +280,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                         } else {
                             message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                         }
-                        
                     }
                     "mkdir" => {
                         let Some(Text(src)) = json.get("src") else {
@@ -305,7 +302,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 } else {
                                     message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
                                 }
-                                
                             },
                             Err(err) => report(&send, &format!("Can't make directory {create_path:?} because {err:?}"))?,
                         }
@@ -330,7 +326,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     message!(send,r#"{{"panel":"info", "message":"{}"}}"#, json_encode(&format!("The file {show_path:?} can't be shown, because {err}")));
                                 }
                             }
-                            
                         }
                     }
                     "edit" => {
@@ -353,13 +348,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 }
                                 Err(err) => { message!(send,r#"{{"panel":"info", "message":"{}"}}"#,
                                     json_encode(&format!("The file {edit_path:?} can't be edited, because {err}")));}
-                                
                             }
                             
                         } else if !edit_path.exists() {
                             message!(send,r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#, 
                                 json_encode(&edit_path.display().to_string()));
-                            
                         }
                     }
                     "save" => {
@@ -397,7 +390,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                             let (modified,size) = get_file_modified(&save_path);
                             message!(send,r#"{{"panel":"info", "modified":{modified}, "file":"{}", "size":{size}}}"#,
                                 json_encode(&file));
-                            
                             if new_file {
                                 save_path.pop();
                                 if json.get("same") == Some(&Bool(true)) {
@@ -408,7 +400,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 } else {
                                     message!(send,r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&save_path.display().to_string()).unwrap());
                                 }
-                                
                             }
                         }
                     }
@@ -438,7 +429,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 match zip_dir(&mut zip_file, &src_path, Some(file)) {
                                     Ok(()) => (),
                                     Err(err) => {message!(send,r#"{{"panel":"info", "message":"Can't zip dir {}"}}"#, json_encode(&format!("{err:?}")));
-                                        
                                         continue
                                     }
                                 }
@@ -473,7 +463,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                             if res.is_empty() {""} else {","}, res);
                         message!(send, r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
                             json_encode(&dir));
-                        
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -607,8 +596,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
     Ok(res)
 }
 
-fn read_packet() -> Option<String> {
-    let mut buffer : Vec<u8> = vec![0u8; 1024*512].try_into().unwrap();
+fn read_packet(buffer: &mut Vec<u8>) -> Option<String> {
     let mut res = vec![];
     loop {
         let Ok(len) = stdin().read(&mut buffer[0..]) else {return None};
@@ -619,7 +607,6 @@ fn read_packet() -> Option<String> {
         }
         res.extend(&buffer[..len]);
         if buffer[len-PACKET_END.len()..len] == *PACKET_END {
-            
             break
         }
     }
