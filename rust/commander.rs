@@ -504,8 +504,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     // ws close
-    let _ = save_state(state);
-    Ok(())
+    Ok(save_state(state)?)
 }
 
 fn read_state() -> Option<State> {
@@ -536,8 +535,7 @@ fn save_state(state:State) -> io::Result<()> {
     config.push(".sc");
     let mut state_str = String::new();
     write!(state_str,"left={}\nright={}",state.left,state.right).unwrap();
-    fs::write(config, state_str)?;
-    Ok(())
+    fs::write(config, state_str)
 }
 
 fn get_dir(dir: &str) -> io::Result<String> {
@@ -561,12 +559,11 @@ fn get_dir(dir: &str) -> io::Result<String> {
 }
 
 fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<String> {
-    let mut res = String::new();
     let mut cur_dir = PathBuf::from(dir);
     if !sub_dir.is_empty() {
         cur_dir.push(&mut *sub_dir)
     }
-    res = read_dir(&cur_dir)?.fold(res,
+    Ok(read_dir(&cur_dir)?.fold(String::new(),
        |mut res,cur| {if let Ok(cur) = cur {
                 let md = cur.metadata().unwrap();
                 if cur.file_name().display().to_string().contains_ignore_case(search) {
@@ -592,8 +589,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
             }
             res
         }
-    );
-    Ok(res)
+    ))
 }
 
 fn read_packet(buffer: &mut Vec<u8>) -> Option<String> {
@@ -624,7 +620,7 @@ fn get_file_modified(path: &PathBuf) -> (u64,u64) { // in seconds, in bytes
 }
 
 fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Result<()> {
-    for entry in dir.read_dir()? {
+    Ok(for entry in dir.read_dir()? {
         let entry = entry?; 
         if let Ok(file_type) = entry.file_type() { 
             let name = entry.file_name().to_str().unwrap().to_owned();
@@ -639,8 +635,7 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
                 zip_dir(zip, &entry.path(), Some(&zip_path))?
             }   
         }
-    }
-    Ok(())
+    })
 }
 
 fn report(send: &Sender<String>, msg: &str) -> io::Result<()> {
