@@ -216,7 +216,7 @@
     }
     
     /* Dropdown Content (Hidden by Default) */
-    .dropdown-content {
+    .dropdown-content, .dropdown-content-right {
       display: none;
       position: absolute;
       background-color: #f1f1f1;
@@ -226,7 +226,7 @@
     }
     
     /* Links inside the dropdown */
-    .dropdown-content a {
+    .dropdown-content a, .dropdown-content-right a {
       color: black;
       padding: 12px 16px;
       text-decoration: none;
@@ -240,13 +240,19 @@
     }
     
     /* Change color of dropdown links on hover */
-    .dropdown-content a:hover {background-color: #ddd;}
+    .dropdown-content a:hover, .dropdown-content-right a:hover {background-color: #ddd;}
     
     /* Show the dropdown menu on hover */
-    .dropdown:hover .dropdown-content {display: block;}
+    .dropdown:hover .dropdown-content, .dropdown:hover .dropdown-content-right {display: block;}
     
     /* Change the background color of the dropdown button when the dropdown content is shown */
     .dropdown:hover .dropbtn {background-color: #3e8e41;}
+    
+    
+       /* Dropdown Content (Hidden by Default) */
+    .dropdown-content-right {
+      right: 0;
+    }
     
     @media (prefers-color-scheme: dark) {
         :root {
@@ -264,13 +270,13 @@
             opacity:0.9;
             background-color:#333;
         }
-        .dropdown-content a {
+        .dropdown-content a, .dropdown-content-right a {
             color: gray;
         }
-        .dropdown-content {
+        .dropdown-content, .dropdown-content-right {
             background-color: #212121;
         }
-        .dropdown-content a:hover {background-color: #444;}
+        .dropdown-content a:hover, .dropdown-content-right a:hover {background-color: #444;}
         .image-with-button {
             background-color:#99ccff; color: #333;
         }
@@ -283,8 +289,10 @@
   <main>
     <div class="panel" id="left-panel">
       <div class="panel-header">
-        <input type="text" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
-        
+        <input type="text" list="left-bookmarks" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
+        <datalist id="left-bookmarks">
+            <option value="Add the current">
+        </datalist>
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('left')">🔄</button>
             <div class="dropdown-content" id="myDiv">
@@ -299,8 +307,18 @@
 
     <div class="panel" id="right-panel">
       <div class="panel-header">
-        <input type="text" id="right-dir" value="/" onfocus="selectPanel(this)" />
-        <button onclick="requestPanel('right')">🔁</button>
+        <input type="text" list="right-bookmarks" id="right-dir" value="/" onfocus="selectPanel(this)" />
+        <datalist id="right-bookmarks">
+            <option value="Add the current">
+        </datalist>
+        <div class="dropdown">
+            <button class="dropbtn" onclick="requestPanel('right')">🔁</button>
+            <div class="dropdown-content-right" id="myDiv-right">
+                <a href="javascript:sorts['right']==1?sorts['right']=0:sorts['right']=1;var aEls = document.getElementById('myDiv-right').querySelectorAll('a');if (sorts['right']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked');aEls[1].classList.remove('marked');aEls[2].classList.remove('marked')">Z..A</a>
+                <a href="javascript:sorts['right']==2?sorts['right']=3:sorts['right']=2;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(2)').classList.add('marked')">Time</a>
+                <a href="javascript:sorts['right']==4?sorts['right']=5:sorts['right']=4;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(3)').classList.add('marked')">Size</a>
+            </div>
+        </div>
       </div>
       <div id="right-files" class="panel-files"></div>
     </div>
