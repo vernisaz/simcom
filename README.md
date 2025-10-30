@@ -27,7 +27,7 @@ requires a license for a distribution in a source or a binary form, I do not dis
 if you plan to distribute the Simple Commander.
 
 ## Web server
-Since the project uses the websocket endpoint implemented on WS CGI technology,
+Since the project uses a websocket endpoint implemented on WS CGI technology,
 only the [SimHTTP](https://github.com/vernisaz/simhttp)
 can be used to run it properly.
 It isn't a drawback since the server exists on all platforms.
