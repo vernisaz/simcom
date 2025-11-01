@@ -756,9 +756,9 @@
                                 wsktSend(JSON.stringify({op:'info', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
                             })
                             div.focus()
-                            document.title = fileName
                         } else
                             wsktSend(JSON.stringify({op:'show', src:document.getElementById(`${actPanel}-dir`).value, panel:actPanel, file:fileName}))
+                        document.title = fileName
                     }
                 } else {
                     var showFile = ''
