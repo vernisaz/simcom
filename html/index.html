@@ -560,10 +560,15 @@
                             el.classList.toggle('selectedd');
                         }
                     } else {
-                        const link = document.createElement("a");
-                        link.href = `${UPL_URL}/simdown/${dir}${SEP}${fileEntry.name}`;
-                        link.download = fileEntry.name;
-                        link.click();
+                        event.target.classList.toggle('selectedd')
+                        if(event.target.classList.contains('selectedd')) {
+                            if (confirm(`Would you like download ${fileEntry.name}`)) {
+                                const link = document.createElement("a");
+                                link.href = `${UPL_URL}/simdown/${dir}${SEP}${fileEntry.name}`;
+                                link.download = fileEntry.name;
+                                link.click();
+                            }
+                        }
                     }
               }
             };
