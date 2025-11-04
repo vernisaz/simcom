@@ -234,8 +234,14 @@
     }
     
     .marked::before {
-        content: "✓"; /* &uarr;↑, &darr;↓ */
+        content: "✓"; /* ↓ */
         color: #777;
+        margin-right: 2px;
+    }
+    
+    .marked-back::before {
+        content: "↑"; 
+        color: #788;
         margin-right: 2px;
     }
     
@@ -295,9 +301,9 @@
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('left')">🔄</button>
             <div class="dropdown-content" id="myDiv">
-                <a href="javascript:sorts['left']==1?sorts['left']=0:sorts['left']=1;var aEls = document.getElementById('myDiv').querySelectorAll('a');if (sorts['left']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked');aEls[1].classList.remove('marked');aEls[2].classList.remove('marked')">Z..A</a>
-                <a href="javascript:sorts['left']==2?sorts['left']=3:sorts['left']=2;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv').querySelector('a:nth-of-type(2)').classList.add('marked')">Time</a>
-                <a href="javascript:sorts['left']==4?sorts['left']=5:sorts['left']=4;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv').querySelector('a:nth-of-type(3)').classList.add('marked')">Size</a>
+                <a href="javascript:sorts['left']==1?sorts['left']=0:sorts['left']=1;var aEls = document.getElementById('myDiv').querySelectorAll('a');if (sorts['left']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked','marked-back');aEls[1].classList.remove('marked','marked-back');aEls[2].classList.remove('marked','marked-back')">Z..A</a>
+                <a href="javascript:sorts['left']==2?sorts['left']=3:sorts['left']=2;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked','marked-back'));document.getElementById('myDiv').querySelector('a:nth-of-type(2)').classList.add(sorts['left']==2?'marked':'marked-back')">Time</a>
+                <a href="javascript:sorts['left']==4?sorts['left']=5:sorts['left']=4;document.getElementById('myDiv').querySelectorAll('a').forEach(el => el.classList.remove('marked','marked-back'));document.getElementById('myDiv').querySelector('a:nth-of-type(3)').classList.add(sorts['left']==4?'marked':'marked-back')">Size</a>
             </div>
         </div>
       </div>
@@ -313,9 +319,9 @@
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('right')">🔁</button>
             <div class="dropdown-content-right" id="myDiv-right">
-                <a href="javascript:sorts['right']==1?sorts['right']=0:sorts['right']=1;var aEls = document.getElementById('myDiv-right').querySelectorAll('a');if (sorts['right']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked');aEls[1].classList.remove('marked');aEls[2].classList.remove('marked')">Z..A</a>
-                <a href="javascript:sorts['right']==2?sorts['right']=3:sorts['right']=2;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(2)').classList.add('marked')">Time</a>
-                <a href="javascript:sorts['right']==4?sorts['right']=5:sorts['right']=4;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(3)').classList.add('marked')">Size</a>
+                <a href="javascript:sorts['right']==1?sorts['right']=0:sorts['right']=1;var aEls = document.getElementById('myDiv-right').querySelectorAll('a');if (sorts['right']==1) aEls[0].classList.add('marked');else aEls[0].classList.remove('marked','marked-back');aEls[1].classList.remove('marked','marked-back');aEls[2].classList.remove('marked','marked-back')">Z..A</a>
+                <a href="javascript:sorts['right']==2?sorts['right']=3:sorts['right']=2;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked','marked-back'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(2)').classList.add(sorts['right']==2?'marked':'marked-back')">Time</a>
+                <a href="javascript:sorts['right']==4?sorts['right']=5:sorts['right']=4;document.getElementById('myDiv-right').querySelectorAll('a').forEach(el => el.classList.remove('marked','marked-back'));document.getElementById('myDiv-right').querySelector('a:nth-of-type(3)').classList.add(sorts['right']==4?'marked':'marked-back')">Size</a>
             </div>
         </div>
       </div>
