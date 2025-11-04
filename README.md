@@ -23,7 +23,7 @@ You will need also common [scripts](https://github.com/vernisaz/simscript) to bu
 
 The project uses also 2 3rd party dependencies for viewing an info of image files. How to get and build them is described in
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md). Since the crate
-requires a license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
+requires the license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
 if you plan to distribute the Simple Commander.
 
 ## Web server
@@ -33,22 +33,26 @@ can be used to run it properly.
 It isn't a drawback since the server exists on all platforms.
 Hopefully, more vendors will adopt the WS CGI soon and the list of supporting servers will be extended.
 
-Read a note in the above server page regarding running it in a background mode withous setup as a service.
+Read a note in the above server description regarding running it in a background mode withous setup as a service.
 
 ## File upload
 The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
 configured properly accordingly your web server settings. Default value is **./upload**.
 
 ## Platforms
-Windows, Mac, Linux and free BSD are supported.
+Windows, Mac, Linux and Free BSD are supported.
 
 ## Installation
-Unzip the provided archive accordingly your platform and a processor type. Launch *simcom* script, or directly *./bin/simhttp*
+Unzip the provided archive accordingly your platform and the processor type. Launch *simcom* script, or directly *./bin/simhttp*
 from the directory where the installation archive was opened. The access URL will look like -
 
 > http://localhost:3000/cmd/
 
 You can edit **env.conf** to change the host name or port.
+
+## Known issues
+If the WebSocket connection was closed for some reason, the first interaction with it can be lost, 
+and repeating it can be required.
 
 ## No-Cargo build
 This product uses an [alternative tool](https://github.com/vernisaz/rust_bee) to the Cargo building tool.
