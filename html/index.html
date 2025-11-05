@@ -259,6 +259,16 @@
       right: 0;
     }
     
+    ul#left-bookmarks {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 120px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        cursor: pointer;
+        z-index: 1;
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -294,10 +304,10 @@
   <main>
     <div class="panel" id="left-panel">
       <div class="panel-header">
-        <input type="text" list="left-bookmarks" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
-        <datalist id="left-bookmarks">
-            <option value="Add the current">
-        </datalist>
+        <input type="text" id="left-dir" value="/" class="selected-panel" onfocus="selectPanel(this)" />
+        <ul id="left-bookmarks">
+            <li onclick="addBookmark('left')">Add the current</li>
+        </ul>
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('left')">🔄</button>
             <div class="dropdown-content" id="myDiv">
@@ -494,6 +504,13 @@
             // probably reload content
         }
     });
+    
+    document.getElementById('left-dir').addEventListener('keydown', function(event) {
+        if (event.keyCode === 40) { // Down arrow key
+          document.querySelector('#left-bookmarks').style.display = 'block';
+          event.preventDefault(); 
+        }
+      });
     
     function requestPanel(panelId,newDir) {
         if (!newDir)
@@ -1092,6 +1109,23 @@
           wsktSend(JSON.stringify({op:'search', dir:srcDirInput.value, panel:srcPanel, same:same, file:searchStr}))
         }, { once: true });
         dlg.showModal();
+    }
+    
+    function addBookmark(panel) {
+        const dirInput = document.getElementById(`${panel}-dir`);
+        const bookmarks = document.getElementById(`${panel}-bookmarks`);
+        const node = document.createElement("Li");
+        const text = dirInput.value; 
+        const textnode=document.createTextNode(text);
+        node.appendChild(textnode);
+        node.addEventListener('click', (event) => {
+            event.stopPropagation();
+            dirInput.value = textnode.nodeValue
+            bookmarks.style.display = 'none'
+            requestPanel(panel)
+        })
+        bookmarks.appendChild(node);
+        bookmarks.style.display = 'none'
     }
     
     function updateFile(panelId, fileName, modified, size) {
