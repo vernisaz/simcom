@@ -1114,8 +1114,17 @@
     function addBookmark(panel) {
         const dirInput = document.getElementById(`${panel}-dir`);
         const bookmarks = document.getElementById(`${panel}-bookmarks`);
+        const text = dirInput.value;
+        for (const bmEl of bookmarks.children) {
+            // TODO skip first elem
+            if (bmEl.textContent == text) {
+                bmEl.remove()
+                bookmarks.style.display = 'none'
+                return
+            }
+        }
         const node = document.createElement("Li");
-        const text = dirInput.value; 
+         
         const textnode=document.createTextNode(text);
         node.appendChild(textnode);
         node.addEventListener('click', (event) => {
