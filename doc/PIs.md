@@ -125,7 +125,7 @@ Run the
 
 > sudo apt install openjdk-17-jdk-headless
 
-Note that current Java LTS is 25, so probaly choose the version just in case.
+Note that the current Java LTS is 25, so probaly choose the version just in case.
 
 ### Install (Java) 7Bee
 
@@ -198,7 +198,7 @@ The following set of commands is used to control the service,
 
 You can selected any other name for the service not clashing with already existing services.
 
-### A developer paradise
+### The developer paradise
 
 If you do a development using Rust, then I will recommend to install the Rust Development Studio
 ([RDS](https://github.com/vernisaz/rust_dev_studio/releases)), you can download it or build.
