@@ -517,11 +517,11 @@
             for (const bmEl of bookmarks.children) {
                 // TODO skip first elem
                 if (bmEl.firstChild.nodeValue == text) {
-                    bookmarks.firstChild.firstChild.nodeValue = 'Remove the bookmark'
+                    bookmarks.children[0].textContent = 'Remove the bookmark'
                     return
                 }
             }
-            bookmarks.firstChild.firstChild.nodeValue = 'Add the current'
+            bookmarks.children[0].textContent = 'Add the current'
         }
       });
     

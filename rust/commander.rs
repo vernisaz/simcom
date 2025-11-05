@@ -31,6 +31,8 @@ const PACKET_END: &[u8] = b"\r\r\r\n";
 struct State {
     left: String,
     right: String,
+    left_bookmarks: Option<Vec<String>>,
+    right_bookmarks: Option<Vec<String>>,
 }
 
 trait IgnoreCase {
@@ -56,14 +58,22 @@ fn main() -> Result<(), Box<dyn Error>> {
          String::new()
     };
     
-    let mut state = State{
-        left: format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
-        right:format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+    let mut state = 
+    if let Some(stored_state) = read_state(&os_drive) {
+        State{
+            left : stored_state.left,
+            right : stored_state.right,
+            left_bookmarks: stored_state.left_bookmarks,
+            right_bookmarks: stored_state.right_bookmarks,
+        }
+    } else {
+        State{
+            left: format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+            right:format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+            left_bookmarks: None,
+            right_bookmarks: None,
+        }
     };
-    if let Some(stored_state) = read_state() {
-        state.left = stored_state.left;
-        state.right = stored_state.right;
-    }
     
     let (send, recv) = mpsc::channel();
     thread::spawn(move || {
@@ -507,23 +517,31 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(save_state(state)?)
 }
 
-fn read_state() -> Option<State> {
+fn read_state(os_drive: &String) -> Option<State> {
     let Ok(mut config) = get_config_root() else {
         return None
     };
     config.push(".sc");
     if config.exists() {
-        let file_contents = fs::read_to_string(config).ok()?; 
-        if let Some(pair) = file_contents.split_once('\n') {
-            if let Some((panel,dir)) = pair.0.split_once('=' ) {
-                if let Some((other_panel,other_dir)) = pair.1.split_once('=' ) {
-                    return Some(State {
-                        right: if panel == "right" {dir} else {other_dir}.to_string(),
-                        left: if other_panel == "right" {dir} else {other_dir}.to_string(),
-                    })
-                }
-            }
-        }
+        let Ok(state_file) = fs::read_to_string(config) else {
+            return None
+        };
+        let state = simjson::parse(&state_file);
+        let Data(state) = state else {
+            return None
+        };
+        return Some(State {
+            right: match state.get("right") {
+                Some(Text(right)) => right.clone(),
+                _ => format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+            },
+            left: match state.get("left") {
+                Some(Text(left)) => left.clone(),
+                _ => format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+            },
+            left_bookmarks: None,
+            right_bookmarks: None,
+        })
     }
     None
 }
