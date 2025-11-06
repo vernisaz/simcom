@@ -259,7 +259,7 @@
       right: 0;
     }
     
-    ul#left-bookmarks {
+    ul#left-bookmarks, ul#right-bookmarks {
         display: none;
         position: absolute;
         background-color: #f1f1f1;
@@ -295,6 +295,9 @@
         .image-with-button {
             background-color:#99ccff; color: #333;
         }
+        ul#left-bookmarks, ul#right-bookmarks {
+            background-color: #212121;
+        }
     } 
   </style>
   <script src="/cmd/js/common.js" language="Javascript"></script>
@@ -322,10 +325,10 @@
 
     <div class="panel" id="right-panel">
       <div class="panel-header">
-        <input type="text" list="right-bookmarks" id="right-dir" value="/" onfocus="selectPanel(this)" />
-        <datalist id="right-bookmarks">
-            <option value="Add the current">
-        </datalist>
+        <input type="text" id="right-dir" value="/" onfocus="selectPanel(this)" />
+        <ul id="right-bookmarks">
+            <li onclick="addBookmark('right')">Add the current</li>
+        </ul>
         <div class="dropdown">
             <button class="dropbtn" onclick="requestPanel('right')">🔁</button>
             <div class="dropdown-content-right" id="myDiv-right">
@@ -524,6 +527,26 @@
             bookmarks.children[0].textContent = 'Add the current'
         }
       });
+      
+    document.getElementById('right-dir').addEventListener('keydown', function(event) {
+        if (event.keyCode === 40) { // Down arrow key
+            event.preventDefault();
+            const panel = 'right'
+            document.querySelector('#right-bookmarks').style.display = 'block';
+          
+            const dirInput = document.getElementById(`${panel}-dir`);
+            const bookmarks = document.getElementById(`${panel}-bookmarks`);
+            const text = dirInput.value;
+            for (const bmEl of bookmarks.children) {
+                // TODO skip first elem
+                if (bmEl.firstChild.nodeValue == text) {
+                    bookmarks.children[0].textContent = 'Remove the bookmark'
+                    return
+                }
+            }
+            bookmarks.children[0].textContent = 'Add the current'
+        }
+    });
     
     function requestPanel(panelId,newDir) {
         if (!newDir)
