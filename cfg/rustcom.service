@@ -3,12 +3,13 @@ Description=RustCom Daemon
 After=network.target
 
 [Service]
-ExecStart=/home/root2/.rustcom/bin/simhttp
+ExecStart=/home/dmitriy/projects/simhttp/simhttp
 Type=simple
-ExecStop=ps aux | grep -i /home/root2/.rustcom/bin/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1
-ExecReload=ps aux | grep -i /home/root2/.rustcom/bin/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1 && /home/root2/.rustcom/bin/simhttp
-User=root2
-Group=admin
+ExecStop=ps aux | grep -i /home/dmitriy/projects/simhttp/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1
+ExecReload=ps aux | grep -i /home/dmitriy/projects/simhttp/simhttp | awk {'print$2'} | xargs kill >/dev/null 2>&1 && /home/dmitriy/projects/simhttp/simhttp
+User=dmitriy
+Group=dmitriy
+WorkingDirectory=/home/dmitriy/projects/simhttp
 
 [Install]
 WantedBy=multi-user.target
