@@ -526,6 +526,9 @@
                 }
             }
             bookmarks.children[0].textContent = 'Add the current'
+        } else if (event.keyCode === 38) { // Down arrow key
+            event.preventDefault();
+            document.querySelector('#left-bookmarks').style.display = 'none';
         }
       });
       
@@ -544,8 +547,11 @@
                     bookmarks.children[0].textContent = 'Remove the bookmark'
                     return
                 }
-            }
+            } 
             bookmarks.children[0].textContent = 'Add the current'
+        } else if (event.keyCode === 38) { // Down arrow key
+            event.preventDefault();
+            document.querySelector('#right-bookmarks').style.display = 'none';
         }
     });
     
