@@ -682,6 +682,16 @@
                     SEP = response.separator
                     //requestPanel('left', response.left? response.left:DRIVE + SEP);
                     //requestPanel('right', response.right? response.right:DRIVE + SEP);
+                    if (response.left_bookmarks) {
+                        for (const bm of response.left_bookmarks) {
+                            addBookmark('left', bm)
+                        }
+                    }
+                    if (response.right_bookmarks) {
+                        for (const bm of response.right_bookmarks) {
+                            addBookmark('right', bm)
+                        }
+                    }
                     const newDirL = response.left? response.left:DRIVE + SEP
                     const newDirR = response.right? response.right:DRIVE + SEP
                     wsktSend(JSON.stringify({op:'dir', dir:newDirL, panel:'left'}) + '\n' +
@@ -1124,10 +1134,10 @@
         dlg.showModal();
     }
     
-    function addBookmark(panel) {
+    function addBookmark(panel,bmText) {
         const dirInput = document.getElementById(`${panel}-dir`);
         const bookmarks = document.getElementById(`${panel}-bookmarks`);
-        const text = dirInput.value;
+        const text = bmText?bmText:dirInput.value;
         for (const bmEl of bookmarks.children) {
             // TODO skip first elem
             if (bmEl.textContent == text) {
@@ -1147,6 +1157,7 @@
             requestPanel(panel)
         })
         bookmarks.appendChild(node);
+        wsktSend(JSON.stringify({op:'bookmark', dir:text, panel:panel}));
         bookmarks.style.display = 'none'
     }
     

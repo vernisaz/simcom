@@ -7,6 +7,7 @@ extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
     env::consts, env, convert::TryInto, sync::mpsc::{self,Sender}, thread, error::Error,
+    collections::HashSet,
 };
 
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
@@ -31,8 +32,8 @@ const PACKET_END: &[u8] = b"\r\r\r\n";
 struct State {
     left: String,
     right: String,
-    left_bookmarks: Option<Vec<String>>,
-    right_bookmarks: Option<Vec<String>>,
+    left_bookmarks: Option<HashSet<String>>,
+    right_bookmarks: Option<HashSet<String>>,
 }
 
 trait IgnoreCase {
@@ -87,8 +88,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     match env::var("QUERY_STRING") {
         Ok(value) if value == "restart" => (),
         _ => {
-            message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}"}}"#, consts::OS,
-                 os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
+            let json_arr_left = 
+                match state.left_bookmarks {
+                    Some(ref arr) => arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    _ => String::new(),
+                };
+            let json_arr_right = 
+                match state.right_bookmarks {
+                    Some(ref arr) => arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    _ => String::new(),
+                };
+            message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
+                consts::OS,
+                os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
             
         },
     }
@@ -507,6 +519,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                         message!(send, r#"{{"panel":"info", "kind":"exif", "details":{}}}"#, info);
                         
                     }
+                    "bookmark" => {
+                        let Some(Text(dir)) = json.get("dir") else {
+                            continue
+                        };
+                        match panel.as_str() {
+                            "left" => {
+                                if state.left_bookmarks == None {
+                                    state.left_bookmarks = Some(HashSet::new())
+                                }
+                                state.left_bookmarks.as_mut().unwrap()
+                            }
+                            "right" => {
+                                if state.right_bookmarks == None {
+                                    state.right_bookmarks = Some(HashSet::new())
+                                }
+                                state.right_bookmarks.as_mut().unwrap()
+                            }
+                            _ => continue
+                        }.insert(dir.clone());
+                    }
                     _ => ()
                 }
                 _ => ()
@@ -539,24 +571,55 @@ fn read_state(os_drive: &String) -> Option<State> {
                 Some(Text(left)) => left.clone(),
                 _ => format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
             },
-            left_bookmarks: None,
-            right_bookmarks: None,
+            left_bookmarks: match state.get("left_bookmarks") {
+                Some(Arr(bookmarks)) => {
+                    let mut bookmark_paths = HashSet::new();
+                    for bm in bookmarks {
+                        if let Text(path) = bm {
+                            bookmark_paths.insert(path.clone());
+                        }
+                    }
+                    Some(bookmark_paths)
+                },
+                _ => None,
+            },
+            right_bookmarks: match state.get("right_bookmarks") {
+                Some(Arr(bookmarks)) => {
+                    let mut bookmark_paths = HashSet::new();
+                    for bm in bookmarks {
+                        if let Text(path) = bm {
+                            bookmark_paths.insert(path.clone());
+                        }
+                    }
+                    Some(bookmark_paths)
+                },
+                _ => None,
+            },
         })
     }
     None
 }
 
-fn save_state(state:State) -> io::Result<()> {
+fn save_state(state:State) -> Result<(), Box<dyn Error>> {
     let Ok(mut config) = get_config_root() else {
-        return Err(io::Error::new(io::ErrorKind::Other, "no config directory".to_string()))
+        return Err(Box::new(io::Error::new(io::ErrorKind::Other, "no config directory".to_string())))
     };
     config.push(".sc");
-    let mut state_str = String::new();
-    write!(state_str,"left={}\nright={}",state.left,state.right).unwrap();
-    fs::write(config, state_str)
+    let mut state_str = String::from("{");
+    write!(state_str,r#""left":"{}","right":"{}""#,json_encode(&state.left),json_encode(&state.right))?;
+    if let Some(arr) = state.left_bookmarks {
+        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap();
+        write!(state_str,r#","left_bookmarks":[{json_arr}]"#)?
+    }
+    if let Some(arr) = state.right_bookmarks {
+        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e);
+        write!(state_str,r#","right_bookmarks":[{json_arr:?}]"#)?
+    }
+    state_str.push('}');
+    Ok(fs::write(config, state_str)?)
 }
 
-fn get_dir(dir: &str) -> io::Result<String> {
+fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
     let mut init = String::new();
     let path = Path::new(&dir);
     if let Some(_parent_path) = path.parent() {
