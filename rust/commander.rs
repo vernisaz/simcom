@@ -612,8 +612,8 @@ fn save_state(state:State) -> Result<(), Box<dyn Error>> {
         write!(state_str,r#","left_bookmarks":[{json_arr}]"#)?
     }
     if let Some(arr) = state.right_bookmarks {
-        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e);
-        write!(state_str,r#","right_bookmarks":[{json_arr:?}]"#)?
+        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap();
+        write!(state_str,r#","right_bookmarks":[{json_arr}]"#)?
     }
     state_str.push('}');
     Ok(fs::write(config, state_str)?)
