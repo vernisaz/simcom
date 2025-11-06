@@ -539,6 +539,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                             _ => continue
                         }.insert(dir.clone());
                     }
+                    "delete-bookmark" => {
+                        let Some(Text(dir)) = json.get("dir") else {
+                            continue
+                        };
+                        match panel.as_str() {
+                            "left" => {
+                                if state.left_bookmarks == None {
+                                    continue
+                                }
+                                state.left_bookmarks.as_mut().unwrap()
+                            }
+                            "right" => {
+                                if state.right_bookmarks == None {
+                                    continue
+                                }
+                                state.right_bookmarks.as_mut().unwrap()
+                            }
+                            _ => continue
+                        }.remove(dir);
+                    }
                     _ => ()
                 }
                 _ => ()

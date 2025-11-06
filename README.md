@@ -48,11 +48,11 @@ from the directory where the installation archive was opened. The access URL wil
 
 > http://localhost:3000/cmd/
 
-You can edit **env.conf** to change the host name or port.
+You can edit **env.conf** to change a host name or port.
 
 ## Known issues
-If the WebSocket connection was closed for some reason, the first interaction with it can be lost, 
-and repeating it can be required.
+If the WebSocket connection was closed for some reason, the first interaction with it after can be lost, 
+and a repeating it can be required.
 
 ## No-Cargo build
 This product uses an [alternative tool](https://github.com/vernisaz/rust_bee) to the Cargo building tool.
