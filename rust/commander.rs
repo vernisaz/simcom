@@ -546,7 +546,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     // ws close
-    Ok(save_state(state)?)
+    save_state(state)
 }
 
 fn read_state(os_drive: &String) -> Option<State> {
