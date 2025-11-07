@@ -42,25 +42,25 @@ target package {
         target(build)
     }
 	dependency{true}
-	http conf="{
-   \"bind\" : \"0.0.0.0\",
-   \"port\" : 3000,
-   \"threads\" : 40,
-   \"no terminal\": true,
-   \"mapping\" : ["
+	http conf={\
+    "bind" \: "0.0.0.0",\
+    "port" \: 3000,\
+    "threads" \: 40,\
+    "no terminal"\: true,\
+    "mapping" \: [
     read(.${~/~}cfg${~/~}http.conf)
     assign(http conf,"${http conf}${~~}],")
-    assign(http conf,"${http conf}
-    \"log\" : {
-          \"out\": {
-                  \"out _comment_\": \"file|stdout\",
-                  \"name\": \"simcom-${0}\",
-                  \"path\":\".${~/~}log\",
-                  \"max lines\": 59000,
-                  \"max files\": 20
-          },
-          \"level\":2
-    },")
+    assign(http conf,${http conf}\
+     "log" : {\
+          "out": {\
+                  "out _comment_": "file|stdout"\,\
+                  "name": "simcom-${0}"\,\
+                  "path":".${~/~}log"\,\
+                  "max lines": 59000\,\
+                  "max files": 20\
+          }\,\
+          "level":2\
+    }\,)
     read(.${~/~}cfg${~/~}mime.conf)
     assign(http conf,"${http conf}${~~}}")
 	zip(.${~/~}simcom-${version}.zip,
