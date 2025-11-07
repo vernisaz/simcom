@@ -223,7 +223,6 @@
       min-width: 84px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
       z-index: 1;
-      padding-right: 1em;
     }
     
     /* Links inside the dropdown */
@@ -267,6 +266,7 @@
         min-width: 120px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         cursor: pointer;
+        padding-right: 1em;
         z-index: 1;
     }
     
@@ -293,15 +293,15 @@
         .dropdown-content a, .dropdown-content-right a {
             color: gray;
         }
-        .dropdown-content, .dropdown-content-right {
+        .dropdown-content, .dropdown-content-right, ul#left-bookmarks, ul#right-bookmarks {
             background-color: #212121;
         }
         .dropdown-content a:hover, .dropdown-content-right a:hover {background-color: #444;}
         .image-with-button {
             background-color:#99ccff; color: #333;
         }
-        ul#left-bookmarks, ul#right-bookmarks {
-            background-color: #212121;
+        ul#left-bookmarks li:hover, ul#right-bookmarks li:hover {
+            background-color: #555555;
         }
     } 
   </style>
