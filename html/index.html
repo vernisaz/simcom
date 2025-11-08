@@ -415,6 +415,10 @@
               if (event.key == 'F7') {
                   openSearch()
               }
+          } else if (event.altKey) {
+              if (event.key == 'F9') {
+                  openTerminal()
+              }
           } else {
              handleFunction(event.key)
           }
@@ -1196,6 +1200,21 @@
         bookmarks.style.display = 'none'
     }
     
+    function openTerminal() {
+        const dirInputLeft = document.getElementById(`left-dir`);
+        const actPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+        const div = document.createElement('DIV');
+        div.style.overflow = "scroll"
+        div.id = "terminal"
+        div.tabindex = 0
+        const dir = document.getElementById(`${actPanel}-dir`).value
+        div.className = 'overlay wide'
+        div.style.opacity = '1.0'
+        document.body.appendChild(div)
+        
+        document.title = 'Terminal'
+    }
+    
     function updateFile(panelId, fileName, modified, size) {
         const filesDiv = document.getElementById(`${panelId}-files`);
         var update = false
@@ -1291,6 +1310,10 @@
               event.preventDefault();
           }
           if (lastChild.id == "help-panel") {
+              document.body.removeChild(lastChild);
+              event.preventDefault();
+          }
+          if (lastChild.id == "terminal") {
               document.body.removeChild(lastChild);
               event.preventDefault();
           }
