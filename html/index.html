@@ -464,8 +464,8 @@
           event.preventDefault();
           handleFunction('F5')
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
-          event.preventDefault();
-          goBack()
+          //event.preventDefault();
+          goBack(event)
       } else if (event.code == 'NumpadMultiply') {
           let lastChild = document.body.children[document.body.children.length - 1];
           if (lastChild.id == "view-edit") {
@@ -1255,6 +1255,14 @@
         ws_term_connect()
     }
     
+    function closeTerminal() {
+        const lastChild = document.body.children[document.body.children.length - 1];
+        if (lastChild.id == "terminal") {
+            document.body.removeChild(lastChild);
+            ws_term_close()
+        }
+    }
+    
     function updateFile(panelId, fileName, modified, size) {
         const filesDiv = document.getElementById(`${panelId}-files`);
         var update = false
@@ -1339,25 +1347,24 @@
         }
     }
     
-    function goBack() {
+    function goBack(event) {
           let lastChild = document.body.children[document.body.children.length - 1];
           if (lastChild.id == "view-edit") {
-            document.body.removeChild(lastChild);
-            event.preventDefault();
+              if (event) event.preventDefault();
+              document.body.removeChild(lastChild);
           }
           if (lastChild.id == "preview-upload") {
+              if (event) event.preventDefault();
               document.body.removeChild(lastChild);
-              event.preventDefault();
           }
           if (lastChild.id == "help-panel") {
               document.body.removeChild(lastChild);
-              event.preventDefault();
+              if (event) event.preventDefault();
           }
-          if (lastChild.id == "terminal") {
-              document.body.removeChild(lastChild);
-              ws_term_close()
-              event.preventDefault();
-          }
+          /*if (lastChild.id == "terminal") {
+              closeTerminal() 
+              if (event) event.preventDefault();
+          }*/
           document.title = PRG_NAME
     }
     
