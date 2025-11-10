@@ -1355,6 +1355,7 @@
           }
           if (lastChild.id == "terminal") {
               document.body.removeChild(lastChild);
+              ws_term_close()
               event.preventDefault();
           }
           document.title = PRG_NAME
