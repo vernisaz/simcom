@@ -1,0 +1,36 @@
+extern crate simterm;
+extern crate simweb;
+use std::{
+    collections::HashMap,
+    path::PathBuf, env::{self,consts},
+};
+
+use simterm::Terminal;
+
+const VERSION: &str = env!("VERSION");
+
+struct Commander {}
+
+impl Terminal for Commander {
+    fn init(&self) -> (PathBuf, PathBuf, HashMap<String,Vec<String>>,&str) {
+        let web = simweb::WebData::new();
+        let os_drive =
+            if "windows" == consts::OS {
+                match env::var("SystemDrive") {
+                    Ok(value) => value,
+                    Err(_e) => String::new(),
+                }
+            } else {
+                 String::new()
+            };
+        let cwd = match web.param("cwd") {
+            Some(cwd) => PathBuf::from(cwd),
+            _ => PathBuf::from(format!("{os_drive}{}", std::path::MAIN_SEPARATOR_STR))
+        };
+        (cwd.clone(),cwd,HashMap::new(),VERSION)
+    }
+}
+
+fn main() {
+    let _ = Commander{}.main_loop();
+}

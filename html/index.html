@@ -158,6 +158,18 @@
         z-index: 1001;
     }
     
+    div#terminal {
+        opacity:0.9;
+        background-color:#ddd;
+        position:fixed;
+        width:100%;
+        height:100%;
+        top:0px;
+        left:0px;
+        padding: 1em;
+        overflow:auto;
+    }
+    
     .float-button {
           background-color: #3d5d91;
           border: none;
@@ -274,6 +286,19 @@
         background-color: #BBB;
     }
     
+    #terminal {
+        color: #0e131f;
+        font-family: monospace; 
+        padding-top:2px;
+        padding-bottom: 1em;
+        overflow: auto; 
+        width: fit-content;
+    }
+    
+    #terminal pre {
+        display: inline;
+    }
+    
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-color: #1e1e1e;
@@ -306,6 +331,7 @@
     } 
   </style>
   <script src="/cmd/js/common.js" language="Javascript"></script>
+  <script src="/cmd/js/terminal/terminal.js" language="Javascript"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -356,7 +382,7 @@
     <button onclick="handleFunction('F6')">F6 Move</button>
     <button onclick="handleFunction('F7',event)">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
-    <button onclick="handleFunction('F9')">F9 Upload</button>
+    <button onclick="handleFunction('F9',event)">F9 Upload</button>
     <button onclick="handleFunction('F10')">F10 Zip</button>
   </footer>
   </div>
@@ -374,6 +400,9 @@
   <script>
     const WSKT_URL = './com'
     const UPL_URL = './upload';
+    const WS_TERM_URL_BASE = './term'
+    var WS_TERM_URL = WS_TERM_URL_BASE
+    const WIN_SERVER = false
     const PRG_NAME = ' LightCommander'
     const LOCALE = navigator.language
     var wskt = new WebSocket(WSKT_URL)
@@ -1080,6 +1109,10 @@
                 }
                 break
             case 'F9':
+                if (e && e.altKey) {
+                    openTerminal()
+                    return
+                }
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
                 fileInput.multiple = true; // Allows selection of multiple files
@@ -1204,20 +1237,22 @@
         const dirInputLeft = document.getElementById(`left-dir`);
         const actPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
         const div = document.createElement('DIV');
-        div.style.overflow = "scroll"
         div.id = "terminal"
         div.tabindex = 0
         const dir = document.getElementById(`${actPanel}-dir`).value
-        div.className = 'overlay wide'
-        div.style.opacity = '1.0'
+        //div.style.opacity = '1.0'
         const code = document.createElement('CODE')
-        code.contenteditable = true
-        code.id = 'terminal'
-        code.textContent = ' '
+        code.contentEditable = true
+        code.id = 'commandarea'
+        code.style = "min-width:1em"
+        code.addEventListener('keydown', function() { sendCommand(code) })
+        code.textContent = '\xa0'
         div.appendChild(code)
         document.body.appendChild(div)
-        
+        code.focus()
         document.title = 'Terminal'
+        WS_TERM_URL = `${WS_TERM_URL_BASE}?cwd=${encodeURIComponent(dir)}`
+        ws_term_connect()
     }
     
     function updateFile(panelId, fileName, modified, size) {

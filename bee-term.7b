@@ -1,0 +1,11 @@
+project  =cmdterm
+main=rust${~/~}term
+common =..${~/~}simscript${~/~}comm-build.7b:file
+crate_dir=..${~/~}crates
+comp opts=[]
+
+version=1.01-dev
+set_env(VERSION,version)
+
+include(..${~/~}simscript${~/~}comm-test.7b)
+include(common);
