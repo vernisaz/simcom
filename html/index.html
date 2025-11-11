@@ -162,18 +162,22 @@
         z-index:998;
     }
     
+    .scroll-up > div {
+        padding: 1em;
+        color: #0e131f;
+        font-family: monospace; 
+    }
+    
+    .scroll-up > div pre {
+        display: inline;
+    }
+    
     .center-div {
         position: fixed;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 1001;
-    }
-    
-    div#terminal {
-        padding: 1em;
-        color: #0e131f;
-        font-family: monospace; 
     }
     
     .float-button {
@@ -290,10 +294,6 @@
     
     ul#left-bookmarks li:hover, ul#right-bookmarks li:hover {
         background-color: #BBB;
-    }
-    
-    #terminal pre {
-        display: inline;
     }
     
     @media (prefers-color-scheme: dark) {
