@@ -66,6 +66,8 @@ target package {
 	zip(.${~/~}simcom-${version}.zip,
 	-B ${project}/bin,
 	rustcom${ext},
+	-B ${project}/bin,
+	cmdterm${ext},
 	-A ${project}/env.conf,
 	${http conf},
 	-B ${project}/bin,
