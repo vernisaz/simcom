@@ -150,6 +150,18 @@
         grid-template-columns: 1fr;
     }
     
+    .scroll-up {
+        opacity:0.9;
+        background-color:#ddd;
+        position:fixed;
+        width:100%;
+        height:100%;
+        top:0px;
+        left:0px;
+        overflow:auto;
+        z-index:998;
+    }
+    
     .center-div {
         position: fixed;
         left: 50%;
@@ -159,15 +171,9 @@
     }
     
     div#terminal {
-        opacity:0.9;
-        background-color:#ddd;
-        position:fixed;
-        width:100%;
-        height:100%;
-        top:0px;
-        left:0px;
         padding: 1em;
-        overflow:auto;
+        color: #0e131f;
+        font-family: monospace; 
     }
     
     .float-button {
@@ -284,15 +290,6 @@
     
     ul#left-bookmarks li:hover, ul#right-bookmarks li:hover {
         background-color: #BBB;
-    }
-    
-    #terminal {
-        color: #0e131f;
-        font-family: monospace; 
-        padding-top:2px;
-        padding-bottom: 1em;
-        overflow: auto; 
-        width: fit-content;
     }
     
     #terminal pre {
@@ -1236,11 +1233,13 @@
     function openTerminal() {
         const dirInputLeft = document.getElementById(`left-dir`);
         const actPanel = dirInputLeft.classList.contains('selected-panel')?'left':'right';
+        const dir = document.getElementById(`${actPanel}-dir`).value
+        const container = document.createElement('DIV');
+        container.id = 'terminal-container'
+        container.className = 'scroll-up'
         const div = document.createElement('DIV');
         div.id = "terminal"
         div.tabindex = 0
-        const dir = document.getElementById(`${actPanel}-dir`).value
-        //div.style.opacity = '1.0'
         const code = document.createElement('CODE')
         code.contentEditable = true
         code.id = 'commandarea'
@@ -1248,7 +1247,8 @@
         code.addEventListener('keydown', function() { sendCommand(code) })
         code.textContent = '\xa0'
         div.appendChild(code)
-        document.body.appendChild(div)
+        container.appendChild(div)
+        document.body.appendChild(container)
         code.focus()
         document.title = 'Terminal'
         WS_TERM_URL = `${WS_TERM_URL_BASE}?cwd=${encodeURIComponent(dir)}`
@@ -1257,9 +1257,10 @@
     
     function closeTerminal() {
         const lastChild = document.body.children[document.body.children.length - 1];
-        if (lastChild.id == "terminal") {
+        if (lastChild.id == "terminal-container") {
             document.body.removeChild(lastChild);
             ws_term_close()
+            document.title = PRG_NAME
         }
     }
     
@@ -1361,10 +1362,6 @@
               document.body.removeChild(lastChild);
               if (event) event.preventDefault();
           }
-          /*if (lastChild.id == "terminal") {
-              closeTerminal() 
-              if (event) event.preventDefault();
-          }*/
           document.title = PRG_NAME
     }
     
