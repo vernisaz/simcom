@@ -29,7 +29,7 @@ The project uses also 2 3rd party dependencies for viewing an info of image file
 requires the license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
 if you plan to distribute the Simple Commander.
 
-## Why the author so concerened about dependencies
+## Why the author is so concerened about dependencies
 First, every dependency tells that a certain functionality goes from other product. And other product can present it better.
 Second, every dependecy adds own security risk, so the security of the entire product will depend on the security
 of the weakest product in the chain.
