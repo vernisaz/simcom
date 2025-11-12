@@ -19,12 +19,20 @@ Currently the project has 4 direct dependencies:
 - [SimZip](https://github.com/vernisaz/simple_rust_zip)
 - [SimConfig](https://github.com/vernisaz/simconfig)
 
+And one optional dependency:
+- [SimTerminal](https://github.com/vernisaz/simterminal)
+
 You will need also common [scripts](https://github.com/vernisaz/simscript) to build them.
 
 The project uses also 2 3rd party dependencies for viewing an info of image files. How to get and build them is described in
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md). Since the crate
 requires the license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
 if you plan to distribute the Simple Commander.
+
+## Why the author so concerened about dependencies
+First, every dependency tells that a certain functionality goes from other product. And other product can present it better.
+Second, every dependecy adds own security risk, so the security of the entire product will depend on the security
+of the weakest product in the chain.
 
 ## Web server
 Since the project uses a websocket endpoint implemented on WS CGI technology,
