@@ -589,6 +589,50 @@
         }
     });
     
+    const dropArea = document.getElementById('right-panel');
+
+    dropArea.ondragover = function(event) {
+        event.preventDefault(); // Prevent default to allow drop
+        this.style.backgroundColor = '#4f7a28'; // Visual feedback
+    };
+
+    dropArea.ondragleave = function(event) {
+        this.style.backgroundColor = ''; // Remove visual feedback
+    };
+
+    dropArea.ondrop = function(event) {
+        event.preventDefault(); // Prevent default to handle drop
+        this.style.backgroundColor = ''; // Remove visual feedback
+
+        // Access dropped files if applicable
+        const selectedFiles = event.dataTransfer.files;
+        if (selectedFiles.length > 0) {
+            uploadPanel(selectedFiles,'right')
+        }
+    };
+    
+    const leftDropArea = document.getElementById('left-panel');
+
+    leftDropArea.ondragover = function(event) {
+        event.preventDefault(); // Prevent default to allow drop
+        this.style.backgroundColor = '#4f7a28'; // Visual feedback
+    };
+
+    leftDropArea.ondragleave = function(event) {
+        this.style.backgroundColor = ''; // Remove visual feedback
+    };
+
+    leftDropArea.ondrop = function(event) {
+        event.preventDefault(); // Prevent default to handle drop
+        this.style.backgroundColor = ''; // Remove visual feedback
+
+        // Access dropped files if applicable
+        const selectedFiles = event.dataTransfer.files;
+        if (selectedFiles.length > 0) {
+            uploadPanel(selectedFiles,'left')
+        }
+    };
+    
     function requestPanel(panelId,newDir) {
         if (!newDir)
             newDir = document.getElementById(`${panelId}-dir`).value;
@@ -1116,42 +1160,7 @@
                 fileInput.addEventListener('change', (event) => {
                     const selectedFiles = event.target.files;
                     if (selectedFiles.length > 0) {
-                        const fileList = document.createElement('div');
-                        fileList.style = "overflow:scroll"
-                        fileList.id = "preview-upload"
-                        //div.textContent = response.content;
-                        
-                        fileList.className = 'overlay narrow'
-                        
-                        document.body.appendChild(fileList)
-                        const list = document.createElement("ul");
-                        fileList.appendChild(list);
-                        for (const file of selectedFiles) {
-                          const li = document.createElement("li");
-                          list.appendChild(li);
-                    
-                          const img = document.createElement("img");
-                          img.src = URL.createObjectURL(file);
-                          img.height = 60;
-                          li.appendChild(img);
-                          const info = document.createElement("span");
-                          info.textContent = `${file.name}: ${file.size} bytes`;
-                          li.appendChild(info);
-                        }
-                        const proceedButton = document.createElement('button');
-                        proceedButton.textContent = 'Proceed';
-                        proceedButton.id = 'proceedButton';
-                        //proceedButton.className = 'dynamic-btn';
-                        fileList.appendChild(proceedButton);
-                            
-                        proceedButton.addEventListener('click', () => {
-                            const progressBar = document.createElement("progress");
-                            progressBar.setAttribute("max", "100");
-                            fileList.appendChild(progressBar);
-                            sendFile(selectedFiles,srcPanel,progressBar)
-                            // TODO close the panel
-                        }, { once: true });
-
+                        uploadPanel(selectedFiles, srcPanel)
                     } else {
                         console.log('No files selected.');
                     }
@@ -1297,7 +1306,40 @@
               wsktSend(JSON.stringify({op:'save', same:same, panel:srcPanel, file:filePath, content:editArea.value, modified:modified?modified:0}))
           }
     }
-
+    
+    function uploadPanel(selectedFiles,srcPanel) {
+        const fileList = document.createElement('div');
+        fileList.style = "overflow:scroll"
+        fileList.id = "preview-upload"
+        fileList.className = 'overlay narrow'
+        document.body.appendChild(fileList)
+        const list = document.createElement("ul");
+        fileList.appendChild(list);
+        for (const file of selectedFiles) {
+          const li = document.createElement("li");
+          list.appendChild(li);
+    
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.height = 60;
+          li.appendChild(img);
+          const info = document.createElement("span");
+          info.textContent = `${file.name}: ${file.size} bytes`;
+          li.appendChild(info);
+        }
+        const proceedButton = document.createElement('button');
+        proceedButton.textContent = 'Proceed';
+        proceedButton.id = 'proceedButton';
+        fileList.appendChild(proceedButton);
+            
+        proceedButton.addEventListener('click', () => {
+            const progressBar = document.createElement("progress");
+            progressBar.setAttribute("max", "100");
+            fileList.appendChild(progressBar);
+            sendFile(selectedFiles,srcPanel,progressBar)
+        }, { once: true });
+    }
+    
     function sendFile(file, panel, progressBar) {
         const uri = `${UPL_URL}/simupld`; // the URL will depend on an installation topology
         const xhr = new XMLHttpRequest();
