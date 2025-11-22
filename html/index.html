@@ -607,6 +607,7 @@
     };
 
     dropArea.ondrop = function(event) {
+        event.stopPropagation();
         event.preventDefault(); // Prevent default to handle drop
         this.style.backgroundColor = ''; // Remove visual feedback
 
