@@ -122,7 +122,7 @@
         height:100%;
         top:0px;
         left:0px;
-        display: block; /* was grid */
+        display: grid;
         justify-content: center;
         z-index:1000;
     }
@@ -953,6 +953,7 @@
                             pic.style.objectFit = 'none'
                             div.appendChild(pic)
                             div.className = 'overlay wide'
+                            div.style.display = 'block'
                             // create div for buttons and add over
                             if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
                                 div.className = 'overlay image-with-button'
