@@ -51,10 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //let mut buffer : Vec<u8> = vec![0u8; MAX_BLOCK_LEN].try_into().unwrap();
     let os_drive =
     if "windows" == consts::OS {
-        match env::var("SystemDrive") {
-            Ok(value) => value,
-            Err(_e) => String::new(),
-        }
+        env::var("SystemDrive"). unwrap_or_default()
     } else {
          String::new()
     };
@@ -90,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => {
             let json_arr_left = 
                 match state.left_bookmarks {
-                    Some(ref arr) => arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
                     _ => String::new(),
                 };
             let json_arr_right = 
@@ -100,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 };
             message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
                 consts::OS,
-                os_drive, json_encode(&std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
+                os_drive, json_encode(std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
             
         },
     }
@@ -726,7 +723,7 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
         if let Ok(file_type) = entry.file_type() { 
             let name = entry.file_name().to_str().unwrap().to_owned();
             if file_type.is_file() {
-                zip.add(simzip::ZipEntry::from_file(&entry.path().as_os_str().to_str().unwrap().to_string(),
+                zip.add(simzip::ZipEntry::from_file(&entry.path().as_os_str().to_str().unwrap(),
                     path.map(str::to_string).as_ref()));
             }  else if file_type.is_dir() {
                 let zip_path = match path {
