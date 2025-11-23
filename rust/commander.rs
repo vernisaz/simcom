@@ -622,7 +622,7 @@ fn read_state(os_drive: &String) -> Option<State> {
 
 fn save_state(state:State) -> Result<(), Box<dyn Error>> {
     let Ok(mut config) = get_config_root() else {
-        return Err(Box::new(io::Error::new(io::ErrorKind::Other, "no config directory".to_string())))
+        return Err("no config directory".into())
     };
     config.push(".sc");
     let mut state_str = String::from("{");
