@@ -6,7 +6,7 @@ extern crate exif;
 extern crate simcfg;
 use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite, 
     fs::{self,read_dir,}, time::{UNIX_EPOCH,SystemTime}, path::{PathBuf,Path,MAIN_SEPARATOR_STR},
-    env::consts, env, convert::TryInto, sync::mpsc::{self,Sender}, thread, error::Error,
+    env::consts, env, sync::mpsc::{self,Sender}, thread, error::Error,
     collections::HashSet,
 };
 
@@ -87,12 +87,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => {
             let json_arr_left = 
                 match state.left_bookmarks {
-                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).reduce(|a,e| a + "," + &e).unwrap(),
                     _ => String::new(),
                 };
             let json_arr_right = 
                 match state.right_bookmarks {
-                    Some(ref arr) => arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).reduce(|a,e| a + "," + &e).unwrap(),
                     _ => String::new(),
                 };
             message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
@@ -101,13 +101,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             
         },
     }
-    let mut buffer : Vec<u8> = vec![0u8; 1024*512].try_into().unwrap();
-    loop {
-        let commands =
-        match read_packet(&mut buffer) {
-            Some(res) => res,
-            _ => break
-        };
+    let mut buffer : Vec<u8> = vec![0u8; 1024*512];
+    while let Some(res) = read_packet(&mut buffer) {
+        let commands = res;
         //eprintln!("read {commands:?}");
         let mut chars = commands.chars();
         loop {
@@ -159,19 +155,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                         };
                         let mut dst_path = PathBuf::from(&dst);
                         let mut need_copy = true;
-                        if files.len() == 1 {
-                            if let Some(Text(dst_file)) = json.get("file") {
-                                if let Text(file) = &files[0] {
-                                    dst_path.push(dst_file);
-                                    src_path.push(file);
-                                    if src_path.is_dir() {
-                                        let _ = copy_directory_contents(&src_path,&dst_path);
-                                    } else if src_path.is_file() {
-                                        let _ = fs::copy(&src_path,&dst_path);
-                                    }
-                                    need_copy = false;
-                                }
+                        if files.len() == 1 &&let Some(Text(dst_file)) = json.get("file") && let Text(file) = &files[0] {
+                            dst_path.push(dst_file);
+                            src_path.push(file);
+                            if src_path.is_dir() {
+                                let _ = copy_directory_contents(&src_path,&dst_path);
+                            } else if src_path.is_file() {
+                                let _ = fs::copy(&src_path,&dst_path);
                             }
+                            need_copy = false;
                         }
                         if need_copy {
                             for file in files {
@@ -188,9 +180,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 dst_path.pop();
                             }
                         }
-                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dst).unwrap());
                         let other_panel = if panel == "left" { "right" } else { "left" };
-                        message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                        message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(src).unwrap());
                         //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     "move" => {
@@ -217,13 +209,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                             if files.len() == 1 {
                             // only rename in the same directory
                                 dst_path.push(dst_file);
-                                if !dst_path.exists() {
-                                    if let Text(file) = &files[0] {
-                                        src_path.push(file);
-                                        match fs::rename(&src_path,&dst_path) {
-                                            Ok(()) => was_move = true,
-                                            Err(err) => report(&send, &format!("Can't move {src_path:?} to {dst_path:?}, because {err:?}"))?
-                                        }
+                                if !dst_path.exists() && let Text(file) = &files[0] {
+                                    src_path.push(file);
+                                    match fs::rename(&src_path,&dst_path) {
+                                        Ok(()) => was_move = true,
+                                        Err(err) => report(&send, &format!("Can't move {src_path:?} to {dst_path:?}, because {err:?}"))?
                                     }
                                 }
                             }
@@ -259,10 +249,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                             was_move = true
                         }
                         if was_move {
-                             message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(&dst).unwrap());
+                             message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, get_dir(dst).unwrap());
                             
                             let other_panel = if panel == "left" { "right" } else { "left" };
-                            message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(&src).unwrap());
+                            message!(send, r#"{{"panel":"{other_panel}", "dir":[{}]}}"#, get_dir(src).unwrap());
                         }
                     }
                     "del" => {
@@ -292,7 +282,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             src_path.pop();
                         }
                         if json.get("same") == Some(&Bool(true)) {
-                            let dir = get_dir(&src).unwrap(); // TODO add if Ok(dir)
+                            let dir = get_dir(src).unwrap(); // TODO add if Ok(dir)
                             message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
                             
                             message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
@@ -314,7 +304,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         match fs::create_dir(&create_path) {
                             Ok(()) => { 
                                 if json.get("same") == Some(&Bool(true)) {
-                                    let dir = get_dir(&src).unwrap();
+                                    let dir = get_dir(src).unwrap();
                                     message!(send,r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
                                     
                                     message!(send,r#"{{"panel":"right", "dir":[{}]}}"#, dir);
@@ -481,7 +471,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         let res = format!(r#"{{"name":".", "dir":true}}{}{}"#, 
                             if res.is_empty() {""} else {","}, res);
                         message!(send, r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
-                            json_encode(&dir));
+                            json_encode(dir));
                     }
                     "info" => {
                         let Some(Text(file)) = json.get("file") else {
@@ -690,7 +680,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
     ))
 }
 
-fn read_packet(buffer: &mut Vec<u8>) -> Option<String> {
+fn read_packet(buffer: &mut [u8]) -> Option<String> {
     let mut res = vec![];
     loop {
         let Ok(len) = stdin().read(&mut buffer[0..]) else {return None};
@@ -723,7 +713,7 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
         if let Ok(file_type) = entry.file_type() { 
             let name = entry.file_name().to_str().unwrap().to_owned();
             if file_type.is_file() {
-                zip.add(simzip::ZipEntry::from_file(&entry.path().as_os_str().to_str().unwrap(),
+                zip.add(simzip::ZipEntry::from_file(entry.path().as_os_str().to_str().unwrap(),
                     path.map(str::to_string).as_ref()));
             }  else if file_type.is_dir() {
                 let zip_path = match path {
