@@ -683,7 +683,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
 fn read_packet(buffer: &mut [u8]) -> Option<String> {
     let mut res = vec![];
     loop {
-        let Ok(len) = stdin().read(&mut buffer[0..]) else {return None};
+        let len = stdin().read(&mut buffer[0..]).ok()?;
         // loop until entire payload read
         if len == 0 { return None }
         if len == 4 && buffer[0] == 255 && buffer[1] == 255 && buffer[2] == 255 && buffer[3] == 4 {
@@ -726,7 +726,7 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
     })
 }
 
-fn report(send: &Sender<String>, msg: &str) -> io::Result<()> {
+fn report(send: &Sender<String>, msg: &str) -> Result<(), Box<dyn Error>> {
     eprintln!("{msg}");
     message!(send, r#"{{"panel":"info", "message":"{}"}}"#, json_encode(msg));
     Ok(())
@@ -746,9 +746,7 @@ fn copy_directory_contents(
         if path.is_file() {
             let file_name = path
                 .file_name()
-                .ok_or_else(|| {
-                    io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name")
-                })?;
+                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name"))?;
             let dest_path = destination_dir.join(file_name);
             count += fs::copy(&path, &dest_path)?;
             eprintln!("Copied file: {:?} to {:?}", path, dest_path);
