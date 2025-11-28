@@ -389,12 +389,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 eprintln!("no content to save");
                                 continue
                             };
-                            match fs::write(&save_path, content) {
-                                Err(err) => {
-                                    message!(send,r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
-                                    continue
-                                }
-                                _ => (),
+                            if let Err(err) = fs::write(&save_path, content) {
+                                message!(send,r#"{{"panel":"info", "message":"Can't save because {}"}}"#, json_encode(&err.to_string()));
+                                continue
                             }
                             let (modified,size) = get_file_modified(&save_path);
                             message!(send,r#"{{"panel":"info", "modified":{modified}, "file":"{}", "size":{size}}}"#,
