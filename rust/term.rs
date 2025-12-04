@@ -16,10 +16,7 @@ impl Terminal for Commander {
         let web = simweb::WebData::new();
         let os_drive =
             if "windows" == consts::OS {
-                match env::var("SystemDrive") {
-                    Ok(value) => value,
-                    Err(_e) => String::new(),
-                }
+                env::var("SystemDrive").unwrap_or_default()
             } else {
                  String::new()
             };
