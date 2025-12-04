@@ -471,8 +471,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     message!(send, r#"{{"panel":"{panel}", "dir":[{res}], "path":"{}"}}"#,
                                     json_encode(dir));
                             }
-                            Err(err) => message!(send, r#"{{"panel":"info", "message":"Can't search in {}/{} for {} because {}"}}"#,
-                                json_encode(dir), json_encode((sub_dir), json_encode((search), json_encode(&format!("{err:?}")))
+                            Err(err) => {message!(send, r#"{{"panel":"info", "message":"Can't search in {}/{} for {} because {}"}}"#,
+                                json_encode(dir), json_encode(&sub_dir), json_encode(&search), json_encode(&format!("{err:?}")));}
                         }
                        
                     }
