@@ -226,10 +226,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     Err(err) => {
                                         if err.kind() == ErrorKind:: CrossesDevices {
                                             if src_path.is_file() {
-                                                match fs::copy(&src_path,&dst_path) {
-                                                    Ok(_) => {let _ = fs::remove_file(&src_path);}
-                                                    Err(_) => (),
-                                                }
+                                                if fs::copy(&src_path,&dst_path).is_ok() {let _ = fs::remove_file(&src_path);}
                                             } else if src_path.is_dir() {
                                                 match copy_directory_contents(&src_path,&dst_path) {
                                                     Ok(_) => {
