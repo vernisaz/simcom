@@ -66,8 +66,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     } else {
         State{
-            left: format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
-            right:format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+            left: format!{"{os_drive}{}", MAIN_SEPARATOR_STR},
+            right:format!{"{os_drive}{}", MAIN_SEPARATOR_STR},
             left_bookmarks: None,
             right_bookmarks: None,
         }
@@ -97,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 };
             message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
                 consts::OS,
-                os_drive, json_encode(std::path::MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
+                os_drive, json_encode(MAIN_SEPARATOR_STR),json_encode(&state.left), json_encode(&state.right));
             
         },
     }
@@ -485,7 +485,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         let obtain_info = || -> Result<String, Box<dyn Error>> {
                             let mut path = PathBuf::from(&dir);
                             path.push(file);
-                            let file = std::fs::File::open(path)?;
+                            let file = fs::File::open(path)?;
                             let mut bufreader = std::io::BufReader::new(&file);
                             let exifreader = exif::Reader::new();
                             let exif = exifreader.read_from_container(&mut bufreader).map_err(|e| format!("Exif parsing err: {e:?}"))?;
@@ -572,11 +572,11 @@ fn read_state(os_drive: &String) -> Option<State> {
         return Some(State {
             right: match state.get("right") {
                 Some(Text(right)) => right.clone(),
-                _ => format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+                _ => format!{"{os_drive}{}", MAIN_SEPARATOR_STR},
             },
             left: match state.get("left") {
                 Some(Text(left)) => left.clone(),
-                _ => format!{"{os_drive}{}", std::path::MAIN_SEPARATOR_STR},
+                _ => format!{"{os_drive}{}", MAIN_SEPARATOR_STR},
             },
             left_bookmarks: match state.get("left_bookmarks") {
                 Some(Arr(bookmarks)) => {
