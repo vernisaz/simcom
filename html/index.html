@@ -1372,6 +1372,9 @@
                       document.body.removeChild(lastChild);
                   }
                   requestPanel(panel)
+                  const otherPanel = panel == 'right' ? 'left':'right';
+                  if (document.getElementById(`${otherPanel}-dir`).value == document.getElementById(`${panel}-dir`).value)
+                    requestPanel(otherPanel) // generally content of other panel can be cloned
               } else {
                   alert(xhr.responseText); // handle response.
               }
