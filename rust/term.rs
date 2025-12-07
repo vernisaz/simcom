@@ -9,7 +9,7 @@ use simterm::Terminal;
 
 const VERSION: &str = env!("VERSION");
 
-struct Commander {}
+struct Commander;
 
 impl Terminal for Commander {
     fn init(&self) -> (PathBuf, PathBuf, HashMap<String,Vec<String>>,&str) {
@@ -29,5 +29,5 @@ impl Terminal for Commander {
 }
 
 fn main() {
-    let _ = Commander{}.main_loop();
+    let _ = Commander.main_loop();
 }
