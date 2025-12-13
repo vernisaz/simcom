@@ -115,6 +115,8 @@ Clone git repositories to the directory,
 - [https://github.com/vernisaz/rust_bee.git](https://github.com/vernisaz/rust_bee)
 - [https://github.com/vernisaz/simtime.git](https://github.com/vernisaz/simtime)
 - [https://github.com/vernisaz/simple\_rust_zip.git](https://github.com/vernisaz/simple_rust_zip)
+- [SimColor](https://github.com/vernisaz/simcolor)
+- [SimScipt](https://github.com/vernisaz/simscript)
 
 ### Install Java
 
@@ -130,8 +132,8 @@ Note that the current Java LTS is 25, so probaly choose the version just in case
 ### Install (Java) 7Bee
 
 You do not need to install the product. The **jar** from it will be sufficient, therefore go to 
-[the page](https://sourceforge.net/projects/seven-bee/)
-and download *7Bee-1.3.1-on-2023-09-29(12 24).zip*. Create the directory *7bee/lib* inside *projects* and extract *bee.jar* there.
+[the page](https://github.com/drogatkin/7Bee)
+and [download](https://github.com/drogatkin/7Bee/releases/tag/1.3.3) **bee.jar**. Create the directory *7bee/lib* inside *projects* and place *bee.jar* there.
 
 ### Build rb
 
@@ -143,7 +145,9 @@ and edit *bee-rust.xml* there. You need to modify only,
 ```
 specifying an absolute path to directory *crates* you created on the previous step.
 
-Issue,
+Edit [bee.7b](https://github.com/vernisaz/simple_rust_zip/blob/master/bee.7b) in SimZip to
+`use deflater=false` (later you can rebuild the crate with deflater). Return to _rust\_bee_ and
+issue,
 
 > java -jar ../7bee/lib/bee.jar
 
