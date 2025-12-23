@@ -202,6 +202,32 @@ The following set of commands is used to control the service,
 
 You can selected any other name for the service not clashing with already existing services.
 
+### Installing PHP and integrating with SimHTTP
+First, install PHP, unless it's here.
+
+> sudo apt install php -y
+
+Next, you can start adding PHP projects to run on SimHTTP. For example, check out
+[Raspberry Pi Dashboard](https://github.com/femto-code/Raspberry-Pi-Dashboard).
+
+After cloning its repository, add a mapping entry in *env.conf* as below,
+```json
+   {"path":"/piphp",
+   "CGI": true,
+   "ext": "php",
+   "engine": "php-cgi",
+   "headerless": false,
+   "options":[{"name":"REDIRECT_STATUS", "value" : "CGI"},
+       {"name":"SCRIPT_FILENAME", "value": "$SCRIPT_FILE"},
+       {"name":"SERVER_ADDR", "value": "$IP"}],
+   "translated": "./../side/Raspberry-Pi-Dashboard"}
+```
+
+`translated` value has to be either absolute, or related to the directory where _simhttp_ will be launched from.
+
+Hit URL like _http://rpi-host:8333/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
+start acessing the dashboard using _http://rpi-host:8333/piphp/_. Note that host and port should match your environment. 
+
 ### The developer paradise
 
 If you do a development using Rust, then I will recommend to install the Rust Development Studio
