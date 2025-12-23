@@ -226,7 +226,7 @@ After cloning its repository, add a mapping entry in *env.conf* as below,
 `translated` value has to be either absolute, or related to the directory where _simhttp_ will be launched from.
 
 Hit URL like _http://rpi-host:8333/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
-start acessing the dashboard using _http://rpi-host:8333/piphp/_. Note that host and port should match your environment. 
+start accessing the dashboard using _http://rpi-host:8333/piphp/_. Note, that host and port should match your environment. 
 
 ### The developer paradise
 
@@ -237,6 +237,5 @@ Now you can use a web browser to develop, debug, test crates and run Rust applic
 
 ## Simple Commander
 If you read the guide, it means that you can clone (unless already did it) its repository. You will
-need to clone one more repository before executing **rb** to build the _Commander_. All details are
+need to clone few more repositories before executing **rb** to build the _Commander_. All details are
 provided in [README.md](https://github.com/vernisaz/simcom/blob/master/README.md).
-in it 
