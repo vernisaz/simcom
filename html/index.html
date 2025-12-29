@@ -1336,7 +1336,7 @@
           img.height = 60;
           li.appendChild(img);
           const info = document.createElement("span");
-          info.textContent = `${file.name}: ${file.size} bytes`;
+          info.textContent = `${file.name}: ${file.size.toLocaleString('en-US')} bytes`;
           li.appendChild(info);
         }
         const proceedButton = document.createElement('button');
@@ -1348,6 +1348,7 @@
             const progressBar = document.createElement("progress");
             progressBar.setAttribute("max", "100");
             fileList.appendChild(progressBar);
+            proceedButton.disabled = true
             sendFile(selectedFiles,srcPanel,progressBar)
         }, { once: true });
     }
