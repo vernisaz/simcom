@@ -16,6 +16,7 @@ impl Terminal for Commander {
         let web = simweb::WebData::new();
         let os_drive =
             if "windows" == consts::OS {
+                unsafe { env::set_var("TERM", "xterm-256color") }
                 env::var("SystemDrive").unwrap_or_default()
             } else {
                  String::new()
