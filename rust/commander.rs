@@ -711,11 +711,11 @@ fn zip_dir (zip: &mut simzip::ZipInfo, dir: &Path, path:Option<&str>) -> io::Res
     Ok(for entry in dir.read_dir()? {
         let entry = entry?; 
         if let Ok(file_type) = entry.file_type() { 
-            let name = entry.file_name().to_str().unwrap().to_owned();
             if file_type.is_file() {
-                zip.add(simzip::ZipEntry::from_file(entry.path().as_os_str().to_str().unwrap(),
+                zip.add(simzip::ZipEntry::from_file(entry.path(),
                     path.map(str::to_string).as_ref()));
             }  else if file_type.is_dir() {
+                let name = entry.file_name().to_str().unwrap().to_owned();
                 let zip_path = match path {
                     None => name,
                     Some(path) => path.to_owned() + "/" + &name
