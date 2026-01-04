@@ -209,7 +209,7 @@ You can selected any other name for the service not clashing with already existi
 ### Installing PHP and integrating with SimHTTP
 First, install PHP, unless it's here.
 
-> sudo apt install php -y
+> sudo apt install php-cgi
 
 Next, you can start adding PHP projects to run on SimHTTP. For example, check out
 [Raspberry Pi Dashboard](https://github.com/femto-code/Raspberry-Pi-Dashboard).
