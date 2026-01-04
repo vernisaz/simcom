@@ -11,6 +11,10 @@ Use the (or a similar command)
 
 and in the Interfaces section, enable SSH.
 
+When you do frequent reassigning IP to the RPi host name, the following command can help in keys update:
+
+> ssh-keygen -R *hostname*
+
 If you have USB drives, as I do, you need to mount them first. Issue:
 
 ```
@@ -103,7 +107,7 @@ Install _git_ unless you already have it,
 
 > sudo apt install git
 
-Copy you SSH keys (if needed)
+Copy you SSH keys (if needed) using the command without SSH session 
 
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
