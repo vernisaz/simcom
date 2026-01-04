@@ -70,7 +70,7 @@ Now you need to configure it by editing:
 An entry as below can be added:
 
 ```
-\[your_share_name]
+[your_share_name]
     path = /media/usbdrive
     writeable = yes
     browseable = yes
@@ -87,7 +87,7 @@ After you applied the changes, restart Samba using:
 > sudo systemctl restart smbd
 
 
-Disclaimer: the section was created with Google AI help
+Disclaimer: the section was created with the Google AI help
 
 If you need to do some other work on you devices, you can read [the small guide](https://sourceforge.net/p/tjws/git/ci/master/tree/1.x/doc/sbc/README.md).
 
