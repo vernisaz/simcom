@@ -1282,6 +1282,9 @@
             document.body.removeChild(lastChild);
             ws_term_close()
             document.title = PRG_NAME
+            // refresh panels
+            requestPanel('right')
+            requestPanel('left')
         }
     }
     
