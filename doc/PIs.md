@@ -206,6 +206,8 @@ The following set of commands is used to control the service,
 
 You can selected any other name for the service not clashing with already existing services.
 
+**Note**, that specifying a user account the server runs from, prohibits using port \< 1024 for the server on Unix systems.
+
 ### Installing PHP and integrating with SimHTTP
 First, install PHP, unless it's here.
 
