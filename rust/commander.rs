@@ -103,15 +103,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let mut buffer : Vec<u8> = vec![0u8; 1024*512];
     while let Some(res) = read_packet(&mut buffer) {
-        let commands = res;
-        //eprintln!("read {commands:?}");
-        let mut chars = commands.chars();
+        let mut chars = res.chars();
         loop {
-            let res = parse_fragment(&mut chars);
-            let json = match res.0 {
+            let fragment = parse_fragment(&mut chars);
+            let json = match fragment.0 {
                 Data(json) => json,
                 JsonData::None => break,
-                _ => {eprintln!("invalid json {:?} of {commands}", res.0);break},
+                _ => {eprintln!("invalid json {:?} of {res}", fragment.0);break},
             };
             //eprintln!("parsed {json:?}");
             let Some(Text(panel)) = json.get("panel") else {
@@ -547,7 +545,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     }
                     _ => ()
                 }
-            //    _ => ()
             }
         }
     }
