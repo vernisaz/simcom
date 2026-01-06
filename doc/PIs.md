@@ -17,7 +17,8 @@ When you do frequent reassigning IP to the RPi host name, the following command 
 
 ### Run OS from USB/NVMe SSD
 Generally, if you pull SD card out, Raspberry Pi will try to boot from USB/NVMe drive. However,
-you can do it as the preferable option. Just open Advanced options/Boot order in `raspi-config`.
+you can do it as the preferable way. Just open Advanced options/Boot order in `raspi-config` and 
+select your preferred order.
 
 ### Connect more USB drives
 If you have USB drives, as I do, you need to mount them first. Issue:
@@ -46,7 +47,7 @@ You get a result like:
 /dev/sda1: LABEL="My Book" BLOCK_SIZE="4096" UUID="A2CA0AEBCA0ABC13" TYPE="ntfs"
 ```
 
-Now you can edit *fstab*
+You can edit *fstab* now,
 
 > sudo nano /etc/fstab
 
@@ -64,7 +65,7 @@ UUID=A2CA0AEBCA0ABC13 /media/usbdrive ntfs defaults,auto,users,rw,nofail,noatime
 **note**: that `noatime` attribute makes sense for SSD drives only.
 
 ## Install Samba
-This step is optional and required in a case if you like to share the added drive. Issue the -
+This step is optional and required in a case if you like to share the added drive, or some other directory. Issue the -
 
 > sudo apt install samba samba-common-bin
 
@@ -72,7 +73,7 @@ Now you need to configure it by editing:
 
 > sudo nano /etc/samba/smb.conf
 
-An entry as below can be added:
+An entry as below should be added:
 
 ```
 [your_share_name]
@@ -92,9 +93,9 @@ After you applied the changes, restart Samba using:
 > sudo systemctl restart smbd
 
 
-Disclaimer: the section was created with the Google AI help
+*Disclaimer*: the section was created with the Google AI help
 
-If you need to do some other work on you devices, you can read [the small guide](https://sourceforge.net/p/tjws/git/ci/master/tree/1.x/doc/sbc/README.md).
+If you need to do some other settins on you devices, you can read [the small guide](https://sourceforge.net/p/tjws/git/ci/master/tree/1.x/doc/sbc/README.md).
 
 ## Install Rust
 
@@ -112,7 +113,7 @@ Install _git_ unless you already have it,
 
 > sudo apt install git
 
-Copy you SSH keys (if needed) using the command without SSH session 
+Copy you SSH keys (if needed) out of the SSH session 
 
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
@@ -154,13 +155,11 @@ and edit *bee-rust.xml* there. You need to modify only,
 ```
 specifying an absolute path to directory *crates* you created on the previous step.
 
-Edit [bee.7b](https://github.com/vernisaz/simple_rust_zip/blob/master/bee.7b) in SimZip to
-`use deflater=false` (later you can rebuild the crate with deflater). Return to _rust\_bee_ and
-issue,
+Issue,
 
 > java -jar ../7bee/lib/bee.jar
 
-The RustBee tool will be built then. You can install it now issuing,
+The RustBee tool will be built then. You can install it after issuing,
 
 > sudo ./rb install
 
@@ -212,8 +211,9 @@ The following set of commands is used to control the service,
 You can choose any other name for the service not clashing with already existing service names.
 
 **Note**, that specifying a user account the server runs from, prohibits using port \< 1024 for the server on Unix systems.
+Run the server as *root* or establish a port forwarding, if you need using a system port for the server.
 
-### Installing PHP and integrating with SimHTTP
+### Installing PHP and integrating it with SimHTTP
 First, install PHP, unless it's here.
 
 > sudo apt install php-cgi
@@ -236,7 +236,7 @@ After cloning its repository, add a mapping entry in *env.conf* as below,
 
 `translated` value has to be either absolute, or related to the directory where _simhttp_ will be launched from.
 
-Hit URL like _http://rpi-host:8333/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
+Hit URL like _http://rpi-host:8443/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
 start accessing the dashboard using _http://rpi-host:8333/piphp/_. Note, that host and port should match your environment. 
 
 I have fixed few bugs of the project, so contact me, if you need the fixes.
