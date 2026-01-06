@@ -15,6 +15,11 @@ When you do frequent reassigning IP to the RPi host name, the following command 
 
 > ssh-keygen -R *hostname*
 
+### Run OS from USB/NVMe SSD
+Generally, if you pull SD card out, Raspberry Pi will try to boot from USB/NVMe drive. However,
+you can do it as the preferable option. Just open Advanced options/Boot order in `raspi-config`.
+
+### Connect more USB drives
 If you have USB drives, as I do, you need to mount them first. Issue:
 
 ```
