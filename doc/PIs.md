@@ -191,7 +191,7 @@ It is a convenient to run the server as a service. First,  create a directory wh
 location for a system service isn't a good idea. Only two files needed to be copied there, simhttp and env.conf.
 
 Second, you need to edit file [rustcom.service](https://github.com/vernisaz/simcom/blob/master/cfg/rustcom.service) specifying the
-selected location for the server.
+ location of the server.
 
 Last, copy the service file to /usr/lib/systemd/system/, as:
 
@@ -204,7 +204,7 @@ The following set of commands is used to control the service,
 - stop - `sudo systemctl stop rustcom`
 - disable - `sudo systemctl disable rustcom`
 
-You can selected any other name for the service not clashing with already existing services.
+You can choose any other name for the service not clashing with already existing service names.
 
 **Note**, that specifying a user account the server runs from, prohibits using port \< 1024 for the server on Unix systems.
 
@@ -233,6 +233,8 @@ After cloning its repository, add a mapping entry in *env.conf* as below,
 
 Hit URL like _http://rpi-host:8333/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
 start accessing the dashboard using _http://rpi-host:8333/piphp/_. Note, that host and port should match your environment. 
+
+I have fixed few bugs of the project, so contact me, if you need the fixes.
 
 ### The developer paradise
 
