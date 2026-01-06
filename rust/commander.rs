@@ -118,8 +118,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 continue
             };
             
-            match json.get("op") {
-                Some(Text(op)) => match op.as_str() {
+            if let Some(Text(op)) = json.get("op") { match op.as_str() {
                     "dir" => {
                         //eprintln!("{json:?}");
                         let Some(Text(dir)) = json.get("dir") else {
@@ -217,7 +216,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     }
                                 }
                             }
-                        } else if files.len() > 0 {
+                        } else if !files.is_empty() {
                             for file in files {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
@@ -548,7 +547,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     }
                     _ => ()
                 }
-                _ => ()
+            //    _ => ()
             }
         }
     }
