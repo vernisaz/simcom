@@ -87,12 +87,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => {
             let json_arr_left = 
                 match state.left_bookmarks {
-                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<String>>().join("," ),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<_>>().join("," ),
                     _ => String::new(),
                 };
             let json_arr_right = 
                 match state.right_bookmarks {
-                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<String>>().join(","),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<_>>().join(","),
                     _ => String::new(),
                 };
             message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
@@ -219,23 +219,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                match fs::rename(&src_path,&dst_path) {
-                                    Err(err) => {
-                                        if err.kind() == ErrorKind:: CrossesDevices {
-                                            if src_path.is_file() {
-                                                if fs::copy(&src_path,&dst_path).is_ok() {let _ = fs::remove_file(&src_path);}
-                                            } else if src_path.is_dir() {
-                                                match copy_directory_contents(&src_path,&dst_path) {
-                                                    Ok(_) => {
-                                                        // TODO decide of cases when only some files were copied
-                                                        let _ = fs::remove_dir_all(&src_path);
-                                                    }
-                                                    Err(err) => report(&send, &format!("Can't copy {src_path:?} because {err:?}"))?
-                                                }
+                                if let Err(err) = fs::rename(&src_path,&dst_path) &&
+                                     err.kind() == ErrorKind:: CrossesDevices {
+                                    if src_path.is_file() {
+                                        if fs::copy(&src_path,&dst_path).is_ok() {let _ = fs::remove_file(&src_path);}
+                                    } else if src_path.is_dir() {
+                                        match copy_directory_contents(&src_path,&dst_path) {
+                                            Ok(_) => {
+                                                // TODO decide of cases when only some files were copied
+                                                let _ = fs::remove_dir_all(&src_path);
                                             }
+                                            Err(err) => report(&send, &format!("Can't copy {src_path:?} because {err:?}"))?
                                         }
                                     }
-                                    _ => ()
                                 }
                                 src_path.pop();
                                 dst_path.pop();
