@@ -87,12 +87,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => {
             let json_arr_left = 
                 match state.left_bookmarks {
-                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<String>>().join("," ),
                     _ => String::new(),
                 };
             let json_arr_right = 
                 match state.right_bookmarks {
-                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).reduce(|a,e| a + "," + &e).unwrap(),
+                    Some(ref arr) => arr.iter().map(|e| format!("\"{}\"", json_encode(e))).collect::<Vec<String>>().join(","),
                     _ => String::new(),
                 };
             message!(send, r#"{{"panel":"control", "system":"{}", "root":"{}", "separator":"{}","left":"{}", "right":"{}","left_bookmarks":[{json_arr_left}],"right_bookmarks":[{json_arr_right}]}}"#,
@@ -611,11 +611,11 @@ fn save_state(state:State) -> Result<(), Box<dyn Error>> {
     let mut state_str = String::from("{");
     write!(state_str,r#""left":"{}","right":"{}""#,json_encode(&state.left),json_encode(&state.right))?;
     if let Some(arr) = state.left_bookmarks {
-        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap();
+        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).collect::<Vec<_>>().join(",");
         write!(state_str,r#","left_bookmarks":[{json_arr}]"#)?
     }
     if let Some(arr) = state.right_bookmarks {
-        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).reduce(|a,e| a + "," + &e).unwrap();
+        let json_arr = arr.into_iter().map(|e| format!("\"{}\"", json_encode(&e))).collect::<Vec<_>>().join(",");
         write!(state_str,r#","right_bookmarks":[{json_arr}]"#)?
     }
     state_str.push('}');
