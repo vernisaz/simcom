@@ -208,10 +208,10 @@ The following set of commands is used to control the service,
 - stop - `sudo systemctl stop rustcom`
 - disable - `sudo systemctl disable rustcom`
 
-You can choose any other name for the service not clashing with already existing service names.
+You can choose any other name for the service not clashing with already existing service name.
 
 **Note**, that specifying a user account the server runs from, prohibits using port \< 1024 for the server on Unix systems.
-Run the server as *root* or establish a port forwarding, if you need using a system port for the server.
+Run the server as *root* or establish a port forwarding, if you need using a standard  port, like 80, or 443 for the server.
 
 ### Installing PHP and integrating it with SimHTTP
 First, install PHP, unless it's here.
