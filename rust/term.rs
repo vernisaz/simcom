@@ -1,11 +1,13 @@
 extern crate simterm;
 extern crate simweb;
+extern crate simcolor;
 use std::{
     collections::HashMap,
     path::PathBuf, env::{self,consts},
 };
 
-use simterm::Terminal;
+use simterm::{Terminal, VERSION as TERM_VERSION};
+use simcolor::Colorized;
 
 const VERSION: &str = env!("VERSION");
 
@@ -26,6 +28,10 @@ impl Terminal for Commander {
             _ => PathBuf::from(format!("{os_drive}{}", std::path::MAIN_SEPARATOR_STR))
         };
         (cwd.clone(),cwd,HashMap::new(),VERSION)
+    }
+    fn greeting(&self, version: &str) -> String {
+        let ver = version.color_num(196).to_string();
+        format!("OS terminal {ver}/{TERM_VERSION}")
     }
 }
 
