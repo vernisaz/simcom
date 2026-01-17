@@ -1,4 +1,4 @@
-# 3d party crates SimCommander depends on
+# 3rd party crates SimCommander depends on
 
 There is one 3rd party dependency [exif](https://github.com/kamadak/exif-rs),
 and [mutate_once](https://github.com/kamadak/mutate_once-rs) it depends on.
