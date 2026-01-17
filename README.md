@@ -31,7 +31,7 @@ if you plan to distribute the Simple Commander.
 
 ## Why the author is so concerened about dependencies
 First, every dependency tells that a certain functionality goes from other product. And other product can present it better.
-Second, every dependecy adds own security risks, so the security of the entire product will depend on the security
+Second, every dependency adds own security risks, so the security of the entire product will depend on the security
 of the weakest product in the chain.
 
 ## Web server
@@ -46,6 +46,8 @@ Read a note in the above server description regarding running it in a background
 ## File upload
 The functionality handled by [upload CGI](https://github.com/vernisaz/simupload) project. Make sure that *upload URL*
 configured properly accordingly your web server settings. Default value is **./upload**.
+
+Upload functionality is also possible using websocket, however currently SimHTTP doesn't support binary packets.
 
 ## Platforms
 Windows, Mac, Linux and Free BSD are supported.
