@@ -3,7 +3,7 @@ extern crate simweb;
 extern crate simcolor;
 use std::{
     collections::HashMap,
-    path::PathBuf, env::{self,consts},
+    path::PathBuf, env::{self,consts}, process::Command,
 };
 
 use simterm::{Terminal, VERSION as TERM_VERSION};
@@ -27,6 +27,23 @@ impl Terminal for Commander {
             Some(cwd) => PathBuf::from(cwd),
             _ => PathBuf::from(format!("{os_drive}{}", std::path::MAIN_SEPARATOR_STR))
         };
+        if let Some(mut home_dir) = env::home_dir () {
+            home_dir.push(".beerc.7b");
+            if home_dir.is_file() {
+                let output = Command::new("rb")
+                    .arg("-f")
+                     .arg(&home_dir.display().to_string())
+                     .current_dir(&cwd)
+                     .output();
+                if let Ok(output) = output {
+                    for line in String::from_utf8_lossy(&output.stdout).lines() {
+                        if let Some((key,val)) = line.split_once('=') {
+                            unsafe { env::set_var(key,val) }
+                        }
+                    }
+                }
+            }
+        }
         (cwd.clone(),cwd,HashMap::new(),VERSION)
     }
     fn greeting(&self, version: &str) -> String {
