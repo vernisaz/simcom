@@ -27,24 +27,32 @@ impl Terminal for Commander {
             Some(cwd) => PathBuf::from(cwd),
             _ => PathBuf::from(format!("{os_drive}{}", std::path::MAIN_SEPARATOR_STR))
         };
+        let mut aliases = HashMap::new();
         if let Some(mut home_dir) = env::home_dir () {
             home_dir.push(".beerc.7b");
             if home_dir.is_file() {
                 let output = Command::new("rb")
                     .arg("-f")
-                     .arg(&home_dir.display().to_string())
+                     .arg(home_dir.display().to_string())
                      .current_dir(&cwd)
                      .output();
                 if let Ok(output) = output {
                     for line in String::from_utf8_lossy(&output.stdout).lines() {
                         if let Some((key,val)) = line.split_once('=') {
-                            unsafe { env::set_var(key,val) }
+                            key.strip_prefix("alias ").and_then(|alias| {
+                                let mut vals = val.chars();
+                                if val.len() > 2 && vals.next().unwrap() == '\'' && vals.last().unwrap() == '\'' {
+                                    aliases.insert(alias.to_string(), val[1..val.len() - 1].split_whitespace().map(str::to_string).collect());
+                                }
+                                None::<()>
+                            }).or_else(|| unsafe { env::set_var(key,val); None::<_>} );
+                            
                         }
                     }
                 }
             }
         }
-        (cwd.clone(),cwd,HashMap::new(),VERSION)
+        (cwd.clone(),cwd,aliases,VERSION)
     }
     fn greeting(&self, version: &str) -> String {
         let ver = version.color_num(196).to_string();
