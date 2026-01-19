@@ -60,6 +60,23 @@ from the directory where the installation archive was opened. The access URL wil
 
 You can edit **env.conf** to change a host name or port.
 
+## Terminal customization
+If you have [RustBee](https://github.com/vernisaz/rust_bee) installed in your system, then you can try an additional
+customization a terminal session. Create file : `$HOME/.beerc.7b` which will produce out in lines in the format
+`name=value`. If `name` starts with `alias `, then the line will be considered as an *alias* definition.
+Otherwise, it will be considered as an environment variable definition, for example:
+```
+target env {
+   dependency{}
+   display("LS_COLORS=di=01;33:ln=01;36:ex=01;32:*.zip=01;31:*.7b=01;35:*.md=94")
+   display(FORCE_COLOR=true)
+      display(alias ll='ls -la')
+   display(alias gs='git status')
+   display(alias ..='cd ..')
+   display(alias dir='dir --color')
+}
+```
+
 ## Known issues
 If the WebSocket connection was closed for some reason, then the first interaction with it after can be lost, 
 and a repeating it can be required.
