@@ -37,15 +37,14 @@ impl Terminal for Commander {
                      .current_dir(&cwd)
                      .output();
                 if let Ok(output) = output {
-                    for line in String::from_utf8_lossy(&output.stdout).lines() {
-                        if let Some((key,val)) = line.split_once('=') {
-                            if let Some(alias) = key.strip_prefix("alias ") {
-                                if val.len() > 2 && let Some(val) = val.strip_prefix('\'') && let Some(val) = val.strip_suffix('\'') {
-                                    aliases.insert(alias.to_string(), val.split_whitespace().map(str::to_string).collect());
-                                }
-                            } else {
-                                unsafe { env::set_var(key,val); }
+                    for (key,val) in String::from_utf8_lossy(&output.stdout).lines()
+                        .filter_map(|line| line.split_once('=')) { 
+                        if let Some(alias) = key.strip_prefix("alias ") {
+                            if val.len() > 2 && let Some(val) = val.strip_prefix('\'') && let Some(val) = val.strip_suffix('\'') {
+                                aliases.insert(alias.to_string(), val.split_whitespace().map(str::to_string).collect());
                             }
+                        } else {
+                            unsafe { env::set_var(key,val); }
                         }
                     }
                 }
