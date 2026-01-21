@@ -54,7 +54,7 @@ impl Terminal for Commander {
     }
     fn greeting(&self, version: &str) -> String {
         let ver = version.color_num(196).to_string();
-        format!("OS terminal {ver}/{TERM_VERSION}")
+        format!("Web terminal {ver}/{TERM_VERSION}")
     }
 }
 
