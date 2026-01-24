@@ -117,6 +117,8 @@ Copy you SSH keys (if needed) out of the SSH session
 
 > scp ~/.ssh/id_rsa* root2@pi:/home/root2/.ssh/
 
+**Note**: issue the command outside your SSH session, because it starts its own.
+
 Create a projects directory, unless you already have some and willing to reuse it. The guide will refer the directory
 as _projects_ assuming that you can select any other name of your choice.
 
@@ -130,7 +132,8 @@ Clone git repositories to the directory,
 
 ### Install Java
 
-It's required to bootstrap **rb** tool building. (Since the guide claims - No Java, 
+It's required to bootstrap **rb** building tool on platforms where it doesn't exist prebuilt,
+for example FreeBSD. (Since the guide claims - No Java, 
 _rb_ can be built on other machine in a cross compilation mode. Rust itself requires Python for own build.)
 
 Run the
@@ -143,7 +146,8 @@ Note that the current Java LTS is 25, so probaly choose the version just in case
 
 You do not need to install the product. The **jar** from it will be sufficient, therefore go to 
 [the page](https://github.com/drogatkin/7Bee)
-and [download](https://github.com/drogatkin/7Bee/releases/tag/1.3.3) **bee.jar**. Create the directory *7bee/lib* inside *projects* and place *bee.jar* there.
+and [download](https://github.com/drogatkin/7Bee/releases/tag/1.3.3) **bee.jar**.
+Create the directory *7bee/lib* inside *projects* and place *bee.jar* there.
 
 ### Build rb
 
