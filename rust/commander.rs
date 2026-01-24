@@ -1,3 +1,4 @@
+#![allow(clippy::unit_arg)]
 extern crate simjson;
 extern crate simweb;
 extern crate simtime;
@@ -9,7 +10,6 @@ use std::{io::{self,Read,stdin,Write,ErrorKind}, fmt::Write as FmtWrite,
     env::consts, env, sync::mpsc::{self,Sender}, thread, error::Error,
     collections::HashSet,
 };
-
 use simjson::{JsonData::{self,Data,Text,Arr,Num,Bool},parse_fragment};
 use simweb::{json_encode,html_encode};
 use simzip::{ZipEntry,ZipInfo};
