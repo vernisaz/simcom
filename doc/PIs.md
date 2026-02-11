@@ -155,7 +155,7 @@ Create an empty directory called _crates_ in the **projects**. Navigate to the *
 and edit *bee-rust.xml* there. You need to modify only,
 
 ```
-<!ENTITY crates "/Users/root2/projects/crates">
+<!ENTITY crates "/Users/rocket/projects/crates">
 ```
 specifying an absolute path to directory *crates* you created on the previous step.
 
