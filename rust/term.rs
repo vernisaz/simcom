@@ -15,10 +15,10 @@ struct Commander;
 
 impl Terminal for Commander {
     fn init(&self) -> (PathBuf, PathBuf, HashMap<String,Vec<String>>,&str) {
+        unsafe { env::set_var("COLORTERM", "truecolor") } // since terminal can be invoked from a service (not a regular terminal session)
         let web = simweb::WebData::new();
         let os_drive =
             if "windows" == consts::OS {
-                unsafe { env::set_var("TERM", "xterm-256color") }
                 env::var("SystemDrive").unwrap_or_default()
             } else {
                  String::new()
