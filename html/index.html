@@ -1051,7 +1051,7 @@
                 const dstPanel = srcPanel == 'right'?'left':'right';
                 const move = key == 'F6'
                 var over = false
-                if (e && e.shiftKey) {
+                if (e && (e.shiftKey || e.altKey)) {
                     over = true
                 }
                 if (files && files.length > 0) {
