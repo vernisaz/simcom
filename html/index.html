@@ -385,8 +385,8 @@
     <button onclick="handleFunction('F2')">F2 Panel</button>
     <button onclick="handleFunction('F3')">F3 View</button>
     <button onclick="handleFunction('F4')">F4 Edit</button>
-    <button onclick="handleFunction('F5')">F5 Copy</button>
-    <button onclick="handleFunction('F6')">F6 Move</button>
+    <button onclick="handleFunction('F5',event)">F5 Copy</button>
+    <button onclick="handleFunction('F6',event)">F6 Move</button>
     <button onclick="handleFunction('F7',event)">F7 Mkdir</button>
     <button onclick="handleFunction('F8')">F8 Delete</button>
     <button onclick="handleFunction('F9',event)">F9 Upload</button>
@@ -1050,6 +1050,10 @@
             case 'F6':
                 const dstPanel = srcPanel == 'right'?'left':'right';
                 const move = key == 'F6'
+                var over = false
+                if (e && e.shiftKey) {
+                    over = true
+                }
                 if (files && files.length > 0) {
                     if (files.length == 1)
                         msg.innerHTML = (move?'Moving ':'Copying ') + files[0] + '...'
@@ -1067,7 +1071,7 @@
                             createBtn.style.visibility = "visible"
                             createBtn.addEventListener("click", (e) => {
                               const newName = dlg.querySelector("#some_txt").value;
-                              wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files}))
+                              wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,file:newName,src:srcDirInput.value, panel:dstPanel, files:files, overwrite:over}))
                             }, { once: true });
                             dlg.showModal()
                         } 
@@ -1078,7 +1082,7 @@
                     extraTxt.required = false
                     createBtn.style.visibility = "hidden"
                     dlg.show()
-                    wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files}))
+                    wsktSend(JSON.stringify({op:(move?'move':'copy'), dst:dstDirInput.value,src:srcDirInput.value, panel:dstPanel, files:files, overwrite:over}))
                 }
                 break
             case 'F8':
@@ -1448,6 +1452,8 @@
         '<p>^I - getting info on the panel</p>' +
         '<p>^R - refresh panels</p>' +
         '<p>^S - save edited content</p>' +
+        '<p>Shift+F5 - copy selected file(s) overwritng existing ones</p>' +
+        '<p>Shift+F6 - move selected file(s) overwritng existing ones</p>' +
         '<p>↓ - in the path bar opens bookmarks</p>' +
         '<p>↑ - in the path bar closes bookmarks</p>'
         if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
