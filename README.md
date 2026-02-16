@@ -1,7 +1,7 @@
 # Simple Commander (simcom)
 
 ## Goal
-Mimic Norton Commander functionality using a  web interface and the websocket.
+Mimic Norton Commander functionality using a web interface and the websocket.
 
 ## Technologies
 - Rust
@@ -78,8 +78,8 @@ target env {
 ```
 
 ## Known issues
-If the WebSocket connection was closed for some reason, then the first interaction with it after can be lost, 
-and a repeating it can be required.
+If the WebSocket connection was closed for some reason, then the first packet can get lost after restoring communication, 
+and repeating command can be required.
 
 ## No-Cargo build
 This product uses an [alternative tool](https://github.com/vernisaz/rust_bee) to the Cargo building tool.
