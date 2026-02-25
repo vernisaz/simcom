@@ -241,7 +241,7 @@ After cloning its repository, add a mapping entry in *env.conf* as below,
 `translated` value has to be either absolute, or related to the directory where _simhttp_ will be launched from.
 
 Hit URL like _http://rpi-host:8443/piphp/setup.php_ after restarting the server. Complete the setup screen, and then
-start accessing the dashboard using _http://rpi-host:8333/piphp/_. Note, that host and port should match your environment. 
+start accessing the dashboard using _http://rpi-host:8443/piphp/_. Note, that host and port should match your environment. 
 
 I have fixed few bugs of the project, so contact me, if you need the fixes.
 
