@@ -470,7 +470,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     );
                                 }
                             }
-                        } else if !edit_path.exists() {
+                        } else if !edit_path.exists() { // new file
                             message!(
                                 send,
                                 r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#,
