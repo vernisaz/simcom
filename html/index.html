@@ -1468,6 +1468,13 @@
         document.body.appendChild(helpDiv)
     }
     
+    function customPrompt() {
+        const prompt = document.createElement("pre")
+        prompt.style='color:#cc6600;'
+        prompt.textContent = '\n% '
+        return prompt
+    }
+    
     function unloadWS() {
         wskt.close();
     }
