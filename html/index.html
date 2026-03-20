@@ -439,23 +439,27 @@
       event.key == 'F5' || event.key == 'F6' ||
       event.key == 'F7' || event.key == 'F8' ||
       event.key == 'F9' || event.key == 'F10') {
-          event.preventDefault();
           if (event.ctrlKey) {
               if (event.key == 'F1') {
+                  event.preventDefault();
                   alignPanel('right')
               }
               if (event.key == 'F2') {
+                  event.preventDefault();
                   alignPanel('left')
               }
           } else if (event.shiftKey) {
               if (event.key == 'F7') {
+                  event.preventDefault();
                   openSearch()
               }
           } else if (event.altKey) {
               if (event.key == 'F9') {
+                  event.preventDefault();
                   openTerminal()
               }
           } else {
+              event.preventDefault();
              handleFunction(event.key,event)
           }
       } else if (event.key == 'F13') {
