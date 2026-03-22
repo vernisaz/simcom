@@ -1482,6 +1482,12 @@
     function unloadWS() {
         wskt.close();
     }
+    function extendURL(str) {
+        const urlRegex = /https?:\/\/[a-zA-Z0-9-._~]+[\:\d{1,3}]?[a-zA-Z0-9-._~/]*(?:\?(?:[a-zA-Z0-9-._~%]+=(?:[a-zA-Z0-9-._~%\+]+)?&?)*)?(?:#[a-zA-Z0-9-._~]+)?/gm;
+        return str.replace(urlRegex, (url) => {
+              return '<a href="' + url + '" target="_blank">' + url + '</a>';
+        })
+    }
   </script>
 </body>
 </html>
