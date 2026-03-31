@@ -21,7 +21,7 @@ you can do it as the preferable way. Just open Advanced options/Boot order in `r
 select your preferred order.
 
 ### Connect more USB drives
-If you have USB drives, as I do, you need to mount them first. Issue:
+If you have USB drives (unless it's a boot drive), as I do, you need to mount them first. Issue:
 
 ```
 root2@pi:~ $ lsblk
@@ -182,10 +182,11 @@ building other projects
 - [SimJSON](https://github.com/vernisaz/simjson)
 - [SimThreadPool](https://github.com/vernisaz/simtpool)
 - [SimWeb](https://github.com/vernisaz/simweb)
+- [SimpleCLI](https://github.com/vernisaz/simcli)
 
 And then run **rb** in each of them (except the first with scripts). It will build required common crates.
 
-The crates are actually required to build the web server, and can be used in other
+The crates are actually required to build the web server, and they can be used in other
 applications too.
 
 ### SimHTTP
