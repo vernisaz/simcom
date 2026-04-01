@@ -5,7 +5,7 @@ crate_dir=..${~/~}crates
 comp opts=[]
 show_exif=true
 
-version=1.20
+version=1.21
 simhttp proj=..${~/~}simhttp
 simupload proj=..${~/~}simupload
 
