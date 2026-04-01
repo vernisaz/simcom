@@ -1,4 +1,5 @@
 #![allow(clippy::unit_arg)]
+#[cfg(feature = "exif")]
 extern crate exif;
 extern crate simcfg;
 extern crate simjson;
@@ -470,7 +471,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     );
                                 }
                             }
-                        } else if !edit_path.exists() { // new file
+                        } else if !edit_path.exists() {
+                            // new file
                             message!(
                                 send,
                                 r#"{{"panel":"{panel}", "op":"edit", "file":"{}", "content":""}}"#,
@@ -631,14 +633,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                         }
                     }
                     "info" => {
+                        #[cfg(feature = "exif")]
                         let Some(Text(file)) = json.get("file") else {
                             eprintln!("no file to get info");
                             continue;
                         };
+                        #[cfg(feature = "exif")]
                         let Some(Text(dir)) = json.get("src") else {
                             eprintln!("no dir to get info");
                             continue;
                         };
+                        #[cfg(feature = "exif")]
                         let obtain_info = || -> Result<String, Box<dyn Error>> {
                             let mut path = PathBuf::from(&dir);
                             path.push(file);
@@ -667,6 +672,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                             }
                             info.push(']');
                             Ok(info)
+                        };
+                        #[cfg(not(feature = "exif"))]
+                        let obtain_info = || -> Result<String, Box<dyn Error>> {
+                            Ok(
+                                r#"[{"tag":"Info", "value":"No Exif reader configured","id":"-"}]"#
+                                    .to_string(),
+                            )
                         };
                         let Ok(info) = obtain_info() else { continue };
                         message!(
@@ -996,6 +1008,7 @@ fn copy_directory_contents(
     Ok(count)
 }
 
+#[cfg(feature = "exif")]
 fn first_n_chars(s: &str, n: usize) -> &str {
     match s.char_indices().nth(n) {
         Some((x, _)) => &s[..x],

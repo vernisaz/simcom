@@ -26,8 +26,10 @@ You will need also common [scripts](https://github.com/vernisaz/simscript) to bu
 
 The project uses also 2 3rd party dependencies for viewing an info of image files. How to get and build them is described in
 [dep crates/README.md](https://github.com/vernisaz/simcom/blob/master/dep%20crates/README.md). Since the crate
-requires the license for a distribution in a source or a binary form, I do not distribute Simple Commander in any form. Keep it in mind
-if you plan to distribute the Simple Commander.
+license requires to list it for a distribution in a source or a binary form, I release the Simple Commander without the crate.
+When you build the Simple Commander, you can specify your desire to use the crate as bellow,
+
+> show_exif=true
 
 ## Why the author is so concerened about dependencies
 First, every dependency tells that a certain functionality goes from other product. And other product can present it better.

@@ -3,6 +3,7 @@ main=rust${~/~}commander
 common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
 comp opts=[]
+show_exif=true
 
 version=1.20
 simhttp proj=..${~/~}simhttp
@@ -23,11 +24,20 @@ if {
 	}
 }
 
+if {
+	eq(show_exif,true)
+	then {
+		array(comp opts, --cfg, feature="exif")
+		assign(comp opts,~~)
+		display(${YELLOW}Exif feature applied${NO_COLOR} ${})
+	}
+}
+
 set_env(VERSION,version)
 mode=mode:prop
 if {
 	eq(mode,release) then {
-		array(-C,opt-level=3)
+		array(comp opts,-C,opt-level=3)
 		assign(comp opts, ~~)
 	}
 }
