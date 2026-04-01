@@ -30,7 +30,7 @@ if {
 	then {
 		array(comp opts, --cfg, feature="exif")
 		assign(comp opts,~~)
-		display(${YELLOW}Exif feature applied${NO_COLOR} ${})
+		display(${YELLOW}Exif feature applied${NO_COLOR})
 	}
 }
 
