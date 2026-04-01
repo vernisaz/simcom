@@ -1,7 +1,9 @@
+# the script is for building web terminal for Simple Commander
 project  =cmdterm
 main=rust${~/~}term
 common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
+doc_dir=..${~/~}docs
 comp opts=[]
 
 version=1.03
