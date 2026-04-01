@@ -2,6 +2,7 @@ project  =rustcom
 main=rust${~/~}commander
 common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
+doc_dir=..${~/~}docs
 comp opts=[]
 show_exif=true
 
