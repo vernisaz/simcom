@@ -58,7 +58,7 @@ target package {
     "port" \: 3000,\
     "threads" \: 40,\
     "no terminal"\: true,\
-    "max_chunk_size_kilo":16384,\
+    "max_chunk_size_kilo"\: 16384,\
     "mapping" \: [
     read(.${~/~}cfg${~/~}http.conf)
     assign(http conf,"${http conf}${~~}],")
