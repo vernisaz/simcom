@@ -438,7 +438,8 @@
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
-       
+      if (event.key != 'Escape' && isViewMode()) 
+        return
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
           if (el) {
@@ -886,6 +887,7 @@
     }
     
     function handleFunction(key,e) {
+        // if in edit or view, ignored
         const dlg = document.querySelector('dialog')
         const msg = dlg.querySelector('p')
         const dirInputLeft = document.getElementById(`left-dir`);
@@ -1443,6 +1445,14 @@
               if (event) event.preventDefault();
           }
           document.title = PRG_NAME
+    }
+    
+    function isViewMode() {
+        if (document.getElementById('help-panel') ||
+            document.getElementById('view-edit') ||
+            document.getElementById('terminal-container') ||
+            document.getElementById('preview-upload'))
+            return true; else return false
     }
     
     function showHelp() {
