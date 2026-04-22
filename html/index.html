@@ -438,7 +438,7 @@
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
-      if (event.key != 'Escape' && isViewMode()) 
+      if ((event.key != 'Escape' && event.code != 'KeyS') && isViewMode()) 
         return
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
