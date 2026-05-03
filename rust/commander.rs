@@ -221,17 +221,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 dst_path.pop();
                             }
                         }
-                        message!(
-                            send,
-                            r#"{{"panel":"{panel}", "dir":[{}]}}"#,
-                            get_dir(dst).unwrap()
-                        );
+                        if let Ok(dst) = get_dir(dst) {
+                            message!(send, r#"{{"panel":"{panel}", "dir":[{dst}]}}"#,);
+                        }
                         let other_panel = if panel == "left" { "right" } else { "left" };
-                        message!(
-                            send,
-                            r#"{{"panel":"{other_panel}", "dir":[{}]}}"#,
-                            get_dir(src).unwrap()
-                        );
+                        if let Ok(src) = get_dir(src) {
+                            message!(send, r#"{{"panel":"{other_panel}", "dir":[{src}]}}"#);
+                        }
                         //eprintln!("copy {:?} -> {:?} : {:?}",json.get("src"), json.get("dst"), json.get("files"))
                     }
                     "move" => {
@@ -318,19 +314,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                             }
                             was_move = true
                         }
-                        if was_move {
-                            message!(
-                                send,
-                                r#"{{"panel":"{panel}", "dir":[{}]}}"#,
-                                get_dir(dst).unwrap()
-                            );
+                        if was_move && let Ok(dst) = get_dir(dst) {
+                            message!(send, r#"{{"panel":"{panel}", "dir":[{dst}]}}"#);
 
                             let other_panel = if panel == "left" { "right" } else { "left" };
-                            message!(
-                                send,
-                                r#"{{"panel":"{other_panel}", "dir":[{}]}}"#,
-                                get_dir(src).unwrap()
-                            );
+                            if let Ok(src) = get_dir(src) {
+                                message!(send, r#"{{"panel":"{other_panel}", "dir":[{src}]}}"#);
+                            }
                         }
                     }
                     "del" => {
@@ -362,17 +352,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                             }
                             src_path.pop();
                         }
-                        if json.get("same") == Some(&Bool(true)) {
-                            let dir = get_dir(src).unwrap(); // TODO add if Ok(dir)
-                            message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                        if let Ok(dir) = get_dir(src) {
+                            if json.get("same") == Some(&Bool(true)) {
+                                message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
 
-                            message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
-                        } else {
-                            message!(
-                                send,
-                                r#"{{"panel":"{panel}", "dir":[{}]}}"#,
-                                get_dir(src).unwrap()
-                            );
+                                message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                            } else {
+                                message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                            }
                         }
                     }
                     "mkdir" => {
@@ -388,17 +375,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                         create_path.push(file);
                         match fs::create_dir(&create_path) {
                             Ok(()) => {
-                                if json.get("same") == Some(&Bool(true)) {
-                                    let dir = get_dir(src).unwrap();
-                                    message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                if let Ok(dir) = get_dir(src) {
+                                    if json.get("same") == Some(&Bool(true)) {
+                                        message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
 
-                                    message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
-                                } else {
-                                    message!(
-                                        send,
-                                        r#"{{"panel":"{panel}", "dir":[{}]}}"#,
-                                        get_dir(src).unwrap()
-                                    );
+                                        message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    } else {
+                                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                    }
                                 }
                             }
                             Err(err) => report(
@@ -524,17 +508,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                             );
                             if new_file {
                                 save_path.pop();
-                                if json.get("same") == Some(&Bool(true)) {
-                                    let dir = get_dir(&save_path.display().to_string()).unwrap();
-                                    message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+                                if let Ok(dir) = get_dir(&save_path.display().to_string()) {
+                                    if json.get("same") == Some(&Bool(true)) {
+                                        message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
 
-                                    message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
-                                } else {
-                                    message!(
-                                        send,
-                                        r#"{{"panel":"{panel}", "dir":[{}]}}"#,
-                                        get_dir(&save_path.display().to_string()).unwrap()
-                                    );
+                                        message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    } else {
+                                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                    }
                                 }
                             }
                         }
@@ -581,12 +562,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                         match zip_file.store() {
                             Ok(()) => {
                                 src_path.pop();
-                                let dir = get_dir(&src_path.display().to_string()).unwrap();
-                                if json.get("same") == Some(&Bool(true)) {
-                                    message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
-                                    message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
-                                } else {
-                                    message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                if let Ok(dir) = get_dir(&src_path.display().to_string()) {
+                                    if json.get("same") == Some(&Bool(true)) {
+                                        message!(send, r#"{{"panel":"left", "dir":[{}]}}"#, &dir);
+
+                                        message!(send, r#"{{"panel":"right", "dir":[{}]}}"#, dir);
+                                    } else {
+                                        message!(send, r#"{{"panel":"{panel}", "dir":[{}]}}"#, dir);
+                                    }
                                 }
                             }
                             Err(msg) => {
@@ -751,11 +734,11 @@ fn read_state(os_drive: &String) -> Option<State> {
         let Data(state) = state else { return None };
         return Some(State {
             right: match state.get("right") {
-                Some(Text(right)) => right.clone(),
+                Some(Text(right)) => right.to_string(),
                 _ => format! {"{os_drive}{}", MAIN_SEPARATOR_STR},
             },
             left: match state.get("left") {
-                Some(Text(left)) => left.clone(),
+                Some(Text(left)) => left.to_string(),
                 _ => format! {"{os_drive}{}", MAIN_SEPARATOR_STR},
             },
             left_bookmarks: match state.get("left_bookmarks") {
