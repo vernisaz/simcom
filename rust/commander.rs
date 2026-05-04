@@ -803,19 +803,17 @@ fn save_state(state: State) -> Result<(), Box<dyn Error>> {
 }
 
 fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
-    let mut init = String::new();
-    let path = Path::new(&dir);
-    if let Some(_parent_path) = path.parent() {
+    let mut init = vec![];
+    if let Some(_parent_path) = Path::new(&dir).parent() {
         //let timestamp = fs::metadata(parent_path)?.modified()?;
-        write!(init, r#"{{"name":"..", "dir":true}}"#)? //,"..",true)//,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
+        init.push(r#"{"name":"..", "dir":true}"#.to_string())
     };
-    Ok(read_dir(dir)?.fold(init, |mut res, cur| {
-        if let Ok(cur) = cur {
-            let md = cur.metadata().unwrap();
-            write!(
-                res,
-                r#"{}{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#,
-                if res.is_empty() { "" } else { "," },
+    init.extend(read_dir(dir)?.filter_map(|cur| {
+        if let Ok(cur) = cur
+            && let Ok(md) = cur.metadata()
+        {
+            Some(format!(
+                r#"{{"name":"{}", "dir":{}, "size":{}, "timestamp":{}}}"#,
                 json_encode(&cur.file_name().display().to_string()),
                 md.is_dir(),
                 md.len(),
@@ -824,11 +822,12 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
                     .as_millis()
-            )
-            .unwrap();
+            ))
+        } else {
+            None
         }
-        res
-    }))
+    }));
+    Ok(init.join(","))
 }
 
 fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<String> {
