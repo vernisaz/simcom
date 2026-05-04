@@ -807,7 +807,7 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
     let path = Path::new(&dir);
     if let Some(_parent_path) = path.parent() {
         //let timestamp = fs::metadata(parent_path)?.modified()?;
-        write!(init, r#"{{"name":"..", "dir":true}}"#).unwrap() //,"..",true)//,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
+        write!(init, r#"{{"name":"..", "dir":true}}"#)? //,"..",true)//,timestamp.duration_since(UNIX_EPOCH).unwrap().as_millis()).unwrap()
     };
     Ok(read_dir(dir)?.fold(init, |mut res, cur| {
         if let Ok(cur) = cur {
