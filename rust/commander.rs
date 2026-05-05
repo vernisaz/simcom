@@ -969,17 +969,17 @@ fn copy_directory_contents(
         if path.is_file() {
             let file_name = path
                 .file_name()
-                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name"))?;
+                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid file name"))?;
             let dest_path = destination_dir.join(file_name);
             if !*overwrite && dest_path.exists() {
                 return Err(IoError::other(format!("destination {dest_path:?} exists")));
             }
             count += fs::copy(&path, &dest_path)?;
-            eprintln!("Copied file: {:?} to {:?}", path, dest_path);
+            //eprintln!("Copied file: {:?} to {:?}", path, dest_path);
         } else if path.is_dir() {
             let file_name = path
                 .file_name()
-                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "Invalid file name"))?;
+                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "directory name is invalid"))?;
             let dest_path = destination_dir.join(file_name);
             match copy_directory_contents(&path, &dest_path, overwrite) {
                 Ok(files) => count += files,
