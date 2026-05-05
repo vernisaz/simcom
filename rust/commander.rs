@@ -820,7 +820,7 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                 md.modified()
                     .unwrap()
                     .duration_since(UNIX_EPOCH)
-                    .unwrap()
+                    .unwrap_or_default()
                     .as_millis()
             ))
         } else {
@@ -863,7 +863,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     md.modified()
                         .unwrap()
                         .duration_since(UNIX_EPOCH)
-                        .unwrap()
+                        .unwrap_or_default()
                         .as_millis()
                 )
                 .unwrap();
