@@ -818,10 +818,10 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                 md.is_dir(),
                 md.len(),
                 md.modified()
-                    .unwrap()
-                    .duration_since(UNIX_EPOCH)
+                    .and_then(|time|
+                    Ok(time.duration_since(UNIX_EPOCH)
                     .unwrap_or_default()
-                    .as_millis()
+                    .as_millis())).unwrap_or_default()
             ))
         } else {
             None
