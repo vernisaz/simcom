@@ -1505,8 +1505,18 @@
     }
     function extendURL(str) {
         const urlRegex = /https?:\/\/[a-zA-Z0-9-._~]+[\:\d{1,3}]?[a-zA-Z0-9-._~/]*(?:\?(?:[a-zA-Z0-9-._~%]+=(?:[a-zA-Z0-9-._~%\+]+)?&?)*)?(?:#[a-zA-Z0-9-._~]+)?/gm;
+        const fileNameReg = /(?<path>\/?(([\w-\.]+)\/)*)(?<file>[\w-]+\.(rs|swift|java|7b)):(?<line>\d+):(?<col>\d+|\s)/gm
         return str.replace(urlRegex, (url) => {
               return '<a href="' + url + '" target="_blank">' + url + '</a>';
+        }).replace(fileNameReg, (fileName) => {
+            const matches = [...fileName.matchAll(fileNameReg)];
+            if (matches.length > 0) {
+                const file = matches[0].groups.file;
+                const line = matches[0].groups.line;
+                const col = matches[0].groups.col;
+                var path = matches[0].groups.path
+                return `<a href="/rustcgi/showsrc?src=${encodeURIComponent(path)}${encodeURIComponent(file)}&line=${line}&pos=${col}" target="${escape(file)}">${fileName}</a>`
+            }
         })
     }
   </script>
