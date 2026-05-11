@@ -420,7 +420,7 @@
     const UPL_URL = './upload';
     const WS_TERM_URL_BASE = './term'
     var WS_TERM_URL = WS_TERM_URL_BASE
-    const WIN_SERVER = false
+    var WIN_SERVER = false
     const PRG_NAME = ' LightCommander'
     const LOCALE = navigator.language
     var wskt = new WebSocket(WSKT_URL)
@@ -815,6 +815,7 @@
                 } else if (response.panel == 'control') {
                     DRIVE = response.root
                     SEP = response.separator
+                    WIN_SERVER = response.system == 'windows' 
                     //requestPanel('left', response.left? response.left:DRIVE + SEP);
                     //requestPanel('right', response.right? response.right:DRIVE + SEP);
                     if (response.left_bookmarks) {
