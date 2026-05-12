@@ -818,10 +818,11 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                 md.is_dir(),
                 md.len(),
                 md.modified()
-                    .and_then(|time|
-                    Ok(time.duration_since(UNIX_EPOCH)
+                    .and_then(|time| Ok(time
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or_default()
+                        .as_millis()))
                     .unwrap_or_default()
-                    .as_millis())).unwrap_or_default()
             ))
         } else {
             None
@@ -836,8 +837,9 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
         cur_dir.push(&mut *sub_dir)
     }
     Ok(read_dir(&cur_dir)?.fold(String::new(), |mut res, cur| {
-        if let Ok(cur) = cur {
-            let md = cur.metadata().unwrap();
+        if let Ok(cur) = cur
+            && let Ok(md) = cur.metadata()
+        {
             if cur
                 .file_name()
                 .display()
@@ -851,7 +853,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     } else {
                         MAIN_SEPARATOR_STR
                     },
-                    &cur.file_name().display().to_string()
+                    &cur.file_name().display()
                 );
                 write!(
                     res,
@@ -861,18 +863,20 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     md.is_dir(),
                     md.len(),
                     md.modified()
-                        .unwrap()
-                        .duration_since(UNIX_EPOCH)
+                        .and_then(|time| Ok(time
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or_default()
+                            .as_millis()))
                         .unwrap_or_default()
-                        .as_millis()
                 )
                 .unwrap();
             }
-            if cur.file_type().is_ok() && cur.file_type().unwrap().is_dir() {
+            if let Ok(file_type) = cur.file_type() && file_type.is_dir() {
                 cur_dir.push(cur.path());
                 *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
-                let cur_res = search_in_dir(dir, sub_dir, search).unwrap();
-                if !cur_res.is_empty() {
+                if let Ok(cur_res) = search_in_dir(dir, sub_dir, search)
+                    && !cur_res.is_empty()
+                {
                     if !res.is_empty() {
                         write!(res, ",").unwrap();
                     }
@@ -977,9 +981,9 @@ fn copy_directory_contents(
             count += fs::copy(&path, &dest_path)?;
             //eprintln!("Copied file: {:?} to {:?}", path, dest_path);
         } else if path.is_dir() {
-            let file_name = path
-                .file_name()
-                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "directory name is invalid"))?;
+            let file_name = path.file_name().ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidInput, "directory name is invalid")
+            })?;
             let dest_path = destination_dir.join(file_name);
             match copy_directory_contents(&path, &dest_path, overwrite) {
                 Ok(files) => count += files,
