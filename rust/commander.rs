@@ -818,10 +818,10 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                 md.is_dir(),
                 md.len(),
                 md.modified()
-                    .and_then(|time| Ok(time
+                    .map(|time| time
                         .duration_since(UNIX_EPOCH)
                         .unwrap_or_default()
-                        .as_millis()))
+                        .as_millis())
                     .unwrap_or_default()
             ))
         } else {
@@ -863,15 +863,17 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     md.is_dir(),
                     md.len(),
                     md.modified()
-                        .and_then(|time| Ok(time
+                        .map(|time| time
                             .duration_since(UNIX_EPOCH)
                             .unwrap_or_default()
-                            .as_millis()))
+                            .as_millis())
                         .unwrap_or_default()
                 )
                 .unwrap();
             }
-            if let Ok(file_type) = cur.file_type() && file_type.is_dir() {
+            if let Ok(file_type) = cur.file_type()
+                && file_type.is_dir()
+            {
                 cur_dir.push(cur.path());
                 *sub_dir = cur_dir.strip_prefix(dir).unwrap().display().to_string();
                 if let Ok(cur_res) = search_in_dir(dir, sub_dir, search)
