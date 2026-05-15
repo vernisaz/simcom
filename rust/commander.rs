@@ -817,12 +817,10 @@ fn get_dir(dir: &str) -> Result<String, Box<dyn Error>> {
                 json_encode(&cur.file_name().display().to_string()),
                 md.is_dir(),
                 md.len(),
-                md.modified()
-                    .map(|time| time
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap_or_default()
-                        .as_millis())
+                md.modified().map_or(0, |time| time
+                    .duration_since(UNIX_EPOCH)
                     .unwrap_or_default()
+                    .as_millis())
             ))
         } else {
             None
