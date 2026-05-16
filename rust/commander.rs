@@ -679,17 +679,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 if state.left_bookmarks.is_none() {
                                     state.left_bookmarks = Some(HashSet::new())
                                 }
-                                state.left_bookmarks.as_mut().unwrap()
+                                state.left_bookmarks.as_mut()
                             }
                             "right" => {
                                 if state.right_bookmarks.is_none() {
                                     state.right_bookmarks = Some(HashSet::new())
                                 }
-                                state.right_bookmarks.as_mut().unwrap()
+                                state.right_bookmarks.as_mut()
                             }
                             _ => continue,
                         }
-                        .insert(dir.clone());
+                        .map(|bms| bms.insert(dir.clone()));
                     }
                     "delete-bookmark" => {
                         let Some(Text(dir)) = json.get("dir") else {
@@ -700,17 +700,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 if state.left_bookmarks.is_none() {
                                     continue;
                                 }
-                                state.left_bookmarks.as_mut().unwrap()
+                                state.left_bookmarks.as_mut()
                             }
                             "right" => {
                                 if state.right_bookmarks.is_none() {
                                     continue;
                                 }
-                                state.right_bookmarks.as_mut().unwrap()
+                                state.right_bookmarks.as_mut()
                             }
                             _ => continue,
                         }
-                        .remove(dir);
+                        .map(|bms| bms.remove(dir));
                     }
                     _ => (),
                 }
@@ -910,16 +910,14 @@ fn read_packet(buffer: &mut [u8]) -> Option<String> {
 }
 
 fn get_file_modified(path: &PathBuf) -> (u64, u64) {
-    // in seconds, in bytes
+    // (in seconds, in bytes)
     match fs::metadata(path) {
         Ok(metadata) => (
-            if let Ok(time) = metadata.modified() {
+            metadata.modified().map_or(0, |time| {
                 time.duration_since(SystemTime::UNIX_EPOCH)
                     .unwrap_or_default()
                     .as_secs()
-            } else {
-                0
-            },
+            }),
             metadata.len(),
         ),
         _ => (0, 0),
