@@ -730,8 +730,7 @@ fn read_state(os_drive: &String) -> Option<State> {
         let Ok(state_file) = fs::read_to_string(config) else {
             return None;
         };
-        let state = simjson::parse(&state_file);
-        let Data(state) = state else { return None };
+        let Data(state) = simjson::parse(&state_file) else { return None };
         return Some(State {
             right: match state.get("right") {
                 Some(Text(right)) => right.to_string(),
@@ -746,7 +745,7 @@ fn read_state(os_drive: &String) -> Option<State> {
                     let mut bookmark_paths = HashSet::new();
                     for bm in bookmarks {
                         if let Text(path) = bm {
-                            bookmark_paths.insert(path.clone());
+                            bookmark_paths.insert(path.to_string());
                         }
                     }
                     Some(bookmark_paths)
