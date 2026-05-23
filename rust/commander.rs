@@ -19,8 +19,8 @@ use std::{
     env::consts,
     error::Error,
     fmt::Write as FmtWrite,
-    fs::{self, read_dir},
-    io::{self, Error as IoError, ErrorKind, Read, Write, stdin},
+    fs::{self, read_dir, File},
+    io::{self, BufReader, Error as IoError, ErrorKind, Read, Write, stdin},
     path::{MAIN_SEPARATOR_STR, Path, PathBuf},
     sync::mpsc::{self, Sender},
     thread,
@@ -184,7 +184,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             eprintln!("no dst to copy");
                             continue;
                         };
-                        let overwrite =  Some(&Bool(true)) == json.get("overwrite");
+                        let overwrite = Some(&Bool(true)) == json.get("overwrite");
                         let mut dst_path = PathBuf::from(&dst);
                         let mut need_copy = true;
                         if files.len() == 1
@@ -205,8 +205,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                let _ = if src_path.is_file() && (overwrite || !dst_path.exists())
-                                {
+                                let _ = if src_path.is_file() && (overwrite || !dst_path.exists()) {
                                     fs::copy(&src_path, &dst_path)
                                 } else if src_path.is_dir() {
                                     copy_directory_contents(&src_path, &dst_path, &overwrite)
@@ -328,14 +327,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                         for file in files {
                             let Text(file) = file else { continue };
                             src_path.push(file);
-                            let err;
-                            if src_path.is_file() {
-                                err = fs::remove_file(&src_path);
+                            let err = if src_path.is_file() {
+                                fs::remove_file(&src_path)
                             } else if src_path.is_dir() {
-                                err = fs::remove_dir_all(&src_path);
+                                fs::remove_dir_all(&src_path)
                             } else {
-                                err = Ok(())
-                            }
+                                Ok(())
+                            };
                             if let Err(err) = err {
                                 report(
                                     &send,
@@ -622,8 +620,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                         let obtain_info = || -> Result<String, Box<dyn Error>> {
                             let mut path = PathBuf::from(&dir);
                             path.push(file);
-                            let file = fs::File::open(path)?;
-                            let mut bufreader = std::io::BufReader::new(&file);
+                            let file = File::open(path)?;
+                            let mut bufreader = BufReader::new(&file);
                             let exifreader = exif::Reader::new();
                             let exif = exifreader
                                 .read_from_container(&mut bufreader)
@@ -722,7 +720,9 @@ fn read_state(os_drive: &String) -> Option<State> {
         let Ok(state_file) = fs::read_to_string(config) else {
             return None;
         };
-        let Data(state) = simjson::parse(&state_file) else { return None };
+        let Data(state) = simjson::parse(&state_file) else {
+            return None;
+        };
         return Some(State {
             right: match state.get("right") {
                 Some(Text(right)) => right.to_string(),
