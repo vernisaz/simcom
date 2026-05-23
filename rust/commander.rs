@@ -184,11 +184,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             eprintln!("no dst to copy");
                             continue;
                         };
-                        let overwrite = if let Some(Bool(overwrite_val)) = json.get("overwrite") {
-                            overwrite_val
-                        } else {
-                            &false
-                        };
+                        let overwrite =  Some(&Bool(true)) == json.get("overwrite");
                         let mut dst_path = PathBuf::from(&dst);
                         let mut need_copy = true;
                         if files.len() == 1
@@ -198,8 +194,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                             dst_path.push(dst_file);
                             src_path.push(file);
                             if src_path.is_dir() {
-                                let _ = copy_directory_contents(&src_path, &dst_path, overwrite);
-                            } else if src_path.is_file() && (*overwrite || !dst_path.exists()) {
+                                let _ = copy_directory_contents(&src_path, &dst_path, &overwrite);
+                            } else if src_path.is_file() && (overwrite || !dst_path.exists()) {
                                 let _ = fs::copy(&src_path, &dst_path);
                             }
                             need_copy = false;
@@ -209,11 +205,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                let _ = if src_path.is_file() && (*overwrite || !dst_path.exists())
+                                let _ = if src_path.is_file() && (overwrite || !dst_path.exists())
                                 {
                                     fs::copy(&src_path, &dst_path)
                                 } else if src_path.is_dir() {
-                                    copy_directory_contents(&src_path, &dst_path, overwrite)
+                                    copy_directory_contents(&src_path, &dst_path, &overwrite)
                                 } else {
                                     Ok(0)
                                 };
@@ -248,11 +244,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             eprintln!("no dst to move");
                             continue;
                         };
-                        let overwrite = if let Some(Bool(overwrite_val)) = json.get("overwrite") {
-                            overwrite_val
-                        } else {
-                            &false
-                        };
+                        let overwrite = Some(&Bool(true)) == json.get("overwrite");
                         let mut dst_path = PathBuf::from(&dst);
                         let mut was_move = false;
                         if let Some(Text(dst_file)) = json.get("file") {
@@ -263,7 +255,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     && let Text(file) = &files[0]
                                 {
                                     src_path.push(file);
-                                    if *overwrite || !dst_path.exists() {
+                                    if overwrite || !dst_path.exists() {
                                         match fs::rename(&src_path, &dst_path) {
                                             Ok(()) => was_move = true,
                                             Err(err) => report(
@@ -283,20 +275,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 let Text(file) = file else { continue };
                                 src_path.push(file.clone());
                                 dst_path.push(file);
-                                if !*overwrite && dst_path.exists() {
+                                if !overwrite && dst_path.exists() {
                                     continue;
                                 }
                                 if let Err(err) = fs::rename(&src_path, &dst_path)
                                     && err.kind() == ErrorKind::CrossesDevices
                                 {
-                                    if src_path.is_file() && (*overwrite || !dst_path.exists()) {
+                                    if src_path.is_file() && (overwrite || !dst_path.exists()) {
                                         // probably not rquired
                                         if fs::copy(&src_path, &dst_path).is_ok() {
                                             let _ = fs::remove_file(&src_path);
                                         }
                                     } else if src_path.is_dir() {
                                         match copy_directory_contents(
-                                            &src_path, &dst_path, overwrite,
+                                            &src_path, &dst_path, &overwrite,
                                         ) {
                                             Ok(_) => {
                                                 // TODO decide of cases when only some files were copied
