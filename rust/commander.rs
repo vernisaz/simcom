@@ -19,13 +19,15 @@ use std::{
     env::consts,
     error::Error,
     fmt::Write as FmtWrite,
-    fs::{self, read_dir, File},
-    io::{self, BufReader, Error as IoError, ErrorKind, Read, Write, stdin},
+    fs::{self, read_dir},
+    io::{self, Error as IoError, ErrorKind, Read, Write, stdin},
     path::{MAIN_SEPARATOR_STR, Path, PathBuf},
     sync::mpsc::{self, Sender},
     thread,
     time::{SystemTime, UNIX_EPOCH},
 };
+#[cfg(feature = "exif")]
+use std::{fs::File,io::BufReader};
 
 macro_rules! message {
     ($arg1:ident, $($arg:tt)*) => (
