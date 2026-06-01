@@ -17,7 +17,7 @@ When you do frequent reassigning IP to the RPi host name, the following command 
 
 ### Run OS from USB/NVMe SSD
 Generally, if you pull SD card out, Raspberry Pi will try to boot from USB/NVMe drive. However,
-you can do it as the preferable way. Just open Advanced options/Boot order in `raspi-config` and 
+you can do it as the preferable way. Just open _Advanced options/Boot order_ in `raspi-config` and 
 select your preferred order.
 
 ### Connect more USB drives
@@ -33,7 +33,7 @@ mmcblk0     179:0    0 29.7G  0 disk
 └─mmcblk0p2 179:2    0 29.2G  0 part /
 ```
 
-Note a name of the device. You need to create a mount point for it first:
+Note a name of the device (sda1). You need to create a mount point for it first:
 
 > root2@pi:~ $ sudo mkdir /media/usbdrive
 
@@ -63,6 +63,8 @@ UUID=\[UUID] \[MOUNT POINT] \[TYPE] defaults,auto,users,rw,nofail,noatime 0 0
 UUID=A2CA0AEBCA0ABC13 /media/usbdrive ntfs defaults,auto,users,rw,nofail,noatime 0 0
 ```
 **note**: that `noatime` attribute makes sense for SSD drives only.
+
+Reboot your PC and you have the drive automatically mounted.
 
 ## Install Samba
 This step is optional and required in a case if you like to share the added drive, or some other directory. Issue the -
