@@ -189,7 +189,7 @@ function replaceWithGaps(str, regex, onMatch, onGap) {
 
     return result;
 }
-// use the method for normalized paths
+// use the method to normilize separators in path to wem/POSIX style
 function getLastPathComponent(path) {
      path = path.replace(/\/\/+/g, '/');
      path = path.replaceAll('\\', '/');
