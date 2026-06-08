@@ -16,7 +16,7 @@ const VERSION: &str = env!("VERSION");
 struct Commander;
 
 impl Terminal for Commander {
-    fn init(&self) -> (PathBuf, PathBuf, HashMap<String, Vec<String>>, &str) {
+    fn init(&self) -> (PathBuf, PathBuf, HashMap<String, String>, &str) {
         unsafe { env::set_var("COLORTERM", "truecolor") } // since terminal can be invoked from a service (not a regular terminal session)
         let web = simweb::WebData::new();
         let os_drive = if "windows" == consts::OS {
@@ -46,10 +46,7 @@ impl Terminal for Commander {
                             if val.len() > 2 {
                                 aliases.insert(
                                     alias.to_string(),
-                                    val.trim_matches('\'')
-                                        .split_whitespace()
-                                        .map(str::to_string)
-                                        .collect(),
+                                    val[1..val.len()-1].to_string(),
                                 );
                             }
                         } else {
