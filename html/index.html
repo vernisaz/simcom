@@ -451,7 +451,7 @@
       event.key == 'F5' || event.key == 'F6' ||
       event.key == 'F7' || event.key == 'F8' ||
       event.key == 'F9' || event.key == 'F10') {
-          if (event.ctrlKey) {
+          if (event.ctrlKey && (event.key == 'F1' || event.key == 'F2')) {
               if (event.key == 'F1') {
                   event.preventDefault();
                   alignPanel('right')
@@ -463,11 +463,9 @@
           } else if (event.shiftKey && event.key == 'F7') {
                   event.preventDefault();
                   openSearch()
-          } else if (event.altKey) {
-              if (event.key == 'F9') {
+          } else if (event.altKey && event.key == 'F9') {
                   event.preventDefault();
                   openTerminal()
-              }
           } else {
               event.preventDefault();
              handleFunction(event.key,event)
