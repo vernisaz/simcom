@@ -460,11 +460,9 @@
                   event.preventDefault();
                   alignPanel('left')
               }
-          } else if (event.shiftKey) {
-              if (event.key == 'F7') {
+          } else if (event.shiftKey && event.key == 'F7') {
                   event.preventDefault();
                   openSearch()
-              }
           } else if (event.altKey) {
               if (event.key == 'F9') {
                   event.preventDefault();
