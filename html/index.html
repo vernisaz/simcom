@@ -438,7 +438,7 @@
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
-      if ((event.key != 'Escape' && event.code != 'KeyS') && isViewMode()) 
+      if ((event.key != 'Escape' && event.code != 'KeyS' && event.key != 'F2') && isViewMode()) 
         return
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
@@ -451,6 +451,13 @@
       event.key == 'F5' || event.key == 'F6' ||
       event.key == 'F7' || event.key == 'F8' ||
       event.key == 'F9' || event.key == 'F10') {
+          if (event.key == 'F2') {
+              let lastChild = document.body.children[document.body.children.length - 1];
+              if (lastChild.id == "view-edit") {
+                   saveEdited() // preventDefault() is inside it
+                   return
+              }
+          }
           if (event.ctrlKey && (event.key == 'F1' || event.key == 'F2')) {
               if (event.key == 'F1') {
                   event.preventDefault();
