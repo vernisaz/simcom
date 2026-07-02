@@ -1139,12 +1139,17 @@
                 const createBtn = dlg.querySelector("#confirmBtn");
                 createBtn.style.visibility = "visible"
                 createBtn.addEventListener("click", (e) => {
-
                   const dirName = dlg.querySelector("#some_txt").value;
                   const srcDirInput = document.getElementById(`${srcPanel}-dir`);
                   const same = document.getElementById(`left-dir`).value == document.getElementById(`right-dir`).value
                   wsktSend(JSON.stringify({op:'mkdir', src:srcDirInput.value, panel:srcPanel, same:same, file:dirName}))
                 }, { once: true });
+                dlg.querySelector("#some_txt").addEventListener("keypress", (event) => {
+                    if (event.key === "Enter") { // Check if Enter key is pressed
+                        event.preventDefault();
+                        createBtn.click()
+                    }
+                });
                 dlg.showModal();
                 break
             case 'F1':
@@ -1183,6 +1188,12 @@
                       const fileName = dlg.querySelector("#some_txt").value;
                       wsktSend(JSON.stringify({op:'edit', src:document.getElementById(`${srcPanel}-dir`).value, panel:srcPanel, file:fileName }))
                     }, { once: true });
+                    dlg.querySelector("#some_txt").addEventListener("keypress", (event) => {
+                        if (event.key === "Enter") { // Check if Enter key is pressed
+                            event.preventDefault();
+                            createBtn.click()
+                        }
+                    });
                     dlg.showModal();
                 }
                 break
