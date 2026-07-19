@@ -163,7 +163,7 @@ function normalizePath(path,separator,root) {
     }
   }
 
-  return (separator == '/'?'/':'') + normalizedSegments.join(separator); // Reconstruct the path
+  return (separator == '/'?'/':'') + normalizedSegments.join(separator) + (normalizedSegments.length <= 1 && separator == '\\'?'\\':''); // Reconstruct the path
 }
 
 // co-pilot suggestion
