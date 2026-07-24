@@ -20,7 +20,7 @@ Currently the project has 4 direct dependencies:
 - [SimConfig](https://github.com/vernisaz/simconfig)
 
 And one optional dependency:
-- [SimTerminal](https://github.com/vernisaz/simterminal)
+- [SimTerminal](https://github.com/vernisaz/simterminal) which adds [Simple Color](https://github.com/vernisaz/simcolor)
 
 You will need also common [scripts](https://github.com/vernisaz/simscript) to build them.
 
@@ -90,4 +90,4 @@ having 0 dependencies on the _crates.io_. Some 3rd party dependency exists thoug
 without Cargo as well.
 
 ## Status
-The product is in the beta state.
+The product is in a beta state.

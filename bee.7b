@@ -6,7 +6,7 @@ doc_dir=..${~/~}docs
 comp opts=[]
 show_exif=true
 
-version=1.21
+version=1.22
 simhttp proj=..${~/~}simhttp
 simupload proj=..${~/~}simupload
 
