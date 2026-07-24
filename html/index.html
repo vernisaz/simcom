@@ -683,6 +683,8 @@
         const dirInput = document.getElementById(`${panelId}-dir`);
         const filesDiv = document.getElementById(`${panelId}-files`);
         const dir = response.path?response.path:dirInput.value;
+        if (dirInput.classList.contains('selected-panel'))
+                     document.title = getLastPathComponent(dir) + PRG_NAME
         dirInput.value = dir
           filesDiv.innerHTML = ''; //sortCol=5;
           if (!sortCol || sortCol == 0 || sortCol == 1) {
@@ -715,9 +717,6 @@
               if (fileEntry.dir) {
                 let newDir = dir != (DRIVE + SEP) ? `${dir}${SEP}${fileEntry.name}`:`${dir}${fileEntry.name}`;
                 newDir = normalizePath(newDir,SEP,DRIVE)
-                // TODO update title if it's an active panel
-                if (dirInput.classList.contains('selected-panel'))
-                     document.title = getLastPathComponent(dirInput.value) + PRG_NAME
                 requestPanel(panelId, newDir);
               } else {
                     if (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) {
