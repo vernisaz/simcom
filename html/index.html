@@ -438,7 +438,7 @@
     window.addEventListener('keydown', function(event) {
       //console.log('Key Pressed:', event.key);
       //console.log('Key Code:', event.code);
-      if ((event.key != 'Escape' && event.code != 'KeyS' && event.key != 'F2') && isViewMode()) 
+      if ((event.key != 'Escape' && event.code != 'KeyS' && event.key != 'F2' && event.key != 'Tab') && isViewMode()) 
         return
       if (event.key == 'Delete' || event.code == 'NumLock'  || event.code == 'Insert') {
           const el = document.querySelector('.file:hover');
@@ -489,6 +489,9 @@
       } else if (event.key == 'F16') {
           event.preventDefault();
           handleFunction('F5')
+      } else if (event.key == 'Tab') {
+          event.preventDefault();
+          handleFunction('F2')
       } else if (event.key == 'Escape' || event.ctrlKey && event.code == 'KeyQ') {
           //event.preventDefault();
           goBack(event)
@@ -1473,7 +1476,7 @@
         const helpDiv = document.createElement('DIV');
         helpDiv.id = "help-panel"
         helpDiv.innerHTML = '<p>F1 - this screen</p>'+
-        '<p>F2 - switch active panel</p>' +
+        '<p>F2, Tab - switch an active panel</p>' +
         '<p>F3 - view hover or selected file</p>' +
         '<p>F4 - edit hover or selected file</p>' +
         '<p>F5 - copy selected file(s)</p>' +
