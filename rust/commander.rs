@@ -844,7 +844,7 @@ fn search_in_dir(dir: &str, sub_dir: &mut String, search: &str) -> io::Result<St
                     } else {
                         MAIN_SEPARATOR_STR
                     },
-                    &cur.file_name().display()
+                    cur.file_name().display()
                 );
                 write!(
                     res,
@@ -976,9 +976,9 @@ fn copy_directory_contents(
                 io::Error::new(io::ErrorKind::InvalidInput, "directory name is invalid")
             })?;
             let dest_path = destination_dir.join(file_name);
-            match copy_directory_contents(&path, &dest_path, overwrite) {
-                Ok(files) => count += files,
-                Err(err) => return Err(err),
+            {
+                let files = copy_directory_contents(&path, &dest_path, overwrite)?;
+                count += files
             }
         }
     }

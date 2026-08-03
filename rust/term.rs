@@ -43,6 +43,7 @@ impl Terminal for Commander {
                         .filter_map(|line| line.split_once('='))
                     {
                         if let Some(alias) = key.strip_prefix("alias ") {
+                            #[allow(unused_mut)]
                             let mut alias = alias.to_string();
                             #[cfg(target_os = "windows")]
                             alias.make_ascii_uppercase();
