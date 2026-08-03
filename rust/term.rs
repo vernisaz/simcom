@@ -4,7 +4,7 @@ extern crate simweb;
 use std::{
     collections::HashMap,
     env::{self, consts},
-    path::{PathBuf,MAIN_SEPARATOR_STR},
+    path::{PathBuf, MAIN_SEPARATOR_STR},
     process::Command,
 };
 
@@ -43,11 +43,11 @@ impl Terminal for Commander {
                         .filter_map(|line| line.split_once('='))
                     {
                         if let Some(alias) = key.strip_prefix("alias ") {
+                            let mut alias = alias.to_string();
+                            #[cfg(target_os = "windows")]
+                            alias.make_ascii_uppercase();
                             if val.len() > 2 {
-                                aliases.insert(
-                                    alias.to_string(),
-                                    val[1..val.len()-1].to_string(),
-                                );
+                                aliases.insert(alias, val[1..val.len() - 1].to_string());
                             }
                         } else {
                             unsafe {
