@@ -5,8 +5,9 @@ common =..${~/~}simscript${~/~}comm-build.7b:file
 crate_dir=..${~/~}crates
 doc_dir=..${~/~}docs
 comp opts=[]
+dep_crates=[--extern, simtime]
 
-version=1.03
+version=1.04
 set_env(VERSION,version)
 
 include(..${~/~}simscript${~/~}comm-test.7b)

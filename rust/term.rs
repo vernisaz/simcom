@@ -4,6 +4,7 @@ extern crate simweb;
 use std::{
     collections::HashMap,
     env::{self, consts},
+    error::Error,
     path::{PathBuf, MAIN_SEPARATOR_STR},
     process::Command,
 };
@@ -63,8 +64,42 @@ impl Terminal for Commander {
     }
     fn greeting(&self, version: &str) -> String {
         let ver = version.color_num(196).to_string();
-        format!("Web terminal {ver}/{TERM_VERSION}")
+        let (_, _, _, h, m, _, _) = simtime::get_datetime(1970, simtime::local_now_secs());
+        let (h, p) = convert_24_to_12(h).unwrap();
+        format!(
+            "Web terminal [{h}:{m:<02} {}M] v{ver}/{TERM_VERSION}",
+            if p { "P" } else { "A" }
+        )
     }
+}
+
+/// Converts a time string in "HH:MM" 24-hour format to "hh:MM AM/PM" 12-hour format.
+///
+/// # Arguments
+/// * `time_24` - A string slice containing the time in 24-hour format.
+///
+/// # Returns
+/// * `Ok((h_12,P)` - The converted time in 12-hour format.
+/// * `Err(String)` - An error message if the input is invalid.
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_24_to_12(0).unwrap().0, 12);
+/// assert_eq!(convert_24_to_12(13).unwrap().0, 1);
+/// ```
+fn convert_24_to_12(hour_24: u32) -> Result<(u32, bool), Box<dyn Error>> {
+    // Validate ranges
+    if hour_24 > 23 {
+        return Err("Hour must be 0-23".into());
+    }
+
+    // Convert to 12-hour format
+    let hour_12 = match hour_24 % 12 {
+        0 => 12,
+        h => h,
+    };
+
+    Ok((hour_12, hour_24 > 11))
 }
 
 fn main() {
